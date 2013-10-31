@@ -1,0 +1,10 @@
+-Installation as an ImageJ/Fiji plugin:
+Extract ScientiFig.zip to a destination directory of your choice then copy this entire destination directory to the ImageJ/Fiji "plugins" folder.
+
+-Installation as a stand-alone:
+Unzip the file and double click on “launcher.jar”
+
+-To run ScientiFig directly from the command line type something like: 
+java -Xmx1024m -jar /path/to/ScientiFig_.jar
+(-Xmx1024m means up to 1024Mo RAM can be used, you can use more or less depending on your sytem, images, ...)
+ps: never allow java to use more than 75% of the physical RAM present on your system

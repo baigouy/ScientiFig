@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="ScientiFig_" default="default" basedir=".">
+    <description>Builds, tests, and runs the project Color_Blind_Assistant_IJ.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="Color_Blind_Assistant_IJ-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    <!-- on transfere tt directement ds FIJI pr pouvoir le tester --> 
+<!--
+<taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="/usr/share/ant/lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+    
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+      <classpath>
+        <pathelement location="/usr/share/java/lib/ant-contrib-0.3.jar"/>
+      </classpath>
+    </taskdef>
+    //permet d'avoir <try><catch> mais j'ai pas reussi-->
+
+    <!-- to create your own netbeans manifest
+    http://www.javaxt.com/Tutorials/Netbeans/How_to_Add_Version_Information_to_a_Jar_File_with_Netbeans
+    -->
+    
+    <target name="-post-jar">
+
+        <echo message="Copying licence/changes"/>
+        <copy file="${basedir}/license.txt" todir="${dist.dir}"/>
+		 <copy file="${basedir}/test_sample_FiguR.xlsx" todir="${dist.dir}" failonerror="No"/>
+		 <copy file="${basedir}/simple_test_sample_FiguR.xlsx" todir="${dist.dir}" failonerror="No"/>
+		 <copy file="${basedir}/HowToInstall.txt" todir="${dist.dir}" failonerror="No"/>
+<!--        <copy file="${basedir}/../../Html/src/WebSF/tutorial.html" todir="${dist.dir}"/> -->
+        <copy file="${basedir}/changes.txt" todir="${dist.dir}"/>
+        
+        <!-- "if" evaluates this element -->
+        
+        <!--permet de continuer le script meme si il y a des erreurs-->
+    <copy file="${basedir}/../../launcher/dist/launcher.jar" todir="${dist.dir}" failonerror="No"/>      
+
+        
+        <!--
+        <if>
+            <bool>
+                <and>
+                    <available file="${basedir}/../../launcher/dist/launcher.jar"/>
+                </and>
+            </bool>
+            
+            <echo>build.xml and run.xml are available</echo>
+            <copy file="${basedir}/../../launcher/dist/launcher.jar" todir="${dist.dir}"/>       
+            
+            <else>
+                <echo>didn't find one or both of build.xml and run.xml</echo>
+            </else>
+        </if>
+        -->
+        
+        <echo message="Copying associated folders and cleaning"/>
+        <delete file="${dist.dir}/README.TXT"/>
+
+        <mkdir dir="${dist.dir}/JournalStyles"/>
+        <copy todir="${dist.dir}/JournalStyles" failonerror="false">
+            <fileset dir="${basedir}/JournalStyles" />
+        </copy>
+
+        <mkdir dir="${dist.dir}/GraphThemes"/>
+        <copy todir="${dist.dir}/GraphThemes" failonerror="false">
+            <fileset dir="${basedir}/GraphThemes" />
+        </copy>
+
+
+<!--
+        <copy todir="${dist.dir}/tuto">
+            <fileset dir="${basedir}/../../Html/src/WebSF" />
+        </copy>
+
+        <delete file="${dist.dir}/tuto/menu.js" />
+        -->
+
+
+        <!--
+                <copy todir="/home/benoit/Fiji.app/plugins/ScientiFig"  failonerror="No">
+                    <fileset dir="${dist.dir}" />
+                </copy>
+                <copy todir="/home/benoit/.imagej/plugins/ScientiFig"  failonerror="No">
+                    <fileset dir="${dist.dir}" />
+                </copy>
+        -->
+        <!--
+                <copy todir="/home/benoit/.imagej/plugins/JournalStyles">
+                    <fileset dir="${basedir}/JournalStyles" />
+                </copy>
+                <copy todir="/home/benoit/.imagej/plugins/tuto">
+                    <fileset dir="${dist.dir}/tuto" />
+                </copy>
+        -->
+
+        <!-- maybe it would be simpler to distribute this with imageJ-->
+        <!--
+        <echo message="All In One JAR"/>
+        <zip destfile="${dist.dir}/ScientiFigOneJar.jar">
+            <zipfileset src="${dist.dir}/lib/AbsoluteLayout.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/batik-all-1.7.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/IJ.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/poi-3.7-20101029.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/poi-scratchpad-3.7-20101029.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/swing-layout-1.0.4.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset src="${dist.dir}/lib/xml-apis-ext.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
+            <zipfileset dir="${dist.dir}" includes="*.txt"/>
+            <zipfileset src="${dist.dir}/ScientiFig_.jar" includes="**/*"/>
+        </zip>
+        -->
+        
+        <!--
+                <copy todir="/home/benoit/Fiji.app/plugins/lib" failonerror="No">
+                    <fileset dir="${dist.dir}/lib" />
+                </copy>
+                <copy todir="/home/benoit/.imagej/plugins/lib" failonerror="No">
+                    <fileset dir="${dist.dir}/lib" />
+                </copy>
+                <copy todir="/home/benoit/Fiji.app/plugins">
+                    <fileset dir="${dist.dir}"  includes="*.jar"/>
+                </copy>
+                <copy todir="/home/benoit/.imagej/plugins">
+                    <fileset dir="${dist.dir}"  includes="*.jar"/>
+                </copy>
+        -->
+    </target>
+
+</project>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.6" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jPanel1" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="About"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jPanel3" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="jPanel3" alignment="0" max="32767" attributes="0"/>
+              <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="Software_name" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="Copyright" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="Author" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="Email" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="Software_name" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="Copyright" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="Author" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="Email" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="141" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="Software_name">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="sqjdhqskdhqksjdhkqshdkqshdkqs"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="Copyright">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="sqjdhqskdhqksjdhkqshdkqshdkqs"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="Author">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="sqjdhqskdhqksjdhkqshdkqshdkqs"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="Email">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="sqjdhqskdhqksjdhkqshdkqshdkqs"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jPanel4" alignment="1" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jPanel4" alignment="1" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel4">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Licenses"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jScrollPane1" alignment="0" pref="586" max="32767" attributes="0"/>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jScrollPane1" alignment="0" pref="225" max="32767" attributes="0"/>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JTextArea" name="jTextArea1">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="columns" type="int" value="20"/>
+                        <Property name="lineWrap" type="boolean" value="true"/>
+                        <Property name="rows" type="int" value="5"/>
+                        <Property name="text" type="java.lang.String" value="PLEASE READ CAREFULLY THE LICENSES BELOW, if you do not agree to the terms of the licenses, just delete ScientiFig from your computer.&#xa;&#xa;License ScientiFig (new BSD license)&#xa;&#xa;Copyright (C) 2012-2013 Benoit Aigouy &#xa;&#xa;Redistribution and use in source and binary forms, with or without&#xa;modification, are permitted provided that the following conditions are&#xa;met:&#xa;&#xa;(1) Redistributions of source code must retain the above copyright&#xa;notice, this list of conditions and the following disclaimer. &#xa;&#xa;(2) Redistributions in binary form must reproduce the above copyright&#xa;notice, this list of conditions and the following disclaimer in&#xa;the documentation and/or other materials provided with the&#xa;distribution.  &#xa;    &#xa;(3)The name of the author may not be used to&#xa;endorse or promote products derived from this software without&#xa;specific prior written permission.&#xa;&#xa;THIS SOFTWARE IS PROVIDED BY THE AUTHOR &quot;AS IS&quot; AND ANY EXPRESS OR&#xa;IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED&#xa;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#xa;DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,&#xa;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES&#xa;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR&#xa;SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)&#xa;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,&#xa;STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING&#xa;IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE&#xa;POSSIBILITY OF SUCH DAMAGE.&#xa;&#xa;Licenses Third party libraries:&#xa;&#xa;SF is using the public domain software ImageJ for reading tiffs and can exchange data with ImageJ. ImageJ is a great software&#xa;many thanks to all the ImageJ authors and contributors.&#xa;&#xa;license BATIK  and XML-apis&#xa;/*&#xa; * The Apache Software License, Version 1.1&#xa; *&#xa; * Copyright (c) 1999 The Apache Software Foundation.  All rights &#xa; * reserved.&#xa; *&#xa; * Redistribution and use in source and binary forms, with or without&#xa; * modification, are permitted provided that the following conditions&#xa; * are met:&#xa; *&#xa; * 1. Redistributions of source code must retain the above copyright&#xa; *    notice, this list of conditions and the following disclaimer. &#xa; *&#xa; * 2. Redistributions in binary form must reproduce the above copyright&#xa; *    notice, this list of conditions and the following disclaimer in&#xa; *    the documentation and/or other materials provided with the&#xa; *    distribution.&#xa; *&#xa; * 3. The end-user documentation included with the redistribution, if&#xa; *    any, must include the following acknowlegement:  &#xa; *       &quot;This product includes software developed by the &#xa; *        Apache Software Foundation (http://www.apache.org/).&quot;&#xa; *    Alternately, this acknowlegement may appear in the software itself,&#xa; *    if and wherever such third-party acknowlegements normally appear.&#xa; *&#xa; * 4. The names &quot;The Jakarta Project&quot;, &quot;Jakarta-Regexp&quot;, and &quot;Apache Software&#xa; *    Foundation&quot; must not be used to endorse or promote products derived&#xa; *    from this software without prior written permission. For written &#xa; *    permission, please contact apache@apache.org.&#xa; *&#xa; * 5. Products derived from this software may not be called &quot;Apache&quot;&#xa; *    nor may &quot;Apache&quot; appear in their names without prior written&#xa; *    permission of the Apache Group.&#xa; *&#xa; * THIS SOFTWARE IS PROVIDED ``AS IS&apos;&apos; AND ANY EXPRESSED OR IMPLIED&#xa; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES&#xa; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#xa; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR&#xa; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,&#xa; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT&#xa; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF&#xa; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND&#xa; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,&#xa; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT&#xa; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF&#xa; * SUCH DAMAGE.&#xa; * ====================================================================&#xa; *&#xa; * This software consists of voluntary contributions made by many&#xa; * individuals on behalf of the Apache Software Foundation.  For more&#xa; * information on the Apache Software Foundation, please see&#xa; * &lt;http://www.apache.org/&gt;.&#xa; *&#xa; */ &#xa; &#xa;License Rsession&#xa;http://code.google.com/p/rsession/&#xa;https://sites.google.com/site/mulabsltd/products/rsession&#xa;BSD License&#xa;Copyright (c) 2012, &#xb5;-Labs&#xa;All rights reserved.&#xa;&#xa;Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:&#xa;&#xa;Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.&#xa;Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.&#xa;Neither the name of the &#xb5;-Labs nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.&#xa;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.&#xa;&#xa;&#xa;License icons&#xa;&#xa;I would really like to thank:&#xa;&#xa;Sekkyumu:&#xa;http://sekkyumu.deviantart.com/art/Developpers-Icons-63052312&#xa;You are free to use these icons on personal and/or commercial projects &#xa;without any attribution or credit. You are not permitted to sell any of these &#xa;icons individually or as an icon pack. However, you are permitted to sell a &#xa;product which uses any of these icons as part of the product. Do not make the &#xa;icon set available for download on any other icon/design site - always link to &#xa;this DeviantArt page.&#xa;&#xa;icojoy (onebit icons)&#xa;http://www.icojoy.com&#xa;&#xa;J O N A S R A S K D E&#xa0;S I G N&#xa;These icons are free to use in both commercial products as well as personal use.&#xa;http://jonasraskdesign.com&#xa;jonasrask@gmail.com&#xa;&#xa;iTweek&#xa;http://itweek.deviantart.com/art/Knob-Buttons-Toolbar-icons-73463960&#xa;You are free to use these icons on your software application, website, etc.&#xa;You&apos;re welcome to give credits for the graphics, when used.&#xa;&#xa;logo SF:&#xa;http://icon-generator.net/faq.html&#xa;Is it free?&#xa;Yes, you can use free on personal and commercial perpose.&#xa;&#xa;for their marvelous free icon sets." noResource="true"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>last update Sat Feb 23 17:54:29 CET 2013</comment>
+    <entry key="Figure Letter Font">Arial#0#12</entry>
+    <entry key="Graph Y axis title">Arial#0#12</entry>
+    <entry key="Graph Y axis text">Arial#0#12</entry>
+    <entry key="Journal Column Width in cm">8.5</entry>
+    <entry key="Figure Upper Left Text Font">Arial#0#12</entry>
+    <entry key="Figure Upper Right Text Font">Arial#0#12</entry>
+    <entry key="Graph Main Title">Arial#0#12</entry>
+    <entry key="Graph Legend Text">Arial#0#12</entry>
+    <entry key="Figure ScaleBar Font">Arial#0#12</entry>
+    <entry key="Journal Page Height">21.0</entry>
+    <entry key="Figure Lower Right Text Font">Arial#0#12</entry>
+    <entry key="Graph Legend Title">Arial#0#12</entry>
+    <entry key="Figure Outter Text">Arial#0#12</entry>
+    <entry key="Journal Name">Development</entry>
+    <entry key="Journal 3/4 Page Width in cm">12.75</entry>
+    <entry key="Journal Page (2 columns) Width in cm">18.0</entry>
+    <entry key="ROI/objects Stroke Size">0.65</entry>
+    <entry key="Graph Default Point Width">-1.0</entry>
+    <entry key="Graph X axis title">Arial#0#12</entry>
+    <entry key="Graph X axis text">Arial#0#12</entry>
+    <entry key="Figure Lower Left Text Font">Arial#0#12</entry>
+    <entry key="Capitalization behaviour of the letter">upper case (capitalized)</entry>
+    <entry key="Graph Default Line Width">-1.0</entry>
+</properties>

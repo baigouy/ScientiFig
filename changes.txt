@@ -1,0 +1,500 @@
+22/09/13
+-insets can now be directly extracted from rectangular ROIs
+
+18/07/13
+-renamed a few text files (including journal styles and themes) to prevent ImageJ proper from trying to load them (FIJI was not making this mistake)
+-I have started to improve the integration with ImageJ
+
+10/07/13
+-fixed a minor bug reported by a user that prevented images from being exported when no journal style was selected
+-allowed the "edit image" window to be resized
+
+30/06/13-4/07/13
+-allowed images to be selected in rows using only the mouse (first click on a row selects the row, second click selects a column/panel and third click selects an image) (see http://youtu.be/2f4d5YHBXNA)
+-added shortcuts. Click on Help/Licenses/Citations>shortcuts for a complete list of shortcuts.
+-fixed several typos and text capitalization inconsistencies
+-renamed "block" to "panel"
+-added support for resolution in journal styles
+-added a warning when the user tries to use a resolution lower than that recommended by the journal (see http://youtu.be/3ul6nhqJMxk)
+-added the possibility to log magnification changes applied to the images when saved at a different resolution (see http://youtu.be/3ul6nhqJMxk for a demo)
+-removed the pixel spinner (this spinner became obsolete after I added the possibility to change image resolution when exported)
+-added the possibility to remove/add or rearrange images even when they are included in a row (see http://youtu.be/oy0aNq_4Zbs, http://youtu.be/eMORNoeoiD8 and http://youtu.be/8upT9G5J_ZE, respectively)
+-in the previous version a colored X and outline was indicating the selection, I have now removed the X drawn over the selection
+-prevented the "edit image" window to pop up automatically you have to click on "Edit image text, scale bar,..." to open it (see http://youtu.be/T8QAR8MkSv4)
+-fixed a minor bug caused by adding images that no longer exist to the image list
+-current verion is now 2.6 beta
+
+28/05/13
+-fixed text misalignment in vertical text boxes (it was a nasty bug that occured only when text contained at least 2 styles)
+-I had by mistake inverted "lower left" and "lower right" text labels in the "edit image" window
+-the external horizontal and vertical textbars are now included in Font, text and style quality controls
+
+24/05/13
+-removed files from the image list if they no longer exist when a yf5m file is reloaded
+-added a 'replace' command for text rules that is in charge of performing simple non regex text replacements (this commands does its best to try to preserve style but it may not always be optimal)
+-fixed several minor errors in the freshly added quality controls
+-force a plot to update when text or style has been changed in a quality control (requires an active R connection to effectively modify the plot)
+-fixed a minor bug in the quality control for fonts that made the check ignore floating texts font replacements (in very peculiar conditions, i.e. when the font was correct and only font size was different)
+-made it easier to edit existing text rules by reloading as much as I can previous content
+
+23/05/13
+-fixed sevral major bugs in text rules (user created text rules were not added properly to the list and unicode replacemnts were wrongly processed)
+
+15/05/13
+-removed error bars buttons (in fact error bars become a plot like any other normal plot from), unfortunately this change is not retrocompatible, I'm sorry for not offering the retrocompatibility (I try as much as possible to avoid that) but this was necessary this time to make the soft simpler. The new errorbars offer interesting new capabilities however.
+-added replacement rule for plain text infinity
+-removed journal style selection in FiguR as it was largely useless there and was only taking care of a few journal rules and not the full set of rules (I recommend you use check graph in SF to very the quality of your graphs)
+-updated the main video demo to have it to include checks
+-added the possibility to reload and/or edit error bars
+-graphs controls now check stroke size of error bars
+-fixed a minor bug in check graphs ignoring stroke size errors if these were the only errors in graphs
+-fixed several minor layout issues
+-fixed unnecessary warnings for quality control whereas all controls were performed
+
+14/05/13
+-added a control for line and point size in 'check graphs'
+-fixed a minor bug in scale bar length update when the size was set in the unit spinner (the pixel spinner was working fine)
+-added a warning if graph colors are likely not to be color blind friendly (will work up to eight colors after that it becomes difficult to do)
+
+01-10/05/13
+-replaced hard coded text replacements by flexible regex rules (the tools now almost offers infinite possibilities)
+-added styling capabilities to regex rules
+-added quality controls for graphs, text style, fonts, line arts, ...
+-the corrections are not anymore imposed to the user, he is just suggested a solution bu he decides in the end whether or not this solution should be applied or not (I find it more user friendly to have this like that and this would also prevent the soft to create errors while fixing errors)
+-fixed font issues in R by installing the extrafont plugin
+
+30/04/13
+-removed forbidden words, replaced it by an intelligent algorithm that decides to capitalize or not the text depending on the word
+-added textfields to enter maths/stylized text and units in FiguR
+-added support for maths in FiguR
+-added a simple visual formula editor for FiguR
+-finalized support for stylized text in FiguR (finalized the styledDoc to R translator)
+
+29/04/13
+-added several tools to handle unicode characters to allow addition of unconventional texts
+-improved the java styledDoc to R translator
+
+27-28/04/13
+-added several tools to manipulate strings
+-started to create a java translator from a styledDocument to an R expression (formatted string)
+
+21/04/13
+-solved some MS Windows issues when running FiguR (when the path to java is not set in R)
+-improved control of R with FiguR
+-cleaned the guidelines to keep only essential stuff and added warnings related to running 32bits R with a 64bits java
+-my Rsession does not redirect System.out anymore, I gave it its own printstream linked to a jTextArea (when FiguR is launched)
+-if you get pbs connecting to R under windows just close R and reopen it and also kill all the Rserve process in the process manager (those kind of pbs seem to be windows specific)
+-When running SF using a 64 bits version of java on windows please run the 64 bits version of R (this is the only way one can get rJava to work properly)
+
+10/04/13
+-replaced unicode arrow representing characters in the 'annotate' dialog by icons (more portable)
+
+09/04/13
+-improved arrowhead code (rewritten it entirely)
+-old arrow parameters are now marked as deprecated
+-created retrocompatibility for arrows
+-added the possibility to have half headed arrows, fancy arrowheads or outline only arrows
+-fixed a minor layout bug in the 'Image Editor Frame', bug was only affecting Mac and Windows computers, not linux ones
+
+08/04/13
+-changed journal style extension from .xml to .txt to be compatible with the FIJI uploader (that only allows a limited number of files to be uploaded: https://github.com/imagej/imagej/blob/master/core/updater/src/main/java/imagej/updater/core/Checksummer.java#L416)(Many thanks to Johannes Schindelin for pointing me to this)
+-implemented retrocompatibility for people who created their own style
+-the ScientiFig FIJI update site is now fully operational
+-updated a few icons (made them black and white instead of colored --> looks more pro)
+
+05/04/13
+-the icons now ship in a separate jar file (simpler for distribution)
+-clarified icon licenses further, especially for my (ugly) icons (my icons are released under WTFPL, i.e. you can do whatever you want with them, if you dare to)
+
+02/04/13
+-fixed list refresh error when adding a single row (row content was not displaying)
+-added the possibility to remove annotations in one click
+-started to set up a FIJI update site
+
+30/03/13
+-added a new debug tool that allows to test most the functionalities of the soft automatically with visual inspection (I found a minor bug thanks to it)
+-fixed minor bugs and cleaned the code
+
+28/03/13
+-added the possibility to rotate most shapes. Shapes don't lose their type even when rotated (I think it's the way it should be)
+-fixed a minor layout problem on macs
+
+27/03/13
+-added a warning when loading failed because the loaded .yf5m file is corrupted
+
+26/03/13
+-finalized multithreading (for rotate left, rotate right, crop, custom rotate, flip)
+
+25/03/13
+-fixed a small font bug under linux when 'Arial' is not installed
+-changed font used by glasspane hints from 'Arial' to 'Monospaced' since some linux distros don't have Arial installed by default
+-I have started to implement multi threading for SF (it will take some time before it is fully functional I think but speed gain is significant)
+-force hints to refresh when window is resized
+
+24/03/13
+-fixed a small bug that prevented journal style selection
+-fixed a minor problem with crop and rotation spinners
+
+21/03/13
+-fixed a minor bug affecting plots position after changing plot stroke size
+-fixed a minor row size error after deleting a block from a row
+-increased block swapping speed by removing several useless resize operations (particularly useful when a row contains plots)
+-improved loading
+-added a better handling of 'out of memory errors' at loading and saving (the two major causes of out of memory errors)
+-added a dialog for loading and saving so that people know the soft is doing something even if they don't know how long it's going to take
+-fixed a minor export folder issue
+
+19/03/13
+-minor bug fix: export dpi was always fixed at 300dpi even when the combo value was changed, this has been fixed. dpi can now be set freely as it should always have been
+-the software now remembers the last export folder (instead of always bringing you back to your home folder)
+-I now display the current file name in the title (so you know where the save file is going to be saved)
+-added a counter in the "reformat block" dialog that checks that the numbers of rows and cols is >= to the number of images that must be added to the block
+
+18/03/13
+-fixed a huge bug that could corrupt a file while saving
+-fixed another bug related to textboxes
+
+16/03/13
+-fixed lost ROIs/letters when replacing a vector graphics image by a raster image
+-fixed a display bug for insets (when they were 8 bits). Corrupted insets are forever corrupted and must be replaced manually, sorry.
+-added lossless left and right rotations and horizontal/vertical flips for images contained in a block
+-changed default values for dashed lines
+-I now block replace when multiple images are selected
+-removed the "same height" button which became completely obsolete I think
+-I have set the default font for new journal style to Arial PLAIN 12, because Arial 12 is the most common font used by journals
+-fixed a minor selection error when clicking on a row in a figure
+-I now move the the scrolls to the position of the clicked row (if you don't like this behaviour, inactivate "auto scroll" in Edit>Preferences)
+-fixed a nasty bug that occured during row swapping when they contained text bars that are not associated to a block (for example after block deletion (removing textbars had the same effect)
+-found a solution to force size update even if size value remains the same (I create a new changevent myself)
+-I override the keylistener of jspinners to handle VK_ENTER events better than java does natively (here again I simulate a changeEvent)
+-fixed yet another bug for textbars that was suddenly disappearing when blocks were swapped
+
+15/03/13
+-increased the size/sensitivity of draggable regions in edit ROI mode (replaced points by ellipses)
+-fixed yet another style bug in text with multiple line breaks (should be forever fixed now)
+-changed selection drawing of a selected row
+-I now also highlight selected objects in a row or a column to get a better idea of where we are
+
+14/03/13
+-fixed a bug when line breaks where added to text, all the text after an empty line break (not immediately followed by text) was not drawn, reopening the file should suffice to fix the bug
+-fixed several problems linked to the new interface
+-fixed a display bug for the text bounding box when the text was containing leading white spaces
+-fixed a minor position bug for text bounding box of scale bars
+-I now force remove CaretUpdate listeners, many bugs I was having seem to have been caused by those, the soft was also getting slower because of this apparently
+-fixed a bug affecting block position when it contained images of different sizes, the bug also affected swapping and moving of image
+-fixed a minor bug of cropping/rotation values not updating in some case
+-removed warning when creating blocks having images of different sizes but same AR
+-added labels showing selected image size an AR in order to get a better idea of the crop to apply to images in a block
+
+13/03/13
+-extensively tested the new interface and found many bugs
+-fixed a bug linked to line breaks (the soft may not have applied style properly when line breaks were added), reopening the file with the most recent version should fix the problem
+-created several videos for the new interface
+-added a glasspane to the user interface that allows to help people visualize important elements in the software and to guide them if they don't want to see the online tutorial
+
+10-13/03/13
+-fixed bugs and created a new layout
+
+07/03/13
+-renamed "extras" to "annotate"
+-fixed a size bug when removing an image from a block (block failed to resize automatically, required manual resize)
+-created a small piece of code that tests all the buttons/spinners/menus of the software with images opened and without, in order to find bugs in the soft, I found and fixed 4 very minor bugs that may never have occurred without such a harsh treatment.
+
+06/03/13
+-fixed a very minor bug: when swapping columns in a row, images contained in the block were not being updated properly
+-error logging can be turned off in preferences
+-fixed an undo/redo error in fiji (buttons were showing even when they should not)
+
+05/03/13
+-fixed a bug that occured when trying to delete a freshly created journal style
+-fixed a bug that prevented common journal style to be applied to letters
+-fixed minor size bugs
+-added plenty of videos these videos demo the functionalities of each button (click on the question mark button then on the button of interest)
+-changed version to 2.0 (I think I have added enough new functionalities to call it v2.0)
+-prevented help button to be called twice
+
+04/03/13
+-fixed an inconsistency in space between rows (I now apply the same spacing to all rows, which is most likeley what people want)
+-fixed another minor bug in scale par position for insets
+-fixed a huge bug in undo/redo that was reported by a user
+-fixed minor layout bugs
+-added the possibility to delete blocks without deleting the complete row
+-added the possibility to change the order of columns contained in a row
+-added the possibility to rotate and crop/rotate images even after they have been added to the final figure (may be a bit slow so please only use for fine tuning)
+
+03/03/13
+-Made the software ignore svg preview when they are too big (removed useless rasterization step)
+-made SVG preview canvas render the svg directly instead of creating a bufferedimage and rendering it, in addition this was causing an out of memory error when svg size was not configured properly, which is frequent in home-made svg files (SVG were only converted to ratser for preview purposes, not anywhere else in the software)
+-fixed a bug in changing stroke size of embedded svg files
+-fixed a minor bug in scale bar positioning for insets (bottom left and bootom right bar were not properly positioned)
+-removed support for ppt as it was only partial (in addition it reduces the size of the software and will facilitate integration of the plugin with FIJI and ImageJ)
+
+01/03/13
+-added support for changing stroke size in another type of svg file
+-if R connection is not active I now modify the stroke of the emebedded svg instead
+-added rough memory usage to avoid out of memory errors
+-better handling for "quitting without saving"
+-reactivated progress bar for save
+
+28/02/13
+-fixed a size pb when people were changing the space between images in a montage/block
+-fixed a similar bug in the Figure tab
+-quickly fixed a minor resizing pb when adding a column to a row, better fix needed some day
+-added buttons to force style refresh (at some point just reload styles directly from rows or from montages)
+-removed an unused software refresh after journal style selection cancelation
+-fixed a bug in new (last save file name was not erased)
+-fixed a DND generated error message (the error was just a java display error, no big deal)
+-fixed a huge memory leak when used as a plugin for FIJI/ImageJ
+
+27/02/13
+-added progress bars for loading, saving and exporting files
+-inreased drawing speed for big images (severely modified the SerializableBufferedImage class) --> doubles the memory requirements (I'll try to fix that later)
+-modified the center of the image rotation to be the center of the cropped image (when combining cropping and rotation), I think this is what people would like to have.
+-removed progress bar for saving because it impaired the save on quit
+-fixed a huge bug in the backward arrow in the figure tab that prevented rows to be deleted properly
+-fixed a position bug for blocks after deleting rows
+-fixed several other bugs related to row deletion
+-added a warning when the user tries to apply a journal style when no block or no row is selected
+
+26/02/13
+-optimized showing/hidding the 'image editor frame' (window hides when more than one image is selected and shows when a single image is selected)
+-fixed a minor translation error for embedded svg files
+-prevented addition of scale bars to embedded svg files since it is impossible to know pixel size for them
+-removed PiP for embedded svg since they can and should better be added externally
+-prevented 'Image editor frame' to be resized
+-fixed a stroke size error when drawing selected objects
+-added support for DnD in Figur (you can DnD csv, xls, xlsx, txt files)
+-added support for native file dialogs for save in SF and for import in FiguR
+-I extensively tested all functions by myself so there must not be much bugs left
+
+25/02/13
+-improved display refresh (I now try to only redraw the elements that need to be redrawn --> huge speed and resource gain, but a bit more glitches should use double buffering at some point to pevent glitches but speed is more important)
+-optimized relettering, it now executes much faster tha before
+-I discovered that illustrator and inkscape deal differently with stroke size when a zoom is applied to an svg image so I now ask how embedded files should be corrected, the inkscape way or the illustrator/raster way, by default I use the Illustrator way.
+-Significantly increased the speed of cropping and rotating (I recoded part of the function)
+-found and fixed a bug in journal styles that prevented italic and bold to be kept
+
+23/02/13
+-fixed size and phantom selection problem when deleting images from blocks
+-forced blocks consisting of a single image to have two columns as soon as an image is added to them
+-fixed refresh error when adding a block/column to a row
+-I used a very dirty trick to be able to change the stroke size of objects contained in a svg (very risky I strongly recommend not to use this function)
+-Added support for capitalization/uncapitalization of the letter in journal styles
+
+21-22/02/13
+-added the possibility to set stroke size of lines and or ROIs in the journal style
+-added a button to change stroke size of all objects/ROIs,arrows,... associated to images
+-added the possibility to change stroke size of all images in a montage and of all images in a figure
+-thinking about a solution to change stroke size of embeded svgs (possible but risky so I'm not sure I want to implement it, maybe implement it with a huge warning before, in theory it can be changed afterwards in illustrator or inkscape manually so it's not really necessary)
+-added the possibility to use native file dialog to select files
+-Extended the Drag N Drop sensitive area (the whole ScientiFig window is now sensitive)
+-fixed several other minor bugs not worth to mention here
+
+20/02/13
+-fixed a minor bug affecting ROIs (i.e. modifications made to ROIs were applied even when the user clicked on the cancel button)
+-fixed a minor postion error for inset scalebar when strokesize was > 3
+
+19/02/13
+-fixed a size problem for images embedded in powerpoint
+-modified PiP to make it easier/more flexible to use (only one PiP is allowed per image to make it simpler)
+-added a button to remove PiP
+-moved PiP window and buttons to the Image editor Frame (on the right of the text options)
+-added code to prevent text from overlapping with the PiP
+-PiP can now have their own scale bars (it's the last addition I do for PIPs)
+
+18/02/13
+-added the possibility to comment images (these comments, will not be displayed they are just there to help you figure out what you did with the image or where you got it from, for example)
+-added the possibility to extract images contained in a .yf5m file for which you would have lost the source files (File>Extract Images From Opened Figures/Montages)
+-added partial support for pictures in pictures (insets), work in progress please don't use it
+
+17/02/13
+-made bounding rectangle of selected shape keep a constant size --> simpler to handle
+-fixed transfered selections that should not have been transfered
+-added the possibility to desactivate the warning for unsaved images (on quit), because I find it annoying
+-added support for horizontal text bars (at bottom of image)
+-added support for vertical text bars on the right (let me know if you have pbs using them)
+-added the possibility to reedit the text of vertical and horizontal text bars 
+
+16/02/13
+-I got comments from one of my beta testers, so I tried to fix all the bugs he reported and added several new fonctionalities he suggested (see below)
+-added a warning when montages/figures have not been saved before quitting
+-replaced "over scale bar" by "above scale bar"
+-fixed a refreshing error when selecting text at different positions (text was not updated unless the text area was clicked on)
+-added the possibility to move vectorial objects using keyboard inputs (left, right, up and down arrows, each of these keys will move the selected vectorial objects by exactly one pixel in the desired direction)
+-added support for dashed lines (created a new java interface called linestrokable)
+-fixed arrows layout (arrowhead was not displayed properly when the stroke was different from 1pt)
+-moved a few buttons to be more consistent
+-fixed a minor problem linked to the combination of an opened jcombobox with a joptionpane
+-fixed a bug that prevented the image content list to be emptied upon creation of a new figure 
+-fixed a bug that prevented "extras" (ROIs) addition to .yf5m files created using SF v1.0
+-fixed several bugs related to horizontal and vertical text bars (text was missing upon reload, lost text is unfortunately forever lost, sorry)
+                                           
+15/02/13
+-fixed a minor bug affecting font reloading and a bug affecting current selection
+-blocked an annoying popup showing without reasons
+
+14/02/13
+-added the possibility to have text objects over the images the font of the text will not change when the image is resized the central position of these text objects remains constant and they can be re-edited by pressing on the edit/stop edit button
+-removed the asterisk object (this object is redundant with the text object that contains the following text '*', from now on please use the text object, instead of asterisks) (all asterisks code has been marked as deprecated)
+-NB: the font of this text object will be set to "outter font" when a journal style is selected (this outter font was useless untill now)
+-fixed a bug linked to empty text objects
+-fixed a huge bug in svg files that prevented reloading of the files generated using ScientiFig by batik (and therefore by ScientiFig), corrupted svg files can be fixed manually using a text editor): look for the fields height= width= and viewBox= and remove px from them)
+
+13/02/13
+-partially fixed a bug in ImageJ macros occuring when images are missing (or when the macro refers to images imported from ImageJ, i.e. memory contained images)
+-added partial support for image rotation (very experimental and vectorial images can't be rotated)(of note: the rotation is not vectorial yet as this would require massive code changes and I don't have time for that now, and this may make the soft unstable for a few versions)
+
+12/02/13
+-added partial support for geom_smooth (new plot)
+-fixed a bug occuring when re-editing a scatterplot
+-finalized density/histograms positioning options (dodge, fill, stack, ...)
+-removed dodging options for histograms (because it would be redundant with the freshly added position tool)
+
+11/02/13
+-fixed a bug occuring when editing a journal/graph style (severity medium)
+-fixed several recently corrupted journal styles
+-added a common error logger for SF and FiguR
+-added the possibility to select separators/delimitors when loading .txt or .csv files and the possibility to select the sheet number for .xls and .xlsx files
+-added the possibility to call ScientiFig from within FiguR (in case the user closed it and wants to reopen it)
+-added support for horizontal error bars
+
+08/02/13
+-fixed a big bug that prevented proper scaling and translation of polylines
+-fixed a big bug that was introduced of the 5/02/13 that affected figure layout (if your figure layout was corrupted simply reopen the file with the last version and save it again to fix the problem)
+
+05-07/02/13
+-I have started to add the javadoc infos and partially annotated the code (still far from being complete but should be sufficient to allow external users to use my functions)
+-fixed minor bugs and made minor changes not really worth explaining as it should not affect the user
+
+01/02/13
+-fixed minor plot edition bugs in FiguR
+-I made sure that dodge appears for histograms and not for other types of plots
+
+31/01/13
+-fixed several minor bugs not worth mentioning (spelling mistakes, ...)
+-fixed a huge bug that prevented proper reading and embedding of source files (xls, txt, ...) files in .figur files, this also caused some images to be displayed/plotted improperly in ScientiFig.
+
+30/01/13
+-added journal style selection in FiguR and removed font settings (to avoid redundancy)
+-allowed line width and point size to be changed when the journal style is changed (still experimental and does not work for custom plots yet, maybe I'll add this later, depending on how many requests I get for this)
+-moved the "Rsession status" button in ScientiFig (the button was misplaced)
+
+29/01/13
+-added the possibility to edit existing plots in FiguR (to change parameters such as line width, point shape, ...)
+-added the possibility to create dodged instead of stacked histograms
+
+27-28/01/13
+-temporarily inactivated rotation to avoid problems
+-added support for reopening .figur files
+-modified the structure of .figur files so that they are more flexible and can be edited
+
+22/01/13
+-started to add support for rotation of images in ScientiFig (not urgent as it can be done in ImageJ and then imported from imageJ)
+
+22/1212
+-added support for .csv and .txt in FiguR
+
+28/11/12-11/12/12
+-reconnected more vector graphics related functions to allow editing of vectorial objects
+-added the possibility to edit images even when they are part of a figure
+-added a new tool called FiguR that can communicate with Rsession to drive R and create graphs, the .figur files generated by the software can be loaded with scientifig and be dynamically plotted at the right size and with the right font settings (it works but it is a bit slow, I'll fix that pb later)
+-fixed a bug in relettering when a font color was set
+-added the possibility to have stroke size < 1 in ROIs (1 being often too big)
+-improved the quality of raster images by changing interpolation
+-added the possibility to choose the export resolution for raster and vector images
+-FiguR will continue to evolve and probably become a separate soft but ScientiFig development is in my eyes complete unless people tell me that something is missing or that there are bugs
+
+28/11/12
+-started reconnecting some of the vector graphics features of the software (one can now draw, scale and move vector ojects) so that people can add ROIs, arrows, ... to their images, the position of these ROIs is being conserved with vector precision.
+
+27/11/12
+-images imported from ImageJ/FIJI are now embedded in .yf5m files --> when they are deleted from a montage they are not lost anymore, they are just sent back to the image list (they will be forever lost if you delete them from the image list)
+-fixed a Graphics bug in SF preventing proper drawing of components in FIJI/ImageJ
+-added the possibility to load/DND several yf5m files one after the other (if you do that the figures will be stacked into one big figure)
+
+24/11/12
+-added support for ImageJ/FIJI macro (only a few functions are supported in the macro mode, but you can nevertheless create Montages and Figures with text and also save your files to any format, have a look at the youtube video for more infos)
+
+21/11/12
+-fixed a bug when applying a journal style (type was ignored)
+-fixed a huge bug in text formatting that was preventing the format to be reapplied properly
+
+19/11/12
+-fixed a bug when deleting an image from the 'image content' list (the image was really deleted rather to being sent back to the 'image list')
+-added a plugins.config file to my jar to get a cleaner integration in ImageJ, FIJI
+
+18/11/12 
+-added a button (magenta green glasses) to split single images into their R,G and B components as well as pairwise combinations of these colors to make the image more friendly to color blind people
+-added a button to swap 2 images in a montage
+-fixed a bug in text color (text used to always remain white irrespective of the parameters)
+
+16/11/12
+-added the possibility to add a background color to non transparent images (new panel in the save function)
+-fixed a minor bug in "Automatically Give The Same Height To All Row Components" that occured upon pressing +
+-I have slightly modified the launcher to avoid problems on systems where the java path variable has not been properly configured
+
+15/11/12
+-added 2 entries in the menu "Montages/Figure", one to remove all the text from the images and one to remove all the scale bars
+
+12/11/12
+-added "Automatically Give The Same Height To All Row Components" and enabled it by default, because my feeling is that it is the behaviour that people would want by default
+
+11/11/12
+-temporary fix for the slow crop function (better fix needed, but I'll do it later)
+
+9/11/12
+-minor bug fix, when trying to write text when multiple images were selected at the same time
+-first public release
+
+26/10/12
+-fixed minor bugs in fonts
+-SF is ready to be released/submitted
+-added 3 new video tutorials on cropping and on how to change journal style and figure size
+
+24/10/12
+-major code change (invisible to the user), I have replaced the styledDocument that used to contain the formatted text by some sort of html-like code I invented so I don't serialize anymore the styledDoc but the html-like string equivalent. Since styledDocs might vary between java versions, this is a huge improvement that will prevent several issues each time a new java version is released (such as a figure not opening anymore after java update and also solve pbs due to differences between openJRE and Oracle JRE, I have observed such bug when I used scientifig as a FIJI plugin, FIJI having its own JRE, different from my system JRE).
+
+23/10/12
+-fixed several display bugs on Mac
+-fixed layout bugs on Mac
+-allowed grouping using the Mac Command/Apple key (instead of the Ctrl key)
+-added the possibility to crop vector graphics
+-SF can now ship as a single jar (easier to deploy) check compatibility with the apache licence
+-fixed a bug in Montage "Format"
+-fixed a bug in journal style that was ignoring bold and italic
+
+22/10/12
+-removed the function to crop all images in a table.
+-added a function to crop select images in the montage content List
+
+21/10/12
+-added a function to crop all images in a table
+
+15-19/10/12
+-replaced table by montage
+-connected vector graphics panels to their corresponding lists
+-allowed changing font for selected rows
+
+12/10/12
+-finished undo and redo (to activate it go to the Edit menu and click on preferences)
+-fixed a bad bug in svg images that was duplicating many objects
+-added a launcher
+
+11/10/12
+-added more precision in the svg output by overriding the g2d drawImage
+-added possibility to remove letters
+-added first version of undo and redo 
+
+10/10/12
+-fixed many bugs
+-added new menu in the menubar that allows for the processing several rows or several tables at once
+-software now supports svg vector graphics as input --> allow users to add graphs in there (but the font of the graph will unfortunately be modified, unlike font for images that will remain unchanged)
+-software is now in its final shape
+
+02/10/12
+-added support for transparency in png images
+
+01/10/12
+-added auto button that groups in a same table all images that have the same size
+-added size control for table creation
+-version released to beta testers

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>last update Thu May 09 17:20:12 CEST 2013</comment>
+<entry key="Plot Area Major Grid Stroke Width">element_blank()</entry>
+<entry key="Plot Area Frame Color">#000000</entry>
+<entry key="Plot Area Frame Stroke Width">0.5</entry>
+<entry key="Plot Area Minor Grid Color">#CCCCCC</entry>
+<entry key="Facet Background Color">#ffffff</entry>
+<entry key="Plot Area Background Color">#FFFFFF</entry>
+<entry key="Plot Area Minor Grid Stroke Width">element_blank()</entry>
+<entry key="Plot Area Major Grid Color">#AAAAAA</entry>
+<entry key="Theme name">Basic</entry>
+</properties>

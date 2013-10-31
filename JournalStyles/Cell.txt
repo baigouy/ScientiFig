@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>last update Wed May 15 12:20:13 CEST 2013</comment>
+<entry key="Figure Letter Font">Helvetica#0#14</entry>
+<entry key="Graph Y axis title">Arial#0#12</entry>
+<entry key="Graph Y axis text">Arial#0#12</entry>
+<entry key="Warn if units for x/y axes are missing">true</entry>
+<entry key="Journal Column Width in cm">8.5</entry>
+<entry key="Figure Upper Left Text Font">Helvetica#0#12</entry>
+<entry key="Figure Upper Right Text Font">Helvetica#0#12</entry>
+<entry key="Graph Main Title">Arial#0#12</entry>
+<entry key="Warn if graph has a color">true</entry>
+<entry key="Graph Legend Text">Arial#0#12</entry>
+<entry key="Figure ScaleBar Font">Helvetica#0#12</entry>
+<entry key="Journal Page Height">27.94</entry>
+<entry key="Figure Lower Right Text Font">Helvetica#0#12</entry>
+<entry key="Warn if graph has a grid">true</entry>
+<entry key="Graph Legend Title">Arial#0#12</entry>
+<entry key="Warn if axes have no titles">true</entry>
+<entry key="Figure Outter Text">Helvetica#0#12</entry>
+<entry key="Warn if graph has a title">true</entry>
+<entry key="Warn if there are no brackets around units">true</entry>
+<entry key="Journal Name">Cell</entry>
+<entry key="Journal Page (2 columns) Width in cm">17.4</entry>
+<entry key="Journal 3/4 Page Width in cm">11.4</entry>
+<entry key="ROI/objects Stroke Size">0.65</entry>
+<entry key="Graph Default Point Width">0.65</entry>
+<entry key="Warn if graph legend has a title">true</entry>
+<entry key="Graph X axis title">Arial#0#12</entry>
+<entry key="Graph X axis text">Arial#0#12</entry>
+<entry key="Figure Lower Left Text Font">Helvetica#0#12</entry>
+<entry key="Capitalization behaviour of the letter">upper case (capitalized)</entry>
+<entry key="Graph Default Line Width">0.65</entry>
+</properties>

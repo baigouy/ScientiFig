@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>last update Fri May 10 14:54:00 CEST 2013</comment>
+<entry key="Figure Lower Right Text Font">Arial#0#12</entry>
+<entry key="Journal Page (2 columns) Width in cm">18.3</entry>
+<entry key="Graph Legend Text">Arial#0#12</entry>
+<entry key="Journal Name">Nature</entry>
+<entry key="Figure Outter Text">Arial#0#12</entry>
+<entry key="Graph Legend Title">Arial#0#12</entry>
+<entry key="Graph X axis title">Arial#0#12</entry>
+<entry key="Journal Column Width in cm">8.9</entry>
+<entry key="Graph Y axis text">Arial#0#12</entry>
+<entry key="Figure ScaleBar Font">Arial#0#12</entry>
+<entry key="Warn if there are no brackets around units">true</entry>
+<entry key="Figure Lower Left Text Font">Arial#0#12</entry>
+<entry key="Journal Page Height">24.7</entry>
+<entry key="ROI/objects Stroke Size">0.65</entry>
+<entry key="Warn if axes have no titles">true</entry>
+<entry key="Warn if graph has a grid">true</entry>
+<entry key="Graph Default Line Width">-1.0</entry>
+<entry key="regex rule #9">"REPLACE_UNIT_DIVISIONS_BY_SUPERSCRIPT";
+{"matches("[^\s0-9]{1,2}/\b[^\s0-9]{1,2}\b")"};
+{"&lt;html&gt;Your text (probably) contains unit divisions, we suggest you replace them with superscript:&lt;br&gt;&lt;font color=#00AA00&gt;'10 ms&lt;SUP&gt;-1&lt;/SUP&gt;' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '10 m/s'&lt;/html&gt;"};
+{"replaceAll("([^\s0-9]{1,2})/\b([^\s0-9]{1,2})\b", "&lt;html&gt;$1·$2&lt;sup&gt;-1&lt;/sup&gt;")"};
+{"text 120m/s 30 m/s 300/60 texte 30µm/s txt qsd/test"};</entry>
+<entry key="Warn if graph has a color">true</entry>
+<entry key="regex rule #8">"REPLACE_SLASHES_BY_AND_OR_HYPHEN";
+{"matches("[^\d+]{1,2}/[^\d-]{1,2}")"};
+{"Your text contains slashes '/', we suggest you replace them with plain text 'and', 'or' or hyphens '-':&lt;br&gt;&lt;font color=#00AA00&gt;'red - green - blue' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'red / green / blue'&lt;/font&gt;"};
+{"replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1-$3")","replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1and$3")","replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1or$3")"};
+{"red/green/blue 10/20"};</entry>
+<entry key="Graph Default Point Width">-1.0</entry>
+<entry key="regex rule #7">"REPLACE_SLASHES_BY_AND_OR_HYPHEN_NO_SPACE";
+{"matches("[^\d+]{1,2}/[^\d-]{1,2}")"};
+{"Your text contains slashes '/', we suggest you replace them with plain text 'and', 'or' or hyphens '-':&lt;br&gt;&lt;font color=#00AA00&gt;'red-green-blue' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'red/green/blue'&lt;/font&gt;"};
+{"replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1-$3")","replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1 and $3")","replaceAll("([^\d+]{1,2} {0,})(/)( {0,}[^\d-]{1,2})", "$1 or $3")"};
+{"red/green/blue 10/20"};</entry>
+<entry key="regex rule #6">"REPLACE_MINUS_BY_EN_DASH_SIGN";
+{"matches("- {0,}[0-9]{1,}")"};
+{"Your text contains '-' (hyphen) symbols before negative values or as indicators for ranges, we suggest you replace them with (EN_DASH) '–' symbols:&lt;br&gt;&lt;font color=#00AA00&gt;'text-text2 –10 // 10–20' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'text-text2 -10 // 10-20'&lt;/font&gt;"};
+{"replaceAll("(-)( {0,}[0-9]{1,})", "–$2")"};
+{"text-text  text - text - 10 -10 10 -30 10-40 tot 10-20"};</entry>
+<entry key="regex rule #5">"REPLACE_STAR_BY_MULTIPLICATION_SIGN";
+{"matches("[0-9]{1,} {0,}\* {0,}[0-9]{1,}")"};
+{"Your text contains one ot more '*' (multiplication) symbol we suggest you replace them with '×' symbols:&lt;br&gt;&lt;font color=#00AA00&gt;'a=2×b+c' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'a=2*b+c'&lt;/font&gt;"};
+{"replaceAll("([0-9]{1,} {0,})(\*)( {0,}[0-9]{1,})", "$1×$3")"};
+{" **** 10*20=200 10 * 10 = 100 10+10 = 20"};</entry>
+<entry key="Graph Y axis title">Arial#0#12</entry>
+<entry key="regex rule #4">"CONTAINS_CONSECUTIVE_SPACES";
+{"contains("  ")"};
+{"Your text contains two or more consecutive spaces, we suggest that you remove all duplicated spaces:&lt;br&gt;&lt;font color=#00AA00&gt;'Your text contains too many white spaces' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'Your&amp;nbsp;&amp;nbsp;text&amp;nbsp;contains&amp;nbsp;&amp;nbsp;&amp;nbsp;too many&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;white spaces'&lt;/font&gt;"};
+{"replaceAll(" {2,}", " ")"};
+{"there   are too  many      spaces here"};</entry>
+<entry key="Warn if units for x/y axes are missing">true</entry>
+<entry key="regex rule #3">"ENDS_WITH_WHITE_SPACES";
+{"endsWith(" ")"};
+{"Your text ends with one or more spaces, we suggest that you remove all trailing spaces:&lt;br&gt;&lt;font color=#00AA00&gt;'Your text' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'Your text&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;'&lt;/font&gt;"};
+{"replaceAll("\ {1,}$", "")"};
+{"Your text         "};</entry>
+<entry key="Journal 3/4 Page Width in cm">13.35</entry>
+<entry key="regex rule #2">"STARTS_WITH_WHITE_SPACES";
+{"startsWith(" ")"};
+{"Your text starts with one or more spaces, we suggest that you remove all leading spaces:&lt;br&gt;&lt;font color=#00AA00&gt; 'Your text' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Your text'&lt;/font&gt;"};
+{"replaceAll("^\ {1,}", "")"};
+{"    Your text"};</entry>
+<entry key="Warn if graph has a title">true</entry>
+<entry key="regex rule #1">"STARTS_WITH_PERCENTAGE_SIGN2";
+{"startsWith("(%)")"};
+{"Your label starts with '(%)', please move it to the end:&lt;br&gt;&lt;font color=#00AA00&gt;'Yield (%)' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '(%) Yield'&lt;/font&gt;"};
+{"replaceAll("^\s{0,}\((%)\)\s{0,}(.*)", "$2 ($1)")"};
+{"(%) test","(%)test"};</entry>
+<entry key="Figure Upper Right Text Font">Arial#0#12</entry>
+<entry key="regex rule #0">"STARTS_WITH_PERCENTAGE_SIGN";
+{"startsWith("%")"};
+{"Your label starts with a '%' symbol, please move it to the end:&lt;br&gt;&lt;font color=#00AA00&gt;'Yield (%)' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '% Yield'&lt;/font&gt;"};
+{"replaceAll("^(%)\s{0,}(.*)", "$2 ($1)")"};
+{"% test","%test"};</entry>
+<entry key="Graph X axis text">Arial#0#12</entry>
+<entry key="Graph Main Title">Arial#0#12</entry>
+<entry key="Figure Letter Font">Arial#1#12</entry>
+<entry key="Figure Upper Left Text Font">Arial#0#12</entry>
+<entry key="regex rule #16">"REPLACE_DEGREES_PLAIN_BY_DEGREES_SYMBOLS_PRECEDED_BY_A_TEXT";
+{"matches("\s{0,}[Dd]egree[s]{0,1}\b")"};
+{"You used prime plain text 'degree(s)' instead of the '°' symbol, we suggest you replace plain text:&lt;br&gt;&lt;font color=#00AA00&gt;'several °' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'several degrees'&lt;/font&gt;"};
+{"replaceAll("\s{0,}[Dd]egree[s]{0,1}\b", "°")"};
+{"degrees 60 degrees +/- 1 degree other text degree"};</entry>
+<entry key="regex rule #15">"REPLACE_DEGREES_PLAIN_BY_DEGREES_SYMBOLS_PRECEDED_BY_A_NUMBER";
+{"matches("[0-9]\s{0,}\b[Dd]egree[s]{0,1}\b")"};
+{"You used prime plain text 'degree(s)' instead of the '°' symbol, we suggest you replace plain text:&lt;br&gt;&lt;font color=#00AA00&gt;'30°' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '30 degrees'&lt;/font&gt;"};
+{"replaceAll("([0-9])\s{0,}\b[Dd]egree[s]{0,1}\b", "$1°")"};
+{"degrees 60 degrees +/- 1 degree other text degree"};</entry>
+<entry key="regex rule #14">"REPLACE_PRIMES_PLAIN_BY_PRIME_SYMBOLS";
+{"matches("\b[Pp]rime[s]{0,1}\b")"};
+{"You used prime plain text 'prime' instead of the "'" symbol, we suggest you replace plain text:&lt;br&gt;&lt;font color=#00AA00&gt;" ' " &lt;/font&gt;instead of&lt;font color=#ff0000&gt; " prime ""};
+{"replaceAll("\b\s{0,}[Pp]rime[s]{0,1}\b", "'")"};
+{"prime a &gt; a prime"};</entry>
+<entry key="regex rule #13">"ITALICIZE_ISOLATED_LETTERS_ASSOCIATED_TO_MATH_SIGN";
+{"matches("[a-zA-Z]{1}\s{0,}[=&gt;&lt;]")"};
+{"&lt;html&gt;You did not italicize isolated letters in front of maths, we suggest you do so:&lt;br&gt;&lt;font color=#00AA00&gt;'text &lt;I&gt;P&lt;/I&gt; &amp;lt; 0.05 x plane' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'text P &amp;lt; 0.05 x plane'&lt;/html&gt;"};
+{"replaceAll("([a-zA-Z]{1})(\s{0,}[=&gt;&lt;])", "&lt;html&gt;&lt;i&gt;$1&lt;/i&gt;$2")"};
+{"P&amp;#xsup0.5 a text P &amp;#xinf 0.05 x plane T=0.3"};</entry>
+<entry key="regex rule #12">"ITALICIZE_ISOLATED_LETTERS_NO_RULES";
+{"matches("\b([a-zA-Z]{1})\s")"};
+{"&lt;html&gt;You did not italicize isolated letters, we suggest you do so:&lt;br&gt;&lt;font color=#00AA00&gt;'text &lt;I&gt;P&lt;/I&gt; &amp;lt; 0.05 &lt;I&gt;x&lt;/I&gt; plane' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'text P &amp;lt; 0.05 x plane'&lt;/html&gt;"};
+{"replaceAll("\b([a-zA-Z]{1})(\s)", "&lt;html&gt;&lt;i&gt;$1&lt;/i&gt;$2")"};
+{"P&amp;#xsup0.5 a text P &amp;#xinf 0.05 x plane T=0.3"};</entry>
+<entry key="regex rule #11">"CAPITALIZE_FIRST_LETTER_WISELY";
+{"matches("(^[a-z]{1})([^A-Z]{1,}\b)")"};
+{"You did not capitalize the first letter, we suggest you do so:&lt;br&gt;&lt;font color=#00AA00&gt;'This is a test' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; 'this is a test'&lt;/font&gt;"};
+{"replaceFirst("(^[a-z]{1})([^A-Z]{1,}\b)", "&lt;html&gt;&lt;cap&gt;$1&lt;/cap&gt;$2")"};
+{"this is a test"};</entry>
+<entry key="Capitalization behaviour of the letter">lower case (not capitalized)</entry>
+<entry key="regex rule #10">"ADD_SPACE_BETWEEN_NUMBER_AND_TEXT_EXCEPT_IF_NOT_HYPHENATED";
+{"matches("([0-9]{1,})([^ 0-9-+*=/×]{1})")"};
+{"You did not leave a space between a text and a number, we suggest you put one:&lt;br&gt;&lt;font color=#00AA00&gt;'10 mm 10 µm' &lt;/font&gt;instead of&lt;font color=#ff0000&gt; '10mm 10µm'&lt;/font&gt;"};
+{"replaceAll("([0-9]{1,})([^ 0-9-+*=/×]{1})", "$1 $2")"};
+{"text 5-µm 1234µm 120 µm 10µm 10mm"};</entry>
+</properties>
