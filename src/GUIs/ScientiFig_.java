@@ -197,7 +197,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.6b";
+    public static final String version = "2.7";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -237,6 +237,19 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
     int memoryRefreshSpeed = 2000;
     private static final ArrayList<String> exts = new ArrayList<String>();
+
+    static {
+        exts.add(".figur");
+        exts.add(".jpg");
+        exts.add(".jpeg");
+        exts.add(".png");
+        exts.add(".bmp");
+        exts.add(".gif");
+        exts.add(".tga");
+        exts.add(".tif");
+        exts.add(".tiff");
+        exts.add(".svg");
+    }
     Object current_selected_shapeBlock;
     Object current_selected_shapeRow;
     /**
@@ -264,7 +277,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             /*
              * we set options according to the type of sdelection
              */
-
         }
     };
     /**
@@ -308,17 +320,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      */
     LogFrame errorFrame;
 
-    static {
-        exts.add(".figur");
-        exts.add(".jpg");
-        exts.add(".jpeg");
-        exts.add(".png");
-        exts.add(".bmp");
-        exts.add(".gif");
-        exts.add(".tga");
-        exts.add(".tif");
-        exts.add(".svg");
-    }
     public static PopulateJournalStyles styles = getStyles();
     ROIpanelLight r1 = new ROIpanelLight() {
         @Override
@@ -3772,7 +3773,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 //                        }
 //                    }
 //                }
-
                 HashSet<Object> group = b.getGroup();
                 ArrayList<String> files_to_add = new ArrayList<String>();
                 for (Object object : group) {
@@ -3794,8 +3794,10 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                             if (name != null) {
                                 name = CommonClassesLight.change_path_separators_to_system_ones(name);
                             }
-                            if (new File(name).exists()) {
-                                files_to_add.add(name);
+                            if (name != null) {//bug fix for color blind splits
+                                if (new File(name).exists()) {
+                                    files_to_add.add(name);
+                                }
                             }
                         }
                     }
@@ -5155,7 +5157,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
 
 //                row.sameHeight(getSpaceBetweenRows());
-
 //            }
 //        row.setToWidth(getSizeInPx());
             row.setWidth_in_cm(getSizeInCm());
@@ -6375,7 +6376,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     cur_sel = cur_sel_image2;
                 }
                 /**
-                 * bug fix when deleting too much images so that a panel has to
+                 * bug fix when deleting too many images so that a panel has to
                  * be deleted
                  */
                 boolean goOn = true;
@@ -6457,6 +6458,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                                     }
                                     myList1.addDirectlyToList(name, sb.getBufferedImage());
                                 } else {
+                                    if (name!=null)
                                     if (new File(name).exists()) {
                                         files_to_add.add(name);
                                     }
@@ -6490,6 +6492,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         }
                         createBackup();
                     } catch (Exception e) {
+                        e.printStackTrace();
                     } finally {
                         tableContentList.setModel(tableContentListModel);
                         imagesInFigureList.setModel(imagesInFigureModel);
@@ -6868,7 +6871,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 //                doubleLayerPane2.resizePanel((int) (bounds.getX() + bounds.getWidth() + 1.), (int) (bounds.getY() + bounds.getHeight() + 1.));
 
                 //force recreate figure when clicked
-
                 //modification for review
                 tableListModel.remove(selection);
                 tableList.setSelectedIndex(selection - 1);
@@ -7107,7 +7109,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         Montage panel = panels.get(CommonClassesLight.String2Int(string));
 
                         //--> need to get it from the list to change its color 
-
                         panel.setFirstCorner();
                         //modification for review
 //                        panel.setIsUsedInAFigure(false);
@@ -7555,7 +7556,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }
         }
-
 
         if (source == checkGraph) {
             /*
@@ -8908,7 +8908,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 //            @Override
 //            public void run() {
 
-
         if (jTabbedPane1.getSelectedIndex() == 1) {
             Object cur_sel;
             if (jTabbedPane1.getSelectedIndex() == 1) {
@@ -9458,7 +9457,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     @Override
     public void run(String arg) {
 
-
         final String args = arg;
 
         /*
@@ -9995,4 +9993,3 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JButton zoomPlus;
     // End of variables declaration//GEN-END:variables
 }
-

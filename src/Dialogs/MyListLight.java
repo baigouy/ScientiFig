@@ -604,6 +604,13 @@ public class MyListLight extends javax.swing.JPanel {
         return list;
     }
 
+    public void setTitle(String title) {
+        if (title == null) {
+            title = "";
+        }
+        list.setBorder(javax.swing.BorderFactory.createTitledBorder(title));
+    }
+
     /**
      * just override this to handle drop
      *
@@ -613,6 +620,7 @@ public class MyListLight extends javax.swing.JPanel {
         /*
          * we avoid concurrent access when loading several .yf5m
          */
+
         if (files2add != null) {
             ArrayList<String> yf5mFiles = new ArrayList<String>();
             for (String string : files2add) {
@@ -711,5 +719,3 @@ public class MyListLight extends javax.swing.JPanel {
     public javax.swing.JList list;
     // End of variables declaration//GEN-END:variables
 }
-
-

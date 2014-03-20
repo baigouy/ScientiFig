@@ -284,7 +284,10 @@ public class Loader {
      * @return an imagePlus
      */
     public ImagePlus loadJ(String name) {
-        ImagePlus original = ij.IJ.openImage(name);
+        if (!new File(name).exists()) {
+            return null;
+        }
+        ImagePlus original = ij.IJ.openImage(CommonClassesLight.change_path_separators_to_system_ones(name));
         return original;
     }
 
@@ -324,7 +327,11 @@ public class Loader {
         if (!name.toLowerCase().endsWith(".tif") && !name.toLowerCase().endsWith(".tiff")) {
             return load(name, true);
         }
-        ImagePlus original = ij.IJ.openImage(name);
+
+        if (!new File(name).exists()) {
+            return null;
+        }
+        ImagePlus original = ij.IJ.openImage(CommonClassesLight.change_path_separators_to_system_ones(name));
         BufferedImage img = null;
         if (original != null) {
             fifo = original.getFileInfo();
@@ -332,7 +339,7 @@ public class Loader {
                 BufferedImage tmp = original.getBufferedImage();
                 img = CommonClassesLight.copyImg(tmp);
                 /**
-                 * bug fix for negative values 
+                 * bug fix for negative values
                  */
                 int width = img.getWidth();
                 int height = img.getHeight();
@@ -345,17 +352,19 @@ public class Loader {
                 BufferedImage tmp = original.getBufferedImage();
                 img = CommonClassesLight.copyImg(tmp);
                 /**
-                 * bug fix for negative values 
+                 * bug fix for 8 bits images not loading
                  */
-                int width = img.getWidth();
-                int height = img.getHeight();
-                for (int i = 0; i < width; i++) {
-                    for (int j = 0; j < height; j++) {
-                        int blue = img.getRGB(i, j) & 0xFF;
-                        int RGB = ((blue) << 16) + ((blue) << 8) + (blue);
-                        img.setRGB(i, j, RGB);
-                    }
-                }
+//                int width = img.getWidth();
+//                int height = img.getHeight();
+//                for (int i = 0; i < width; i++) {
+//                    for (int j = 0; j < height; j++) {
+//                        int blue = img.getRGB(i, j) & 0xFF;
+//                        int blue = img.getRGB(i, j) & 0xFF;
+//                        int blue = img.getRGB(i, j) & 0xFF;
+//                        int RGB = ((blue) << 16) + ((blue) << 8) + (blue);
+//                        img.setRGB(i, j, RGB);
+//                    }
+//                }
             } else {
                 img = loadWithImageJ(name);
             }
@@ -371,7 +380,10 @@ public class Loader {
      * @return a bufferedImage
      */
     public BufferedImage loadWithImageJ(String name) {
-        ImagePlus original = ij.IJ.openImage(name);
+        if (!new File(name).exists()) {
+            return null;
+        }
+        ImagePlus original = ij.IJ.openImage(CommonClassesLight.change_path_separators_to_system_ones(name));
         MyBufferedImage img = null;
         if (original != null) {
             fifo = original.getFileInfo();
@@ -430,7 +442,6 @@ public class Loader {
 //            //Logger.getLogger(Negative.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //        SaverLight.save( tmp, "c:/negat2.png");
-
 //        start_time = System.currentTimeMillis();
 //
 //        for (int i = 0; i < 100; i++) { 
@@ -440,10 +451,6 @@ public class Loader {
 //        }
 //
 //        System.collectedCallableOutput.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
-
-
         System.exit(0);
     }
 }
-
-

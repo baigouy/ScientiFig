@@ -71,7 +71,7 @@ public final class IconLabel extends JLabel implements Callable<IconLabel> {
      * @param img thumb to display
      */
     public IconLabel(String name, BufferedImage img) {
-setLabel(name);
+        setLabel(name);
         updateThumb(img);
     }
 
@@ -178,5 +178,3 @@ setLabel(name);
     public static void main(String[] args) {
     }
 }
-
-

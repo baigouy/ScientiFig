@@ -1,3 +1,8 @@
+20/03/14
+-fixed a big bug affecting 8 bit images (that made them appear black)
+-fixed a big bug prevented removal of images produced upon a color blind split
+-changed version number to 2.7
+
 22/09/13
 -insets can now be directly extracted from rectangular ROIs
 
