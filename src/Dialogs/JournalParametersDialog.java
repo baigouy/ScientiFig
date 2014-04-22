@@ -203,23 +203,23 @@ public class JournalParametersDialog extends javax.swing.JPanel {
     }
 
     private double getDoubleColumnSize() {
-        return ((Double) jSpinner1.getValue()).doubleValue();
+        return ((Double) jSpinner1.getValue());
     }
 
     private double getSingleColumnSize() {
-        return ((Double) jSpinner3.getValue()).doubleValue();
+        return ((Double) jSpinner3.getValue());
     }
 
     private double getOneAndHalfColumnSize() {
-        return ((Double) jSpinner4.getValue()).doubleValue();
+        return ((Double) jSpinner4.getValue());
     }
 
     private double getPageHeight() {
-        return ((Double) jSpinner2.getValue()).doubleValue();
+        return ((Double) jSpinner2.getValue());
     }
 
     private float getStrokeSize() {
-        return ((Float) jSpinner5.getValue()).floatValue();
+        return ((Float) jSpinner5.getValue());
     }
 
     public String getLetterCapitalizationBehaviour() {
@@ -227,11 +227,11 @@ public class JournalParametersDialog extends javax.swing.JPanel {
     }
 
     private int getColorDPI() {
-        return ((Integer) jSpinner6.getValue()).intValue();
+        return ((Integer) jSpinner6.getValue());
     }
 
     private int getBWDPI() {
-        return ((Integer) jSpinner7.getValue()).intValue();
+        return ((Integer) jSpinner7.getValue());
     }
 
     /**

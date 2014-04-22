@@ -79,7 +79,7 @@ public class DataOpener extends javax.swing.JPanel {
      */
     @SuppressWarnings("unchecked")
     public int getSheetNumber() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**

@@ -253,7 +253,7 @@ public class MyFontSelector extends javax.swing.JPanel {
     }
 
     public int getFontSize() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     public Font getTextFont() {

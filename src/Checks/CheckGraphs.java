@@ -1214,11 +1214,11 @@ public class CheckGraphs extends javax.swing.JPanel {
     }
 
     public float getLineStrokeValue() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
 
     public float getPointSizeValue() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     public static void main(String[] args) {

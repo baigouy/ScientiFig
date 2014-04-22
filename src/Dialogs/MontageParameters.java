@@ -96,7 +96,7 @@ public class MontageParameters extends javax.swing.JPanel {
      * @return the number of rows of the montage
      */
     public int getNbRows() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -104,7 +104,7 @@ public class MontageParameters extends javax.swing.JPanel {
      * @return the nb of columns of the montage
      */
     public int getNbCols() {
-        return ((Integer) jSpinner2.getValue()).intValue();
+        return ((Integer) jSpinner2.getValue());
     }
 
     /**

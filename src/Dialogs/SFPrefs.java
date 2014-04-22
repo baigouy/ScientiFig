@@ -239,7 +239,7 @@ public class SFPrefs extends javax.swing.JPanel {
      * @return the nb of allowed undos and redos
      */
     public int getNbOfUndosRedos() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -292,7 +292,7 @@ public class SFPrefs extends javax.swing.JPanel {
         if (isUseAllCores()) {
             return CommonClassesLight.getNumberOfCores();
         }
-        return ((Integer) jSpinner2.getValue()).intValue();
+        return ((Integer) jSpinner2.getValue());
     }
 
     /**

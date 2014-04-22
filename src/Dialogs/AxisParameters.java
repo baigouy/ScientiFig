@@ -232,7 +232,7 @@ public class AxisParameters extends javax.swing.JPanel {
      * @return the lower range for the axis
      */
     public float getLowerRange() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
 
     /**
@@ -240,7 +240,7 @@ public class AxisParameters extends javax.swing.JPanel {
      * @return the upper range for the axis
      */
     public float getUpperRange() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     /**
@@ -248,7 +248,7 @@ public class AxisParameters extends javax.swing.JPanel {
      * @return the axis tick interval
      */
     public float getInterval() {
-        return ((Float) jSpinner3.getValue()).floatValue();
+        return ((Float) jSpinner3.getValue());
     }
 
     /**
@@ -256,7 +256,7 @@ public class AxisParameters extends javax.swing.JPanel {
      * @return the orientatioon of the axis labels
      */
     public int getAngleInDegrees() {
-        return ((Integer) jSpinner4.getValue()).intValue();
+        return ((Integer) jSpinner4.getValue());
     }
 
     /**

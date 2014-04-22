@@ -93,7 +93,7 @@ public class SelectABgColor extends javax.swing.JPanel {
      * @return the export dpi of raster images
      */
     public int getDPI() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     public boolean logMagnificationChanges() {

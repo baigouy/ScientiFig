@@ -55,7 +55,7 @@ public class EmptyImage extends javax.swing.JPanel {
      * @return the width of the empty image
      */
     public int getEmptyWidth() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -63,7 +63,7 @@ public class EmptyImage extends javax.swing.JPanel {
      * @return the height of the empty image
      */
     public int getEmptyHeight() {
-        return ((Integer) jSpinner2.getValue()).intValue();
+        return ((Integer) jSpinner2.getValue());
     }
 
     /**

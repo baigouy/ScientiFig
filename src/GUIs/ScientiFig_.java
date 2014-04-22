@@ -1339,7 +1339,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the space between images
      */
     public int getSpaceBetweenImages() {
-        return ((Integer) changeSpaceBetweenImageInPanel.getValue()).intValue();
+        return ((Integer) changeSpaceBetweenImageInPanel.getValue());
     }
 
     /**
@@ -4672,7 +4672,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return space between rows
      */
     private static int getSpaceBetweenRows() {
-        return ((Integer) changeSpaceBetweenRows.getValue()).intValue();
+        return ((Integer) changeSpaceBetweenRows.getValue());
     }
 
     /**
@@ -5173,7 +5173,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size in pixel of the montage or of the selected Figure row
      */
     public int getSizeInPx() {
-        return ((Integer) sizeInPx.getValue()).intValue();
+        return ((Integer) sizeInPx.getValue());
     }
 
     /**
@@ -5181,7 +5181,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size in cm
      */
     public double getSizeInCm() {
-        return ((Double) sizeInCM.getValue()).doubleValue();
+        return ((Double) sizeInCM.getValue());
     }
 
     /**
@@ -8864,7 +8864,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size of the crop on the left
      */
     public int getLeftCrop() {
-        return ((Integer) cropLeftSpinner.getValue()).intValue();
+        return ((Integer) cropLeftSpinner.getValue());
     }
 
     /**
@@ -8872,7 +8872,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size of the crop on the right
      */
     public int getRightCrop() {
-        return ((Integer) cropRightSpinner.getValue()).intValue();
+        return ((Integer) cropRightSpinner.getValue());
     }
 
     /**
@@ -8880,7 +8880,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size to crop at the top
      */
     public int getUpCrop() {
-        return ((Integer) cropUpSpinner.getValue()).intValue();
+        return ((Integer) cropUpSpinner.getValue());
     }
 
     /**
@@ -8888,7 +8888,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the size to crop at the bottom
      */
     public int getDownCrop() {
-        return ((Integer) cropDownSpinner.getValue()).intValue();
+        return ((Integer) cropDownSpinner.getValue());
     }
 
     /**

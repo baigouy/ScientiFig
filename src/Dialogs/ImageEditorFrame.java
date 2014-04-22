@@ -106,7 +106,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * @return the stroke size
      */
     public float getStrokeSize() {
-        return ((Float) jSpinner6.getValue()).floatValue();
+        return ((Float) jSpinner6.getValue());
     }
 
     /**
@@ -114,7 +114,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * @return the scale bar size (in pixels) for insets
      */
     public int getInsetScaleBarSize() {
-        return ((Integer) jSpinner8.getValue()).intValue();
+        return ((Integer) jSpinner8.getValue());
     }
 
     /**
@@ -260,7 +260,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * inset
      */
     public double getFraction() {
-        return ((Double) jSpinner2.getValue()).doubleValue();
+        return ((Double) jSpinner2.getValue());
     }
 
     @SuppressWarnings("unchecked")
@@ -820,7 +820,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      */
     public int getScaleBarLengthInPx() {
         jSpinner1.validate();
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -829,7 +829,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      */
     private float getScaleBarStrokeSize() {
         jSpinner5.validate();
-        return ((Float) jSpinner5.getValue()).floatValue();
+        return ((Float) jSpinner5.getValue());
     }
 
     /**
@@ -838,7 +838,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      */
     public double getScaleBarLengthInUnit() {
         jSpinner3.validate();
-        return ((Double) jSpinner3.getValue()).doubleValue();
+        return ((Double) jSpinner3.getValue());
     }
 
     /**
@@ -848,7 +848,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      */
     public double getScaleBarPixelSize() {
         jSpinner4.validate();
-        return ((Double) jSpinner4.getValue()).doubleValue();
+        return ((Double) jSpinner4.getValue());
     }
 
     /**
@@ -1038,11 +1038,11 @@ public class ImageEditorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_PiPPositionChanged
 
     public int getGelBorderSize() {
-        return ((Integer) jSpinner9.getValue()).intValue();
+        return ((Integer) jSpinner9.getValue());
     }
 
     public int getInternalSpace() {
-        return ((Integer) jSpinner7.getValue()).intValue();
+        return ((Integer) jSpinner7.getValue());
     }
 
     private void insetSpacerChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_insetSpacerChanged

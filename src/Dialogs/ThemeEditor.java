@@ -1537,23 +1537,23 @@ public class ThemeEditor extends javax.swing.JPanel {
     }
     
     public float getAxisTicksStrokeWidth() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
     
     public float getGraphFrameStrokeWidth() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
     
     public float getPanelMajorGridStrokeWidth() {
-        return ((Float) jSpinner3.getValue()).floatValue();
+        return ((Float) jSpinner3.getValue());
     }
     
     public float getPanelMinorGridStrokeWidth() {
-        return ((Float) jSpinner4.getValue()).floatValue();
+        return ((Float) jSpinner4.getValue());
     }
     
     public float getFacetFrameStrokeWidth() {
-        return ((Float) jSpinner5.getValue()).floatValue();
+        return ((Float) jSpinner5.getValue());
     }
     
     private void setlegendbgcolor(int i) {

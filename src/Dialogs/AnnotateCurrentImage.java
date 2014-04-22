@@ -1105,7 +1105,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private void jSpinner1strokeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1strokeChanged
         Object sel = rOIpanelLight1.getSelectedShape();
         if (sel != null) {
-            float strokeSize = ((Float) jSpinner1.getValue()).floatValue();
+            float strokeSize = ((Float) jSpinner1.getValue());
             ((PARoi) sel).setStrokeSize(strokeSize);
             rOIpanelLight1.setStroke_size(strokeSize);
             rOIpanelLight1.repaint();
@@ -1115,7 +1115,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private void jSpinner3arrowheadSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner3arrowheadSizeChanged
         Object sel = rOIpanelLight1.getSelectedShape();
         if (sel != null && sel instanceof MyLine2D) {
-            double size = ((Double) jSpinner3.getValue()).doubleValue();
+            double size = ((Double) jSpinner3.getValue());
             ((MyLine2D) sel).setBraketSize(size);
             rOIpanelLight1.setBracketSize(size);
             rOIpanelLight1.repaint();
@@ -1169,7 +1169,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private void arrowHeadWidthChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_arrowHeadWidthChanged
         Object sel = rOIpanelLight1.getSelectedShape();
         if (sel != null && sel instanceof MyLine2D) {
-            double width = ((Double) jSpinner2.getValue()).doubleValue();
+            double width = ((Double) jSpinner2.getValue());
             ((MyLine2D) sel).setArrowHeadWidth(width);
             rOIpanelLight1.setArrowheadWidth(width);
             rOIpanelLight1.repaint();
@@ -1179,7 +1179,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private void arrowHeadHeightOrLengthChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_arrowHeadHeightOrLengthChanged
         Object sel = rOIpanelLight1.getSelectedShape();
         if (sel != null && sel instanceof MyLine2D) {
-            double height = ((Double) jSpinner8.getValue()).doubleValue();
+            double height = ((Double) jSpinner8.getValue());
             ((MyLine2D) sel).setArrowHeadHeight(height);
             rOIpanelLight1.setArrowheadHeight(height);
             rOIpanelLight1.repaint();

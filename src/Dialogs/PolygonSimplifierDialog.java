@@ -68,7 +68,7 @@ public class PolygonSimplifierDialog extends JPanel {
      * @return the radius of the finger
      */
     public int getFingerRadius() {
-        return ((Integer) jSpinner2.getValue()).intValue();
+        return ((Integer) jSpinner2.getValue());
     }
 
     /**
@@ -76,7 +76,7 @@ public class PolygonSimplifierDialog extends JPanel {
      * @return the max distance between 2 points
      */
     public double getDistance() {
-        return ((Double) jSpinner1.getValue()).doubleValue();
+        return ((Double) jSpinner1.getValue());
     }
 
     /**

@@ -129,14 +129,14 @@ public class LineGraphicsDialog extends javax.swing.JPanel {
      * image
      */
     public float getNewStrokeSize() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
 
     /**
      * @return the new point size that must be applied to scatter plots
      */
     public float getNewPointSize() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     /**

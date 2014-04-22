@@ -505,19 +505,21 @@ public class MyListLight extends javax.swing.JPanel {
      */
     public void MoveUp(java.awt.event.ActionEvent evt) {
         int[] current_selection = getSelectedIndices();
-        if (current_selection[0] > 0) {
-            for (int i = 0; i < current_selection.length; i++) {
-                if (current_selection[0] > 0) {
-                    Object o4 = listModel.get(current_selection[i]);
-                    Object o5 = listModel.get(current_selection[i] - 1);
-                    listModel.set(current_selection[i], o5);
-                    listModel.set(current_selection[i] - 1, o4);
+        if (current_selection.length != 0) {
+            if (current_selection[0] > 0) {
+                for (int i = 0; i < current_selection.length; i++) {
+                    if (current_selection[0] > 0) {
+                        Object o4 = listModel.get(current_selection[i]);
+                        Object o5 = listModel.get(current_selection[i] - 1);
+                        listModel.set(current_selection[i], o5);
+                        listModel.set(current_selection[i] - 1, o4);
+                    }
                 }
+                for (int i = 0; i < current_selection.length; i++) {
+                    current_selection[i]--;
+                }
+                list.setSelectedIndices(current_selection);
             }
-            for (int i = 0; i < current_selection.length; i++) {
-                current_selection[i]--;
-            }
-            list.setSelectedIndices(current_selection);
         }
     }
 
@@ -528,19 +530,21 @@ public class MyListLight extends javax.swing.JPanel {
      */
     public void MoveDown(java.awt.event.ActionEvent evt) {
         int[] current_selection = getSelectedIndices();
-        if (current_selection[current_selection.length - 1] < Size() - 1) {
-            for (int i = current_selection.length - 1; i >= 0; i--) {
-                if (current_selection[current_selection.length - 1] < Size() - 1) {
-                    Object o4 = listModel.get(current_selection[i]);
-                    Object o5 = listModel.get(current_selection[i] + 1);
-                    listModel.set(current_selection[i], o5);
-                    listModel.set(current_selection[i] + 1, o4);
+        if (current_selection.length != 0) {
+            if (current_selection[current_selection.length - 1] < Size() - 1) {
+                for (int i = current_selection.length - 1; i >= 0; i--) {
+                    if (current_selection[current_selection.length - 1] < Size() - 1) {
+                        Object o4 = listModel.get(current_selection[i]);
+                        Object o5 = listModel.get(current_selection[i] + 1);
+                        listModel.set(current_selection[i], o5);
+                        listModel.set(current_selection[i] + 1, o4);
+                    }
                 }
+                for (int i = 0; i < current_selection.length; i++) {
+                    current_selection[i]++;
+                }
+                list.setSelectedIndices(current_selection);
             }
-            for (int i = 0; i < current_selection.length; i++) {
-                current_selection[i]++;
-            }
-            list.setSelectedIndices(current_selection);
         }
     }
 

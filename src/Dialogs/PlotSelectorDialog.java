@@ -801,7 +801,7 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
     }
 
     private float alpha() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     @SuppressWarnings("unchecked")

@@ -391,10 +391,17 @@ public class Loader {
             int bit_depth = original.getBitDepth();
             if (bit_depth == 16) {
                 img.set16Bits(true);
+                if (original.getNChannels() >= 3 && original.getBitDepth() == 16) {
+                    img.set48Bits(true);
+                }
                 img.set8BitsImage(original.getBufferedImage());
             }
             if (original.getNSlices() != 1) {
-                img.setStack(original, true);
+                /**
+                 * removed because it apparently is useless and prevented proper
+                 * loading of images
+                 */
+                img.setStack(original/*, true*/);
             } else {
                 original.close();
             }

@@ -58,7 +58,7 @@ public class LineDialog extends javax.swing.JPanel {
      * @return the line width
      */
     public double getLineWidth() {
-        return ((Double) jSpinner1.getValue()).doubleValue();
+        return ((Double) jSpinner1.getValue());
     }
 
     /**

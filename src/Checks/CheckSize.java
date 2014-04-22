@@ -108,7 +108,7 @@ public class CheckSize extends javax.swing.JPanel {
     }
 
     public double getFinalSize() {
-        return ((Double) jSpinner1.getValue()).doubleValue();
+        return ((Double) jSpinner1.getValue());
     }
 
     @SuppressWarnings("unchecked")

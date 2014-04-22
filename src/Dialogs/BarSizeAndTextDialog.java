@@ -122,7 +122,7 @@ public class BarSizeAndTextDialog extends JPanel {
      * @return the first image to be covered by the text bar
      */
     public int getBarBegin() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -130,7 +130,7 @@ public class BarSizeAndTextDialog extends JPanel {
      * @return the last image to be covered by the text bar
      */
     public int getBarEnd() {
-        return ((Integer) jSpinner2.getValue()).intValue();
+        return ((Integer) jSpinner2.getValue());
     }
 
     /**

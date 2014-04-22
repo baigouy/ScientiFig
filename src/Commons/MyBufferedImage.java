@@ -58,6 +58,7 @@ public class MyBufferedImage extends BufferedImage {
     private int width = -1;
     private int height = -1;
     boolean is16Bits = false;
+    boolean is48Bits = false;
     boolean isFloat = false;
     boolean isDouble = false;
     int cur_px_pos = 0;
@@ -183,18 +184,20 @@ public class MyBufferedImage extends BufferedImage {
      * Sets the associated ImageJ image stack
      *
      * @param ip
-     * @param convertIfComposite
      */
-    public void setStack(ImagePlus ip, boolean convertIfComposite) {
-        if (convertIfComposite) {
-            if (ip != null && ip.isComposite()) {
-                if (ip.getNChannels() > 1) {
-                    ij.IJ.run(ip, "Stack to RGB", "slices");
-                    this.ip = ip;
-                    return;
-                }
-            }
-        }
+    public void setStack(ImagePlus ip/*, boolean convertIfComposite*/) {
+        /**
+         * apparently it's useless --> remove it
+         */
+//        if (convertIfComposite) {
+//            if (ip != null && ip.isComposite()) {
+//                if (ip.getNChannels() > 1) {
+//                    ij.IJ.run(ip, "Stack to RGB", "slices");
+//                    this.ip = ip;
+//                    return;
+//                }
+//            }
+//        }
         this.ip = ip;
         try {
             setStackImage(0);
@@ -211,10 +214,7 @@ public class MyBufferedImage extends BufferedImage {
      * @return true if MyBufferedImage contains an ImageJ stack
      */
     public boolean isStack() {
-        if (ip != null) {
-            return true;
-        }
-        return false;
+        return ip != null;
     }
 
     /**
@@ -360,7 +360,7 @@ public class MyBufferedImage extends BufferedImage {
      * @return true if the image is a float image
      */
     public boolean isFloatImage() {
-        return values_float == null ? false : true;
+        return values_float != null;
     }
 
     /**
@@ -368,7 +368,7 @@ public class MyBufferedImage extends BufferedImage {
      * @return true if the image is a double image
      */
     public boolean isDoubleImage() {
-        return values_double == null ? false : true;
+        return values_double != null;
     }
 
     /**
@@ -396,6 +396,16 @@ public class MyBufferedImage extends BufferedImage {
         return is16Bits;
     }
 
+    public boolean is48Bits() {
+//        if (is16Bits) {
+//            if (ip.getNChannels() >= 3 && ip.getBitDepth() == 16) {
+//                return true;
+//            }
+//        }
+//        return false;.
+        return is48Bits;
+    }
+
     /**
      * Defines whether the image is 16 bits or not
      *
@@ -405,8 +415,12 @@ public class MyBufferedImage extends BufferedImage {
         this.is16Bits = is16Bits;
     }
 
+    public void set48Bits(boolean is48Bits) {
+        this.is48Bits = is48Bits;
+    }
+    
     /**
-     * below are just various fast setpixels functions 
+     * below are just various fast setpixels functions
      */
     public synchronized void setRGB(int i, int j, int alpha, int red, int green, int blue) {
         dbi.setElem(j * width + i, (alpha << 24) + (red << 16) + (green << 8) + (blue));
@@ -816,7 +830,6 @@ public class MyBufferedImage extends BufferedImage {
 
     public static void main(String args[]) {
 
-
         if (true) {
             int test = 10;
             System.out.println((Integer) test);
@@ -846,7 +859,6 @@ public class MyBufferedImage extends BufferedImage {
         System.out.println(bi.getWidth() + " " + bi.getHeight() + " " + bi.getFloatRGB(0, 0));
 
 //        Saver.pop(bi);
-
         if (true) {
             return;
         }
@@ -875,5 +887,3 @@ public class MyBufferedImage extends BufferedImage {
         System.exit(0);
     }
 }
-
-

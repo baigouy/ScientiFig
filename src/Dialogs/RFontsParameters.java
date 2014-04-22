@@ -201,7 +201,7 @@ public class RFontsParameters extends javax.swing.JPanel {
      * @return the line width that should be applied to R graphs
      */
     public float getLineWidthSize() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
 
     /**
@@ -209,7 +209,7 @@ public class RFontsParameters extends javax.swing.JPanel {
      * @return the point size that should be applied to R scatterplots
      */
     public float getPointWidthSize() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     @SuppressWarnings("unchecked")
@@ -636,7 +636,7 @@ public class RFontsParameters extends javax.swing.JPanel {
      * @return the stroke size for line
      */
     private float getLineSize() {
-        return ((Float) jSpinner1.getValue()).floatValue();
+        return ((Float) jSpinner1.getValue());
     }
 
     /**
@@ -644,7 +644,7 @@ public class RFontsParameters extends javax.swing.JPanel {
      * @return the stroke size for points
      */
     private float getPointSize() {
-        return ((Float) jSpinner2.getValue()).floatValue();
+        return ((Float) jSpinner2.getValue());
     }
 
     /**

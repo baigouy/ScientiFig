@@ -74,7 +74,7 @@ public class ExportDialog extends javax.swing.JPanel {
      * @return the dpi of the output image
      */
     public int getDPI() {
-        return ((Integer) jSpinner1.getValue()).intValue();
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
@@ -82,7 +82,7 @@ public class ExportDialog extends javax.swing.JPanel {
      * @return the width of the output image
      */
     public double getImageWidth() {
-        return ((Double) jSpinner2.getValue()).doubleValue();
+        return ((Double) jSpinner2.getValue());
     }
 
     /**
@@ -90,7 +90,7 @@ public class ExportDialog extends javax.swing.JPanel {
      * @return the height of the output image
      */
     public double getImageHeight() {
-        return ((Double) jSpinner3.getValue()).doubleValue();
+        return ((Double) jSpinner3.getValue());
     }
 
     /**
