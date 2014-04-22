@@ -8,7 +8,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.*; 
 import java.net.URI;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
