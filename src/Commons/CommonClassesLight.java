@@ -3,7 +3,7 @@ package Commons;
 import R.RSession.MyRsessionLogger;
 import ij.*;
 import ij.io.FileInfo;
-import java.awt.*;
+import java.awt.*; 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
