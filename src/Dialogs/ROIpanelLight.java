@@ -615,6 +615,12 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     public ArrayList<Object> getROIS() {
         return ROIS;
     }
+
+    public boolean isEmpty() {
+        ArrayList<Object> rois = getROIS();
+        return (rois == null || rois.isEmpty());
+    }
+
     Rectangle2D.Double rec2d;
 
     /**
@@ -861,11 +867,10 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             return;
         }
         super.paint(g);
-        
+
 //        AffineTransform at = new AffineTransform();
 //        at.setToTranslation(25, 10);
 //        ((Graphics2D)g).setTransform(at);
-        
         if (backgroundImage != null) {
             ((Graphics2D) g).drawImage(backgroundImage, 0, 0, (int) ((double) backgroundImage.getWidth() * zoom), (int) ((double) backgroundImage.getHeight() * zoom), null);
         }
@@ -2037,7 +2042,6 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         System.out.println("base: " + l2d.x1 + " " + l2d.y1);
         System.out.println("tip: " + l2d.x2 + " " + l2d.y2);
 
-
         //que se passe t'il si on rotate un carre ?
         Rectangle r = new Rectangle(20, 20, 40, 40);
         AffineTransform at = new AffineTransform();
@@ -2054,12 +2058,8 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
 //        // r2.
 //        shp = at.createTransformedShape(r2);
 //        System.out.println(shp); //--> un path2D
-
         //System.out.println(at.); //en fait je pourrais tjrs garder l'inverse transfo pr ne jamais me perdre
         //on connait  le x1 et le x2, etc --> tres facile et bcp plus puissant que mes mergedshapes
-
         System.exit(0);
     }
 }
-
-
