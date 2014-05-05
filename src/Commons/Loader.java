@@ -396,7 +396,7 @@ public class Loader {
                 }
                 img.set8BitsImage(original.getBufferedImage());
             }
-            if (original.getNSlices() != 1) {
+            if (original.getNSlices() != 1 || img.is48Bits) {
                 /**
                  * removed because it apparently is useless and prevented proper
                  * loading of images

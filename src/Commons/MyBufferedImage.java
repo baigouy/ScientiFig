@@ -495,6 +495,23 @@ public class MyBufferedImage extends BufferedImage {
     public int getRGB(int i, int j) {
         return dbi.getElem(j * width + i);
     }
+    
+    //ça marche mais c'est super slow n'y aurait il pas un moyen d'accéder rapidement et directement aux pixels peu importe la couleur en plus dans setC il y a plein d'etapes inutiles comme le refresh de l'image qui ne sert à rien
+    public int getRGB(int i, int j, int c) {
+//        System.out.println(ip);
+        if (ip!=null)
+        {
+            if (ip.getC()!=c)
+//                          ip.setPositionWithoutUpdate(c, ip.getZ(), ip.getT());  
+            ip.setC(c);
+            //c'est très long --> essayer de limiter les changements de channel en fait --> quantifier tt un channel avant de passer à un autre parce que c'est trop long
+            int[]pxs = ip.getPixel(i, j);
+            if (pxs!=null)
+                return pxs[0];
+            return -1;
+        }else
+            return -1;
+    }
 
     @Override
     public int getWidth() {
@@ -510,7 +527,7 @@ public class MyBufferedImage extends BufferedImage {
         return (alpha << 24) + (red << 16) + (green << 8) + (blue);
     }
 
-    public static int getRGB(int red, int green, int blue) {
+    public static int combineRGB(int red, int green, int blue) {
         return (red << 16) + (green << 8) + (blue);
     }
 
