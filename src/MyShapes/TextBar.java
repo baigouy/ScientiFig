@@ -60,6 +60,11 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
     public int ORIENTATION = HORIZONTAL;
     public ColoredTextPaneSerializable text;
     public boolean isFrame = true;
+    public static final int CENTERED = 0;
+    public static final int ALIGN_LEFT = 1;
+    //TODO finalize right because it doesn't work especially for vertical
+    public static final int ALIGN_RIGHT = 2;
+    public int TEXT_POSITION = CENTERED;
 
     /**
      * a double precision TextBar
@@ -78,7 +83,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
          * @param g2d
          * @param orientation
          */
-        public Double(double x, double y, double width, ColoredTextPaneSerializable text, Graphics2D g2d, int orientation) {
+        public Double(double x, double y, double width, ColoredTextPaneSerializable text, Graphics2D g2d, int orientation, int position) {
             this.text = text;
             Rectangle2D bounds = text.getTextBounds(g2d);
             this.ORIENTATION = orientation;
@@ -87,6 +92,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
                 rec2d = new Rectangle2D.Double(x, y, rec2d.height, rec2d.width);
             }
             this.isFrame = text.isFrame();
+            this.TEXT_POSITION = position;
         }
 
         /**
@@ -103,6 +109,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
             this.text = myel.text;
             this.ORIENTATION = myel.ORIENTATION;
             this.isFrame = myel.isFrame;
+            this.TEXT_POSITION = myel.TEXT_POSITION;
         }
 
         @Override
@@ -119,6 +126,14 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
             this.ZstackPos = ZstackNb;
             return this;
         }
+    }
+
+    public int getTEXT_POSITION() {
+        return TEXT_POSITION;
+    }
+
+    public void setTEXT_POSITION(int TEXT_POSITION) {
+        this.TEXT_POSITION = TEXT_POSITION;
     }
 
     /**
@@ -213,7 +228,21 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
             case HORIZONTAL:
                 if (true) {
                     Rectangle2D bounds = text.getTextBounds(g2d);
-                    float x = (float) ((rec2d.getWidth() - bounds.getX()) / 2. + rec2d.x);
+                    //ça marche --> centre a gauche on dirait
+                    double xPos = 0;
+                    switch (TEXT_POSITION) {
+                        case CENTERED:
+                            xPos = (rec2d.getWidth() - bounds.getX()) / 2.;
+                            break;
+                        case ALIGN_LEFT:
+                            break;
+//                        case ALGN_RIGHT:
+//                            System.out.println("here " +" "+bounds.getWidth()+ " "+rec2d.getWidth());
+//                            xPos = (rec2d.getWidth() - bounds.getWidth());
+//                            System.out.println(xPos);
+//                            break;
+                    }
+                    float x = (float) (xPos + rec2d.x); //--> centrage en x
                     float y = (float) (rec2d.getHeight() / 2. - bounds.getY() / 2. + rec2d.y);//rec2d.getHeight() / 2. - bounds.getY() / 2.;
                     float x_backup = x;
 
@@ -249,8 +278,21 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
             case VERTICAL:
                 if (true) {
                     Rectangle2D bounds = text.getTextBounds(g2d);
+                    double xPos = 0;
+                    switch (TEXT_POSITION) {
+                        case CENTERED:
+                            xPos = (rec2d.getHeight() - bounds.getX()) / 2.;
+                            break;
+                        case ALIGN_LEFT:
+                            xPos = rec2d.getHeight() - bounds.getX();
+                            break;
+                        case ALIGN_RIGHT:
+                            break;
+                    }
+//                    float x = (float) (xPos + rec2d.x); //--> centrage en x
                     float x = (float) ((rec2d.getWidth() / 2. - bounds.getY() / 2.) + rec2d.x);
-                    float y = (float) (rec2d.getHeight() / 2. - bounds.getX() / 2. + rec2d.y + bounds.getX());//rec2d.getHeight() / 2. - bounds.getY() / 2.;
+                    //float y = (float) (rec2d.getHeight() / 2. - bounds.getX() / 2. + rec2d.y + bounds.getX());//rec2d.getHeight() / 2. - bounds.getY() / 2.;
+                    float y = (float) (xPos + rec2d.y + bounds.getX());//rec2d.getHeight() / 2. - bounds.getY() / 2.;
                     float x_backup = x;
                     ArrayList<AttributedString> as = text.createAttributedString();
                     ArrayList<ArrayList<MyFormattedString>> final_text = text.simplify_text(as);
@@ -327,16 +369,15 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
         }
         Graphics2D g2d = test2.createGraphics();
 
-
         long start_time = System.currentTimeMillis();
 
         //tt marche nickel --> essayer gandeur nature maintenant 
         //c'est bon ce coup ci ca marche
         //si black bg --> balck rectangle sinon blc si null --> rien
-        ColoredTextPaneSerializable coloredTextPaneSerializable = new ColoredTextPaneSerializable("totototo tototo sdfsfsd");
+        ColoredTextPaneSerializable coloredTextPaneSerializable = new ColoredTextPaneSerializable("toto");
         coloredTextPaneSerializable.setFontToAllText(new Font("Arial", Font.ITALIC, 50), false, false);
         coloredTextPaneSerializable.setTextBgColor(Color.MAGENTA);
-        TextBar.Double test = new TextBar.Double(50, 0, 256, coloredTextPaneSerializable, g2d, HORIZONTAL);
+        TextBar.Double test = new TextBar.Double(50, 0, 256, coloredTextPaneSerializable, g2d, HORIZONTAL, TextBar.CENTERED);
         System.out.println(test.isHeightIncompressible() + " " + test.isWidthIncompressible() + " " + test.getIncompressibleWidth() + " " + test.getIncompressibleHeight());
         test.scale(0.5);
         System.out.println(test.isHeightIncompressible() + " " + test.isWidthIncompressible() + " " + test.getIncompressibleWidth() + " " + test.getIncompressibleHeight());
@@ -345,18 +386,17 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
         coloredTextPaneSerializable = new ColoredTextPaneSerializable("sdqsdqsdq  sdqsd");
         coloredTextPaneSerializable.setFontToAllText(new Font("Arial", Font.ITALIC, 50), false, false);
         coloredTextPaneSerializable.setTextBgColor(Color.MAGENTA);
-        TextBar.Double test3 = new TextBar.Double(0, 0, 256, coloredTextPaneSerializable, g2d, VERTICAL);
+        TextBar.Double test3 = new TextBar.Double(0, 0, 256, coloredTextPaneSerializable, g2d, VERTICAL, TextBar.CENTERED);
         System.out.println(test3.isHeightIncompressible() + " " + test3.isWidthIncompressible() + " " + test3.getIncompressibleWidth() + " " + test3.getIncompressibleHeight());
         test3.scale(0.5);
         System.out.println(test3.isHeightIncompressible() + " " + test3.isWidthIncompressible() + " " + test3.getIncompressibleWidth() + " " + test3.getIncompressibleHeight());
         test3.draw(g2d);
 
         g2d.dispose();
-        SaverLight.save(test2, "C:/Users/ben/Desktop/images_de_test_pr_figure_assistant/toto.png");
+
+        SaverLight.save(test2, "/home/benoit/toto.png");
 
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
         System.exit(0);
     }
 }
-
-

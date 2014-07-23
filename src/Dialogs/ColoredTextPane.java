@@ -38,6 +38,8 @@ import MyShapes.MyFontTool;
 import Commons.CommonClassesLight;
 import Commons.PaintedButton;
 import Commons.SaverLight;
+import MyShapes.StyledDoc2Html;
+import Tools.StyledDocTools;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -709,7 +711,7 @@ public class ColoredTextPane extends JPanel {
      */
     public void setSelectionSupercript() {
         setSelection(ColoredTextPaneSerializable.SUPERSCRIPT);
-    }
+                    }
 
     /**
      * underlines the selection
@@ -750,7 +752,39 @@ public class ColoredTextPane extends JPanel {
         jRadioButton5 = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         if (jTextPane1 == null)
-        jTextPane1 = new javax.swing.JTextPane(ctps.doc);
+        jTextPane1 = new javax.swing.JTextPane(ctps.doc){
+            @Override
+            public void paste() {
+                try {
+                    getStyledDocument().remove(getSelectionStart(), getSelectionEnd() - getSelectionStart());
+                } catch (Exception e) {
+                }
+                String serializedStyledDocumentContent = CommonClassesLight.getTextFromClipBoard();
+                if (serializedStyledDocumentContent != null) {
+                    StyledDoc2Html test = new StyledDoc2Html();
+                    setStyledDocument(StyledDocTools.insert(test.reparse(serializedStyledDocumentContent), getStyledDocument(), getSelectionStart()));
+                }
+                FakeMoveSelection();
+            }
+
+            @Override
+            public void copy() {
+                StyledDoc2Html test = new StyledDoc2Html();
+                String serializedStyledDocumentContent = test.convertStyledDocToHtml(getStyledDocument(), getSelectionStart(), getSelectionEnd()/*, textBgColor*/);
+                CommonClassesLight.sendTextToClipboard(serializedStyledDocumentContent);
+            }
+
+            @Override
+            public void cut() {
+                copy();
+                try {
+                    getStyledDocument().remove(getSelectionStart(), getSelectionEnd() - getSelectionStart());
+                } catch (Exception e) {
+                }
+            }
+
+        };
+        ;
         LookAndFeel laf = UIManager.getLookAndFeel();
         if (laf.getID().equals("Nimbus")) {
             Painter bgPainter = new Painter<JComponent>() {
@@ -843,7 +877,6 @@ public class ColoredTextPane extends JPanel {
         jButton5.setBorderPainted(false);
         jButton5.setFocusable(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton5.setMaximumSize(new java.awt.Dimension(2147483647, 37));
         jButton5.setMinimumSize(new java.awt.Dimension(70, 37));
         jButton5.setPreferredSize(new java.awt.Dimension(90, 37));
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

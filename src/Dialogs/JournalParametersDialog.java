@@ -136,6 +136,10 @@ public class JournalParametersDialog extends javax.swing.JPanel {
     private void setSpinnerValue(JSpinner spin, double value) {
         spin.setValue(value);
     }
+    
+    private void setSpinnerValue(JSpinner spin, int value) {
+        spin.setValue(value);
+    }
 
     private void setSelectedFont(FontSelectorLight fsl, Font ft) {
         fsl.setSelectedFont(ft);

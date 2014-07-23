@@ -318,7 +318,9 @@ public class MyRsession {
                 + "\nIt should become green, otherwise sorry an error must have occured ask an"
                 + "\nR expert around you (you can also try to repeat steps 3 and 4 just in case)"
                 + "\nthe software will continue to run but the graph functionalities"
-                + "\n(i.e. auto scaling of graphs and font settings for R graphs) will be disabled";
+                + "\n(i.e. auto scaling of graphs and font settings for R graphs) will be disabled"
+                + "\n\nNB: additional steps under linux if rJava installation failed\nsudo R CMD javareconf\ninstall.packages(\"rJava\")";
+        //NB: to install RSQLite under linux --> sudo apt-get install r-cran-rsqlite 
     }
 
     /**
@@ -951,7 +953,13 @@ public class MyRsession {
     public void close() {
         try {
             s.end();
+            try {
+                Thread.sleep(400);
+            } catch (Exception e) {
+            }
+//            s.connection.close();
         } catch (Exception e) {
+//            e.printStackTrace();
         }
     }
 
@@ -961,8 +969,7 @@ public class MyRsession {
      */
     public static String removeAllPackages() {
         String out = "";
-        for (int l = 0; l < required_packages.size(); l++) {
-            String curPackage = required_packages.get(l);
+        for (String curPackage : required_packages) {
             out += removePackageText(curPackage);
         }
         return out;
@@ -994,13 +1001,13 @@ public class MyRsession {
         MyRsessionLogger rlt = new MyRsessionLogger();
 
         if (true) {
+
+            System.out.println(MyRsession.installAllPackages());
+
             //System.out.println(rlt.removeAllPackages());
             rlt.reopenConnection();
 
-
-
             rlt.getAvailableFontsInR();
-
 
             rlt.close();
             return;

@@ -42,11 +42,11 @@ import java.io.StringWriter;
  *
  * @author Benoit Aigouy
  */
-public class ImageColors {
+public class ImageColors { 
 
-    public final static int RED_TO_WHITE = 0;
-    public final static int GREEN_TO_WHITE = 1;
-    public final static int BLUE_TO_WHITE = 2;
+    public final static int CH1_TO_WHITE = 0;
+    public final static int CH2_TO_WHITE = 1;
+    public final static int CH3_TO_WHITE = 2;
     public final static int GRAY = 3;
 
     /**
@@ -319,7 +319,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGB2RGW(BufferedImage image) {
-        return RGB2W(image, BLUE_TO_WHITE);
+        return RGB2W(image, CH3_TO_WHITE);
     }
 
     /**
@@ -331,7 +331,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGBtoRGW(BufferedImage image) {
-        return RGB2W(image, BLUE_TO_WHITE);
+        return RGB2W(image, CH3_TO_WHITE);
     }
 
     /**
@@ -343,7 +343,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGB2RWB(BufferedImage image) {
-        return RGB2W(image, GREEN_TO_WHITE);
+        return RGB2W(image, CH2_TO_WHITE);
     }
 
     /**
@@ -355,7 +355,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGBtoRWB(BufferedImage image) {
-        return RGB2W(image, GREEN_TO_WHITE);
+        return RGB2W(image, CH2_TO_WHITE);
     }
 
     /**
@@ -367,7 +367,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGB2WGB(BufferedImage image) {
-        return RGB2W(image, RED_TO_WHITE);
+        return RGB2W(image, CH1_TO_WHITE);
     }
 
     /**
@@ -379,7 +379,7 @@ public class ImageColors {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static BufferedImage RGBtoWGB(BufferedImage image) {
-        return RGB2W(image, RED_TO_WHITE);
+        return RGB2W(image, CH1_TO_WHITE);
     }
 
     private static int max(int i1, int i2) {
@@ -412,10 +412,10 @@ public class ImageColors {
                     int green = (RGB >> 8) & 0xFF;
                     int blue = (RGB & 0xFF);
 
-                    if (CHANNEL == RED_TO_WHITE) {
+                    if (CHANNEL == CH1_TO_WHITE) {
                         green = max(green, red);
                         blue = max(blue, red);
-                    } else if (CHANNEL == GREEN_TO_WHITE) {
+                    } else if (CHANNEL == CH2_TO_WHITE) {
                         red = max(red, green);
                         blue = max(blue, green);
                     } else {
@@ -848,25 +848,30 @@ public class ImageColors {
             return orig;
         }
         if (showRed) {
-            return ImageColors.forceWhite(orig, ImageColors.RED_TO_WHITE);
+            return ImageColors.forceWhite(orig, ImageColors.CH1_TO_WHITE);
         }
         if (showGreen) {
-            return ImageColors.forceWhite(orig, ImageColors.GREEN_TO_WHITE);
+            return ImageColors.forceWhite(orig, ImageColors.CH2_TO_WHITE);
         }
         if (showBlue) {
-            return ImageColors.forceWhite(orig, ImageColors.BLUE_TO_WHITE);
+            return ImageColors.forceWhite(orig, ImageColors.CH3_TO_WHITE);
         }
         return orig;
     }
 
     public static BufferedImage forceWhite(BufferedImage image, int mode) {
+//        if (CommonClassesLight.is48Bits(image))
+//        {
+//            return CommonClassesLight.get16BitsChannel(mode, image);
+//        }
+        
         BufferedImage original = CommonClassesLight.copyImg(image);
         int width = original.getWidth();
         int height = original.getHeight();
         switch (mode) {
             case GRAY:
                 original = RGB2Grey(original);
-            case BLUE_TO_WHITE:
+            case CH3_TO_WHITE:
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         int RGB = original.getRGB(i, j) & 0xFF;
@@ -874,7 +879,7 @@ public class ImageColors {
                     }
                 }
                 break;
-            case GREEN_TO_WHITE:
+            case CH2_TO_WHITE:
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         int RGB = (original.getRGB(i, j) >> 8) & 0xFF;

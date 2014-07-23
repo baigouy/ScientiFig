@@ -1,3 +1,5 @@
+//TODO aussi permettre de copier le formattage des textes quand celui ci est complexe --> overrider le truc de copy et de paste pour passer du texte html que je pourrais ensuite réimporter dans l'autre textarea
+
 /*
  * obfuscateSFnZIP --> compile then obfuscate n compress
  * dlSF --> dl and opens all files on the website
@@ -56,13 +58,13 @@ import Commons.LimitedTextField;
 import Commons.Loader;
 import Commons.MyGraphics2D;
 import Commons.MyWriter;
+import Commons.Point3D;
 import Commons.SaverLight;
 import Dialogs.CapitalizeFirstLetterDialog;
 import Dialogs.ListOfShortcuts;
 import MyShapes.MagnificationChangeLoggable;
 import R.RSession.MyRsessionLogger;
 import Tools.ComponentBlinker;
-import ij.ImageJ;
 import ij.Macro;
 import ij.WindowManager;
 import ij.io.FileInfo;
@@ -74,13 +76,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
@@ -197,7 +197,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.7";
+    public static final String version = "2.91";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -338,6 +338,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     @SuppressWarnings("LeakingThisInConstructor")
 //    @SuppressWarnings("OverridableMethodCallDuringObjectConstruction")
     public ScientiFig_() {
+
+        //bug is somewhere there
+        //the closing error is somehow in there
         if (isInstanceAlreadyExisting()) {
             this.dispose();
             return;
@@ -380,7 +383,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         WindowManager.addWindow(this);
         CommonClassesLight.GUI = this;
         doubleLayerPane3.setSelectable(false);
-        if (ImageJ.getArgs() != null) {
+        if (CommonClassesLight.ij == null) {
             jMenu6.setVisible(false);
         }
         /*
@@ -410,6 +413,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 loading = false;
             }
         });
+
+        //bug is there below
         memoryRefreshTimer();
         warnForSave = false;
         showAppropriateOptions(null);
@@ -431,6 +436,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         overrideListenersForSpinners();
         /**
          * we set up a new blinker
+         */
+        /**
+         * the pb is here --> see why
          */
         blinker = new ComponentBlinker(this, glasspane);
         /*
@@ -454,7 +462,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
          * ctrl +/zoom +
          */
         InputMap im = new ComponentInputMap(zoomPlus);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK), "zoomPlus");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "zoomPlus");
         ActionMap am = new ActionMapUIResource();
         am.put("zoomPlus", new AbstractAction("zoomPlus") {
             @Override
@@ -469,7 +477,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
          * ctrl -/zoom -
          */
         im = new ComponentInputMap(zoomMinus);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK), "zoomMinus");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "zoomMinus");
         am = new ActionMapUIResource();
         am.put("zoomMinus", new AbstractAction("zoomMinus") {
             @Override
@@ -553,7 +561,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         });
 
         im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK), "Ctrl+LEFT");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Ctrl+LEFT");
         rootPane.getActionMap().put("Ctrl+LEFT", new AbstractAction("Ctrl+LEFT") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -568,7 +576,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 //component.getInputMap().put(KeyStroke.getKeyStroke("F2"), "doNothing");
 //component.getActionMap().put("doNothing", doNothing);
 //        im = RowContentList.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-//        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK), "Ctrl+LEFT");
+//        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Ctrl+LEFT");
 //        RowContentList.getActionMap().put("Ctrl+LEFT", new AbstractAction("Ctrl+LEFT") {
 //            @Override
 //            public void actionPerformed(ActionEvent actionEvent) {
@@ -576,7 +584,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 //            }
 //        });
         im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK), "Ctrl+RIGHT");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Ctrl+RIGHT");
         rootPane.getActionMap().put("Ctrl+RIGHT", new AbstractAction("Ctrl+RIGHT") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -1556,6 +1564,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         moveColLeft = new javax.swing.JButton();
         moveColRight = new javax.swing.JButton();
         jPanel1666 = new javax.swing.JPanel();
+        addLettersOutside = new javax.swing.JButton();
         addTextAboveRow = new javax.swing.JButton();
         addTextBelowRow = new javax.swing.JButton();
         AddTextLeftOfRow = new javax.swing.JButton();
@@ -1663,17 +1672,17 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         setTitle(software_name+" v"+version);
         setIconImage(new ImageIcon(getClass().getClassLoader().getResource("Icons/icon_029.png")).getImage());
         setMinimumSize(new java.awt.Dimension(1024, 630));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                closing(evt);
-            }
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                onQuit(evt);
-            }
-        });
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 windowSizeChanged(evt);
+            }
+        });
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                onQuit(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                closing(evt);
             }
         });
 
@@ -2656,6 +2665,18 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         optionsPanel.add(jPanel16);
 
         jPanel1666.setLayout(new java.awt.GridLayout(2, 3));
+
+        addLettersOutside.setText("<html><center>Add letters outside</center>");
+        addLettersOutside.setToolTipText("Add text bars above images");
+        addLettersOutside.setMaximumSize(new java.awt.Dimension(132, 37));
+        addLettersOutside.setMinimumSize(new java.awt.Dimension(132, 37));
+        addLettersOutside.setPreferredSize(new java.awt.Dimension(132, 37));
+        addLettersOutside.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runAll(evt);
+            }
+        });
+        jPanel1666.add(addLettersOutside);
 
         addTextAboveRow.setText("<html><center>Add text bars<br>above images");
         addTextAboveRow.setToolTipText("Add text bars above images");
@@ -4969,15 +4990,27 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         return shapes;
     }
 
+    private void stopMemoryThread() {
+        try {
+            refreshMemory.shutdownNow();
+        } catch (Exception e) {
+        }
+
+    }
+
     /**
      * this function is called upon quitting
      *
      * @param evt
      */
+    //alternatively bug is there
     private void onQuit(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onQuit
         blinker.stop();
+        /**
+         * fixes the FIJI not closing error when memory thread is active
+         */
+        stopMemoryThread();
         save_properties();
-        WindowManager.removeWindow(this);
         /*
          * in theory useless because I've already set the files to be deletedonexit. But in fact it is useful if the soft is used as an IJ or a FIJI plugin.
          */
@@ -4997,11 +5030,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             System.gc();
         } catch (Exception e) {
         }
-        if ((ImageJ.getArgs() == null && !FiguR_.isInstanceAlreadyExisting())/* || (ImageJ.getArgs() == null && !FiguR_.isInstanceAlreadyExisting())*/) {
-            try {
-                CommonClassesLight.r.close();
-            } catch (Exception e) {
-            }
+
+        if ((CommonClassesLight.ij != null && !FiguR_.isInstanceAlreadyExisting())/* || (ImageJ.getArgs() == null && !FiguR_.isInstanceAlreadyExisting())*/) {
             System.exit(0);
         }
     }//GEN-LAST:event_onQuit
@@ -5331,52 +5361,70 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             boolean success = false;
             if (showHelpVideoForClickedButton) {
                 if (source == replaceImage) {
-                    CommonClassesLight.browse("http://youtu.be/_WmVLcxgzZE");
+                    CommonClassesLight.browse("http://youtu.be/gvsqkl_oxK4");//updated
                     success = true;
                 }
-                if (source == addSelectedImagesInCurPanel) {
-                    CommonClassesLight.browse("http://youtu.be/oy0aNq_4Zbs");
-                    success = true;
-                }
+
                 if (source == moveColLeft || source == moveColRight) {
-                    CommonClassesLight.browse("http://youtu.be/HQ_dXRjYlcg");
+                    CommonClassesLight.browse("http://youtu.be/dbvTZHULTys");//updated
                     success = true;
                 }
                 if (source == deleteJournalStyle) {
-                    CommonClassesLight.browse("http://youtu.be/cHf0gPgLmvw");
+                    CommonClassesLight.browse("http://youtu.be/afLH98xysG8");//updated
                     success = true;
                 }
                 if (source == deleteSelectColumn) {
-                    CommonClassesLight.browse("http://youtu.be/oBvXZFwKFfg");
+                    CommonClassesLight.browse("http://youtu.be/ra8_BwLhtT8");//updated
                     success = true;
                 }
+
+                if (source == zoomPlus) {
+                    CommonClassesLight.browse("http://youtu.be/Q0yZRvQK3b8");//updated
+                    success = true;
+                }
+
+                if (source == zoomMinus) {
+                    CommonClassesLight.browse("http://youtu.be/d3Yeek-oSys");//updated
+                    success = true;
+                }
+
+                if (source == bestFitZoom) {
+                    CommonClassesLight.browse("http://youtu.be/_51H265QLwA");//updated
+                    success = true;
+                }
+
+                if (source == realSizeZoom) {
+                    CommonClassesLight.browse("http://youtu.be/V4DHpo2f9zQ");//updated
+                    success = true;
+                }
+
                 if (source == addEmptyImageToCurrentBlock) {
-                    CommonClassesLight.browse("http://youtu.be/0qv3IBi5DbE");
+                    CommonClassesLight.browse("http://youtu.be/Lg_aDI2QwoY");//updated
                     success = true;
                 }
                 if (source == checkSize || source == checkStyle || source == checkFont || source == checkText || source == checkGraph || source == checkLineArts) {
-                    CommonClassesLight.browse("http://youtu.be/UnO_89HqfYA");
+                    CommonClassesLight.browse("http://youtu.be/uvrXs4t4luk");//updated
                     success = true;
                 }
-                if (source == buttonHelp) {
-                    /*
-                     * just getting crazy
-                     */
-                    CommonClassesLight.browse("http://youtu.be/xfaWeivmwiw");
-                    success = true;
-                }
+//                if (source == buttonHelp) {
+//                    /*
+//                     * just getting crazy
+//                     */
+//                    CommonClassesLight.browse("http://youtu.be/xfaWeivmwiw");
+//                    success = true;
+//                }
                 if (source == createPanelAutomatically) {
                     /*
                      * demo auto
                      */
-                    CommonClassesLight.browse("http://youtu.be/ZbX5Yc3jTtA");
+                    CommonClassesLight.browse("http://youtu.be/l0MayjoUcWo");//updated
                     success = true;
                 }
                 if (source == showShortcuts) {
                     /*
                      * demo + add to panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/oPYMT_Y7L6g");
+                    CommonClassesLight.browse("http://youtu.be/vUroHr_A4PI");//updated
                     success = true;
                 }
                 //TODO add a video for addSelectedImagesInCurBlock
@@ -5384,238 +5432,252 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     /*
                      * demo + add to panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/Qg2Zg6FQMv0");
+                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");//updated
                     success = true;
                 }
-                if (source == reformatTable && jTabbedPane1.getSelectedIndex() == 1) {
+                if (source == addSelectedImagesInCurPanel) {
+                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");//updated
+                    success = true;
+                }
+
+                if (source == reformatTable /*&& jTabbedPane1.getSelectedIndex() == 1*/) {
                     /*
                      * demo panel format button
                      */
-                    CommonClassesLight.browse("http://youtu.be/8upT9G5J_ZE");
+                    CommonClassesLight.browse("http://youtu.be/XdH46WBK_pE");//updated
                     success = true;
                 }
-                if (source == reformatTable && jTabbedPane1.getSelectedIndex() == 2) {
-                    /*
-                     * demo panel format button
-                     */
-                    CommonClassesLight.browse("http://youtu.be/IF1-1aEaD7k");
-                    success = true;
-                }
+//                if (source == reformatTable && jTabbedPane1.getSelectedIndex() == 2) {
+//                    /*
+//                     * demo panel format button
+//                     */
+//                    CommonClassesLight.browse("http://youtu.be/IF1-1aEaD7k");
+//                    success = true;
+//                }
                 if (source == journalColumnsCombo || source == sizeInCM || source == sizeInPx) {
                     /*
                      * demo changing size
                      */
-                    CommonClassesLight.browse("http://youtu.be/QgtqZd_Qhn4");
+                    CommonClassesLight.browse("http://youtu.be/0PCWSE6_ijw");//updated
                     success = true;
                 }
-                if (source == jTextField1 || source == updateLetters && jTabbedPane1.getSelectedIndex() == 1) {
+                if (source == jTextField1 || source == updateLetters /*&& jTabbedPane1.getSelectedIndex() == 1*/) {
                     /*
                      * demo changing letters for panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/aiWU7OkGy34");
+                    CommonClassesLight.browse("http://youtu.be/9WDWYxDDnh4");//updated
                     success = true;
                 }
                 if (source == changeSpaceBetweenImageInPanel) {
                     /*
                      * demo changing space in panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/jYbbpegVy_Q");
+                    CommonClassesLight.browse("http://youtu.be/4m9TOduT8Sk");//updated
                     success = true;
                 }
                 if (source == createPanelFromSelection) {
                     /*
                      * demo creating a montage arrow button
                      */
-                    CommonClassesLight.browse("http://youtu.be/BRI5OKPVfh4");
+                    CommonClassesLight.browse("http://youtu.be/0ujHIeYHGlA");//updated
                     success = true;
                 }
-                if ((source == cropLeftSpinner || source == cropRightSpinner || source == cropUpSpinner || source == cropDownSpinner || source == rotateSpinner) && jTabbedPane1.getSelectedIndex() == 1) {
+                if ((source == cropLeftSpinner || source == cropRightSpinner || source == cropUpSpinner || source == cropDownSpinner)) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/La6jQuSZB8E");
+                    CommonClassesLight.browse("http://youtu.be/cvPAEptL-mY");//updated
+                    success = true;
+                }
+                if (source == rotateSpinner) {
+                    CommonClassesLight.browse("http://youtu.be/OAyHEBYlGz0");//updated
                     success = true;
                 }
                 if (source == deleteSelectedImageFromCurrentBlock) {
                     /*
                      * demo delete an image from a panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/STpeY8IXx8w");
+                    CommonClassesLight.browse("http://youtu.be/et6aL1bhM2U");//updated
                     success = true;
                 }
                 if (source == DeleteSelectedBlock) {
                     /*
                      * demo delete panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/J1COk5fd8d8");
+                    CommonClassesLight.browse("http://youtu.be/bwBEdwvpnIQ");//updated
                     success = true;
                 }
                 if (source == addTextAboveRow || source == addTextBelowRow || source == AddTextLeftOfRow || source == AddTextRightOfRow) {
                     /*
                      * demo text bars
                      */
-                    CommonClassesLight.browse("http://youtu.be/-w9Ref_bBRY");
+                    CommonClassesLight.browse("http://youtu.be/USraEocAkWQ");//updated
                     success = true;
                 }
                 if (source == deleteImagesFromTheList) {
                     /*
                      * demo delete panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/5FIjGonWIm8");
+                    CommonClassesLight.browse("http://youtu.be/71f3OSAjBMs");//updated
                     success = true;
                 }
                 if (source == addSelectedPanelToNewRow) {
                     /*
                      * demo delete add new row
                      */
-                    CommonClassesLight.browse("http://youtu.be/z77Q912ZPII");
+                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");//updated
                     success = true;
                 }
                 if (source == addSelectedPanelToSelectedRow) {
                     /*
                      * demo delete add new row
                      */
-                    CommonClassesLight.browse("http://youtu.be/qBhAJQ84QMA");
+                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");//updated
                     success = true;
                 }
                 if (source == journalCombo) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/TdEjOYMu1WE");
+                    CommonClassesLight.browse("http://youtu.be/cPQzlNAyKcw");//updated
                     success = true;
                 }
                 if (source == moveRowRight || source == moveRowLeft) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/1mfKCc_MX5U");
+                    CommonClassesLight.browse("http://youtu.be/oPtKeSd6xM0");//updated
                     success = true;
                 }
-                if ((source == jTextField1 || source == updateLetters) && jTabbedPane1.getSelectedIndex() == 2) {
-                    /*
-                     * demo changing letters for panel
-                     */
-                    CommonClassesLight.browse("http://youtu.be/QojLIy-NZUI");
-                    success = true;
-                }
+//                if ((source == jTextField1 || source == updateLetters) && jTabbedPane1.getSelectedIndex() == 2) {
+//                    /*
+//                     * demo changing letters for panel
+//                     */
+//                    CommonClassesLight.browse("http://youtu.be/QojLIy-NZUI");
+//                    success = true;
+//                }
                 if (source == removeSelectedRow) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/VjeJCpHPqDk");
+                    CommonClassesLight.browse("http://youtu.be/w0GluC5WBv4");//updated
                     success = true;
                 }
-                if (source == AnnotateImageROIs && jTabbedPane1.getSelectedIndex() == 1) {
+                if (source == AnnotateImageROIs) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/xB8gpwX7O98");
+                    CommonClassesLight.browse("http://youtu.be/gZ_u6EXq6X8");//updated
                     success = true;
                 }
-                if (source == AnnotateImageROIs && jTabbedPane1.getSelectedIndex() == 2) {
+                if (source == AnnotateImageText) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/xacu0_lRnRU");
+                    CommonClassesLight.browse("http://youtu.be/-0YcXXC53RE");//updated
                     success = true;
                 }
+
+//                if (source == AnnotateImageROIs && jTabbedPane1.getSelectedIndex() == 2) {
+//                    /*
+//                     * demo changing journal style
+//                     */
+//                    CommonClassesLight.browse("http://youtu.be/gZ_u6EXq6X8");
+//                    success = true;
+//                }
                 if (source == removeAllAnnotations || source == removeAnnotations) {
                     /*
                      * demo remove annotations
                      */
-                    CommonClassesLight.browse("http://youtu.be/tfzJqjXqlJI");
+                    CommonClassesLight.browse("http://youtu.be/vbPatQVxt-Y");//updated
                     success = true;
                 }
                 if (source == changeSpaceBetweenRows) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/OX06Y3ouPQc");
+                    CommonClassesLight.browse("http://youtu.be/U2YM_pxg1sg");//updated
                     success = true;
                 }
                 if (source == importFromIJ) {
-                    /*
-                     * demo changing journal style
-                     */
-                    CommonClassesLight.browse("http://youtu.be/GuY1VLJjuFQ");
+                    CommonClassesLight.browse("http://youtu.be/4oVx98t-YPI");//updated
                     success = true;
                 }
                 if (source == moveUpInList || source == moveDownInList) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/5EHmuq8aYQo");
+                    CommonClassesLight.browse("http://youtu.be/00odzpvqEFI");//updated
                     success = true;
                 }
-                if ((source == cropLeftSpinner || source == cropRightSpinner || source == cropUpSpinner || source == cropDownSpinner || source == rotateSpinner) && jTabbedPane1.getSelectedIndex() == 2) {
-                    /*
-                     * demo crop and rotate in panels
-                     */
-                    CommonClassesLight.browse("http://youtu.be/U7GXEI-Po5Q");
-                    success = true;
-                }
+//                if ((source == cropLeftSpinner || source == cropRightSpinner || source == cropUpSpinner || source == cropDownSpinner || source == rotateSpinner) && jTabbedPane1.getSelectedIndex() == 2) {
+//                    /*
+//                     * demo crop and rotate in panels
+//                     */
+//                    CommonClassesLight.browse("http://youtu.be/U7GXEI-Po5Q");
+//                    success = true;
+//                }
                 if (source == splitColoredImagesToMagentaGreen) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/jiTfrXWiqNs");
+                    CommonClassesLight.browse("http://youtu.be/G7TWJrXTrCU");//updated
                     success = true;
                 }
                 if (source == moveImageInCurrentPanelLeft || source == moveImageInCurrentPanelRight) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/LB2xBRuM4jE");
+                    CommonClassesLight.browse("http://youtu.be/VDGscaiWCVw");//updated
                     success = true;
                 }
                 if (source == swapImagesFromCurrentPanel) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/s_J1JMUIiOg");
+                    CommonClassesLight.browse("http://youtu.be/m8Fxbkv5tP4");//updated
                     success = true;
                 }
                 if (source == PIP || source == removePiP) {
                     /*
                      * demo add remove PIP
                      */
-                    CommonClassesLight.browse("http://youtu.be/7s49wUimK0Q");
+                    CommonClassesLight.browse("http://youtu.be/lxn0t-jD448");//updated
                     success = true;
                 }
                 if (source == newJournalStyle) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/TARsZ844VOQ");
+                    CommonClassesLight.browse("http://youtu.be/GpK-nC2Ra0o");//updated
                     success = true;
                 }
                 if (source == removeAllScaleBars) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/CcRiI8Dgeug");
+                    CommonClassesLight.browse("http://youtu.be/5Y-h_lEgDCY");//updated
                     success = true;
                 }
                 if (source == removeAllText) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/OmhovQVXDrc");
+                    CommonClassesLight.browse("http://youtu.be/sB-oXKNA4z4");//updated
                     success = true;
                 }
                 if (source == ChangeStrokeSize) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/v9UEUSK1Ho4");
+                    CommonClassesLight.browse("http://youtu.be/pia-zYgcYqM");//updated
                     success = true;
                 }
                 if (source == jMenuItem12) {
                     /*
-                     * demo change style the rest should be ok
+                     * demo change font and bg color of text
                      */
-                    CommonClassesLight.browse("http://youtu.be/UcEJ6deu1QU");
+                    CommonClassesLight.browse("http://youtu.be/E2XTfpWm_Kw");//updated
                     success = true;
                 }
             }
@@ -6458,9 +6520,10 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                                     }
                                     myList1.addDirectlyToList(name, sb.getBufferedImage());
                                 } else {
-                                    if (name!=null)
-                                    if (new File(name).exists()) {
-                                        files_to_add.add(name);
+                                    if (name != null) {
+                                        if (new File(name).exists()) {
+                                            files_to_add.add(name);
+                                        }
                                     }
                                 }
                                 myList1.addAllNoCheck(files_to_add);
@@ -8567,7 +8630,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Additional Vertical Text", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                     if (result == JOptionPane.OK_OPTION) {
                         if (true) {
-                            HashMap<Point, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
+                            HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
                             if (!pos_n_text.isEmpty()) {
                                 TopBar tb;
                                 if (source == AddTextLeftOfRow) {
@@ -8615,7 +8678,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
         }
-        if (source == addTextAboveRow || source == addTextBelowRow) {
+        if (source == addTextAboveRow || source == addTextBelowRow || source == addLettersOutside) {
             /*
              * add text boxes above or below the selected row
              */
@@ -8626,18 +8689,26 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     return;
                 } else {
                     SideBarDialog iopane;
-                    if (source == addTextAboveRow) {
-                        iopane = new SideBarDialog((Row) current_row, SideBarDialog.HORIZONTAL_TOP, defaultStyle);
+                    if (source == addTextAboveRow || source == addLettersOutside) {
+                        if (source == addTextAboveRow) {
+                            iopane = new SideBarDialog((Row) current_row, SideBarDialog.HORIZONTAL_TOP, defaultStyle);
+                        } else {
+                            iopane = new SideBarDialog((Row) current_row, SideBarDialog.ADDITIONAL_LETTER, defaultStyle);
+                        }
                     } else {
                         iopane = new SideBarDialog((Row) current_row, SideBarDialog.HORIZONTAL_BOTTOM, defaultStyle);
                     }
                     int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Add Horizontal Text Bar", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                     if (result == JOptionPane.OK_OPTION) {
-                        HashMap<Point, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
+                        HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
                         if (!pos_n_text.isEmpty()) {
                             TopBar tb = new TopBar((Row) current_row, pos_n_text, TopBar.HORIZONTAL);
-                            if (source == addTextAboveRow) {
-                                ((Row) current_row).setTopTextBar(tb);
+                            if (source == addTextAboveRow || source == addLettersOutside) {
+                                if (source == addTextAboveRow) {
+                                    ((Row) current_row).setTopTextBar(tb);
+                                } else {
+                                    ((Row) current_row).setAdditionbalLetterBar(tb);
+                                }
                             } else {
                                 ((Row) current_row).setBottomTextBar(tb);
                             }
@@ -9281,19 +9352,30 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             blinkAnything(jButton7);
             JLabel jl = new JLabel("<html><font color=\"#FF0000\">ScientiFig thinks you are about to quit without saving, do you want to continue ?<BR><BR>-Click 'Ok' to quit without saving<br>-Or click 'Cancel' to abort<BR><BR>-NB: you can inactivate this warning in Edit>Preferences</font></html>");
             int result = JOptionPane.showOptionDialog(this, new Object[]{jl}, "Warning...", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
-            if (result == JOptionPane.OK_OPTION) {
-                this.dispose();
-            } else {
+            if (result != JOptionPane.OK_OPTION) {
                 /*
                  * we stop the blinking
                  */
                 blinker.stop();
                 glasspane.setBlink(null);
                 glasspane.repaint();
+                return;
             }
-        } else {
-            this.dispose();
         }
+
+        /**
+         * need to remove the window here to avoid FIJI pbs (FIJI not closing)
+         */
+        WindowManager.removeWindow(this);
+        if (!FiguR_.isInstanceAlreadyExisting()) {
+            try {
+                CommonClassesLight.r.close();
+            } catch (Exception e) {
+//                e.printStackTrace();
+            }
+        }
+        this.dispose();
+
     }//GEN-LAST:event_closing
 
     /**
@@ -9838,6 +9920,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public javax.swing.JMenuItem Save;
     private javax.swing.JMenuItem SaveAs;
     private javax.swing.JButton addEmptyImageToCurrentBlock;
+    public static javax.swing.JButton addLettersOutside;
     private javax.swing.JButton addSelectedImagesInCurPanel;
     private javax.swing.JButton addSelectedPanelToNewRow;
     private javax.swing.JButton addSelectedPanelToSelectedRow;

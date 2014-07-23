@@ -34,7 +34,6 @@
 package Tools;
 
 import Debug.AutoDebug;
-import static Debug.AutoDebug.getAllInteractibleComponents;
 import Debug.WiseDebug;
 import Dialogs.GlassPane;
 import MyShapes.MyRectangle2D;
@@ -61,6 +60,12 @@ public class ComponentBlinker {
     GlassPane gp;
     Timer t;
 
+    
+//    public ComponentBlinker()
+//    {
+//        
+//    }
+    
     public ComponentBlinker(Component master, GlassPane gp) {
         this.gp = gp;
         getAllInteractibleComponents(master);
@@ -219,6 +224,8 @@ public class ComponentBlinker {
      * @return the bounds of a component (can be used for blinking the
      * component)
      */
+    
+    //the fucking bug is there --> why does it prevent FIJI from closing
     public static Rectangle2D getComponentPosition(Component c) {
         Rectangle bounds = c.getBounds();
         double transX = 0;
@@ -238,6 +245,7 @@ public class ComponentBlinker {
         bounds.x += transX;
         bounds.y += transY;
         return bounds;
+//        return null;
     }
 
     public void stop() {

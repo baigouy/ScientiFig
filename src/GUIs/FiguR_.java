@@ -179,7 +179,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
 //                loading = true;
 //                jComboBox2.setSelectedIndex(-1);
 //                loading = false;
-                if (ImageJ.getArgs() != null) {
+                if (CommonClassesLight.ij == null) {
                     jMenu12.setVisible(false);
                 }
                 checkRstatus();
@@ -2075,13 +2075,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * The user quits the soft --> we do a bit of cleaning
      */
     private void onQuit(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onQuit
-        WindowManager.removeWindow(this);
         this.setVisible(false);
-        if (ImageJ.getArgs() == null && !ScientiFig_.isInstanceAlreadyExisting()) {
-            try {
-                rsession.close();
-            } catch (Exception e) {
-            }
+
+        if (CommonClassesLight.ij != null && !ScientiFig_.isInstanceAlreadyExisting()) {
+
             System.exit(0);
         }
     }//GEN-LAST:event_onQuit
@@ -2157,12 +2154,18 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             //CommonClasses2.Warning(this, "ouh pas bo l'a pas sauvé le vilain");
             JLabel jl = new JLabel("<html><font color=\"#FF0000\">FiguR thinks you are about to quit without saving, do you want to continue ?<BR><BR>-Click 'Ok' to quit without saving<br>-Or click 'Cancel' to abort</font></html>");
             int result = JOptionPane.showOptionDialog(this, new Object[]{jl}, "Warning...", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
-            if (result == JOptionPane.OK_OPTION) {
-                this.dispose();
+            if (result != JOptionPane.OK_OPTION) {
+                return;
             }
-        } else {
-            this.dispose();
         }
+        if (!ScientiFig_.isInstanceAlreadyExisting()) {
+            try {
+                rsession.close();
+            } catch (Exception e) {
+            }
+        }
+        WindowManager.removeWindow(this);
+        this.dispose();
     }//GEN-LAST:event_closing
 
     private void editText(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editText
@@ -2316,10 +2319,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
 //                    return txt + "\n+ " + defautGraphParameters.toString();
 //                }
 //            } else {
-                if (theme != null) {
-                    txt += "\n+ " + theme.toString();
-                }
-                return txt;
+            if (theme != null) {
+                txt += "\n+ " + theme.toString();
+            }
+            return txt;
 //            }
         }
         String mainTitle = title.getText();
@@ -2539,8 +2542,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         this.xaxisLabel = tmp.getxAxisLabel();
         this.yaxisLabel = tmp.getyAxisLabel();
         this.legendLabel = tmp.getLegendLabel();
-
-
 
         jTextArea3.setText(tmp.Rcommand);
 
@@ -2762,5 +2763,3 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JMenuItem yintercept;
     // End of variables declaration//GEN-END:variables
 }
-
-

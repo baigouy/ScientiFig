@@ -34,6 +34,8 @@
 package Commons;
 
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.process.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
@@ -65,6 +67,12 @@ public class MyBufferedImage extends BufferedImage {
     int max_nb_of_pixels = 0;
     ImagePlus ip;
     boolean isStack = false;
+    /**
+     * to allow 48 bits images to be read
+     */
+    short[][] chs;
+    //short[]ch2;
+    //short[]ch3;
 
     public MyBufferedImage(String name) {
         this(new Loader().load(name));
@@ -199,6 +207,8 @@ public class MyBufferedImage extends BufferedImage {
 //            }
 //        }
         this.ip = ip;
+        int nbChannels = ip.getNChannels();
+        chs = new short[nbChannels][];
         try {
             setStackImage(0);
         } catch (Exception e) {
@@ -264,6 +274,35 @@ public class MyBufferedImage extends BufferedImage {
             return img;
         }
         return null;
+    }
+
+    private BufferedImage get16BitsCh(int chNb) {
+        if (is48Bits) {
+            ImageStack stack = ip.getStack();
+            ImageProcessor ch = stack.getProcessor(chNb);
+            /**
+             * we get rid of the LUT
+             */
+            ch.setColorModel(null);
+            ImagePlus ip2 = new ImagePlus(null, ch);
+            BufferedImage img = CommonClassesLight.copyImg(ip2.getBufferedImage());
+            ip2.close();
+            return img;
+        } else {
+            return null;
+        }
+    }
+
+    public BufferedImage get16bitsCh1() {
+        return get16BitsCh(1);
+    }
+
+    public BufferedImage get16bitsCh2() {
+        return get16BitsCh(2);
+    }
+
+    public BufferedImage get16bitsCh3() {
+        return get16BitsCh(3);
     }
 
     /**
@@ -418,7 +457,7 @@ public class MyBufferedImage extends BufferedImage {
     public void set48Bits(boolean is48Bits) {
         this.is48Bits = is48Bits;
     }
-    
+
     /**
      * below are just various fast setpixels functions
      */
@@ -495,22 +534,42 @@ public class MyBufferedImage extends BufferedImage {
     public int getRGB(int i, int j) {
         return dbi.getElem(j * width + i);
     }
-    
+
     //ça marche mais c'est super slow n'y aurait il pas un moyen d'accéder rapidement et directement aux pixels peu importe la couleur en plus dans setC il y a plein d'etapes inutiles comme le refresh de l'image qui ne sert à rien
+    //now this is a much faster version of it
     public int getRGB(int i, int j, int c) {
 //        System.out.println(ip);
-        if (ip!=null)
-        {
-            if (ip.getC()!=c)
-//                          ip.setPositionWithoutUpdate(c, ip.getZ(), ip.getT());  
-            ip.setC(c);
-            //c'est très long --> essayer de limiter les changements de channel en fait --> quantifier tt un channel avant de passer à un autre parce que c'est trop long
-            int[]pxs = ip.getPixel(i, j);
-            if (pxs!=null)
-                return pxs[0];
+        if (ip != null) {
+            /**
+             * ip.setC is very slow and makes the recovery of pixels very long
+             * so I simpy store 16 bits processors in a short array
+             * corresponding to the channel and then I just recover the pixels from this array
+             */
+            if (chs == null || chs[c - 1] == null) {
+                ip.setC(c);
+                chs[c - 1] = (short[]) ip.getProcessor().getPixels();
+            }
+
+//            if (ip.getC() != c) //                          ip.setPositionWithoutUpdate(c, ip.getZ(), ip.getT());  
+//            {
+//                ip.setC(c);
+//            }
+//            //c'est très long --> essayer de limiter les changements de channel en fait --> quantifier tt un channel avant de passer à un autre parce que c'est trop long
+//            int[] pxs = ip.getPixel(i, j);
+//            if (pxs != null) {
+//                return pxs[0];
+//            }
+            if (chs[c - 1] == null) {
+                return -1;
+            }
+
+            short val = chs[c - 1][j * ip.getWidth() + i];
+            return val;
+
+            //return -1;
+        } else {
             return -1;
-        }else
-            return -1;
+        }
     }
 
     @Override

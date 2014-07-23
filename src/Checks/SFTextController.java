@@ -210,6 +210,14 @@ public class SFTextController {
             new String[]{"You used plain text 'degree(s)' instead of the '°' symbol, we suggest you replace plain text:<br><font color=#00AA00>'several °' </font>instead of<font color=#ff0000> 'several degrees'</font>"},
             new String[]{REPLACE_ALL("\\s{0,}[Dd]egree[s]{0,1}\\b", "°")},
             new String[]{"degrees 60 degrees +/- 1 degree other text degree"});
+        public static final SFTextController BRACKET_LETTERS = new SFTextController(
+            "SURROUND LETTERS BY BRACKETS",
+            new String[]{MATCHES("^[a-zA-Z]$")},
+            new String[]{"You should surround figure letters by brackets"},
+            new String[]{REPLACE_ALL("^[a-zA-Z]$", "($0)")},
+            new String[]{"a --> (a); b --> (b)"});
+    
+    
     /**
      * we group them in an arrayList
      */
@@ -237,6 +245,7 @@ public class SFTextController {
         list.add(REPLACE_PRIMES_PLAIN_BY_PRIME_SYMBOLS);
         list.add(REPLACE_DEGREES_PLAIN_BY_DEGREES_SYMBOLS_PRECEDED_BY_A_NUMBER);
         list.add(REPLACE_DEGREES_PLAIN_BY_DEGREES_SYMBOLS_PRECEDED_BY_A_TEXT);
+        list.add(BRACKET_LETTERS);
     }
     private static final int CONTROLS = 0;
     private static final int MESSAGE = 1;

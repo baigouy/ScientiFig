@@ -3,12 +3,13 @@ package Commons;
 import R.RSession.MyRsessionLogger;
 import ij.*;
 import ij.io.FileInfo;
-import java.awt.*; 
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.*; 
+import java.io.*;
 import java.net.URI;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
@@ -27,6 +28,19 @@ import javax.swing.*;
  * @author Benoit Aigouy
  */
 public class CommonClassesLight {
+    /*
+     * various color modes
+     */
+
+    public static final int UNKNOWN = -1;
+    public static final int CH1 = 0;
+    public static final int CH2 = 1;
+    public static final int CH3 = 2;
+    public static final int GRAY = 3;
+    public static final int GREY = 3;
+    public static final int ALPHA = 4;
+    public static final int SIXTEEN_BITS = 5;
+    public static final int TWELVE_BITS = 5;
 
     public static final ArrayList<String> regexVocabulary = new ArrayList<String>();
 
@@ -262,6 +276,32 @@ public class CommonClassesLight {
         clipboard.setContents(ss, ss);
     }
 
+        /**
+     * Gets a string from the system clipboard
+     *
+     * @return a string if clipboard conatins a string or null otherwise
+     */
+    public static String getTextFromClipBoard() {
+        try {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            if (clipboard.getData(DataFlavor.stringFlavor) != null) {
+                return clipboard.getData(DataFlavor.stringFlavor).toString();
+            }
+        } catch (Exception e) {
+        }
+        return null;//return ""; //think what's best
+    }
+    
+    /**
+     * System independent way to get the control/command key --> test on windows
+     * and on macs
+     *
+     * @return the CTRL key on linux and windows or the CMD key on macs
+     */
+    public static final int getControlKey() {
+        return Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    }
+
     /**
      * returns screen dimensions
      *
@@ -294,7 +334,7 @@ public class CommonClassesLight {
     /**
      * create unicode from html or unicode string
      *
-     * @param c
+     * @param unicode
      */
     public static char getCharFromUnicode(String unicode) {
         if (unicode == null || unicode.isEmpty()) {
@@ -374,8 +414,33 @@ public class CommonClassesLight {
     }
 
     public static String getJAVA_HOME() {
-
         return change_path_separators_to_system_ones(System.getProperty("java.home"));
+    }
+
+    /**
+     *
+     * @param bimg
+     * @return true if the image is 16 bits
+     */
+    public static boolean is16Bits(BufferedImage bimg) {
+        boolean is16Bits = false;
+        if (bimg instanceof MyBufferedImage) {
+            is16Bits = ((MyBufferedImage) bimg).is16Bits();
+        }
+        return is16Bits;
+    }
+
+    /**
+     *
+     * @param bimg
+     * @return true if the image is 48 bits
+     */
+    public static boolean is48Bits(BufferedImage bimg) {
+        boolean is48Bits = false;
+        if (bimg instanceof MyBufferedImage) {
+            is48Bits = ((MyBufferedImage) bimg).is48Bits();
+        }
+        return is48Bits;
     }
 
     /**
@@ -695,7 +760,7 @@ public class CommonClassesLight {
      * @param bimg
      */
     public static void sendToimageJ(BufferedImage bimg) {
-        if (ImageJ.getArgs() == null) {
+        if (CommonClassesLight.ij == null) {
             CommonClassesLight.openImageJ();
         }
         /*
@@ -725,7 +790,7 @@ public class CommonClassesLight {
          * in standalone mode we hide the import from ImageJ button
          * we show the button only if IJ is not showing
          */
-        if (ImageJ.getArgs() == null) {
+        if (CommonClassesLight.ij == null) {
             CommonClassesLight.openImageJ();
         }
         ImagePlus ip = WindowManager.getCurrentImage();
@@ -1545,9 +1610,12 @@ public class CommonClassesLight {
                 System.getProperties().setProperty("plugins.dir", CommonClassesLight.getApplicationFolder(CommonClassesLight.GUI.getClass()));
             }
             if (ij == null) {
-                ij = new ImageJ(null);
+                ij = new ImageJ();
+                ij.exitWhenQuitting(false);
             }
-            ij.exitWhenQuitting(false);
+        }
+        if (ij != null && !ij.isVisible()) {
+            ij.setVisible(true);
         }
     }
 
@@ -1773,7 +1841,7 @@ public class CommonClassesLight {
         if (isUnix() || isMac()) {
             return change_path_separators_to_system_ones(System.getProperty("java.home")) + "/bin/java";
         } else {
-            return change_path_separators_to_system_ones(System.getProperty("java.home")) + "/bin/java.exe";    
+            return change_path_separators_to_system_ones(System.getProperty("java.home")) + "/bin/java.exe";
         }
     }
 
@@ -2251,7 +2319,7 @@ public class CommonClassesLight {
      */
     public static boolean String2Boolean(Object in) {
         if (in != null) {
-            if (in.toString().toLowerCase().contains("ue")) {
+            if (in.toString().toLowerCase().contains("ue") || in.toString().toLowerCase().trim().equals("1")) {
                 return true;
             }
         }
@@ -2702,4 +2770,3 @@ public class CommonClassesLight {
         System.exit(0);
     }
 }
-

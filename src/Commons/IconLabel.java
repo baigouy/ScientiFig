@@ -114,7 +114,7 @@ public final class IconLabel extends JLabel implements Callable<IconLabel> {
         BufferedImage tmp = null;
         if (!complete_name.toLowerCase().endsWith(".svg")) {
             if (!complete_name.toLowerCase().endsWith(".figur")) {
-                tmp = new Loader().load(complete_name);
+                tmp = new Loader().loadWithImageJ8bitFix(complete_name);
             } else {
                 try {
                     Icon icon11 = new javax.swing.ImageIcon(this.getClass().getResource("/Icons/tableur_icon.png"));

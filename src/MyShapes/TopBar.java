@@ -33,6 +33,7 @@
  */
 package MyShapes;
 
+import Commons.Point3D;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -50,16 +51,19 @@ import java.util.Map;
  */
 public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawable, Serializable, Incompressible {
 
+    
+    
     /**
      * Variables
      */
     public static final long serialVersionUID = 4684352783970000844L;
     transient Row associated_row;
-    HashMap<Point, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text;
+    HashMap<Point3D.Integer, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text;
     int ORIENTATION;
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL_LEFT = 1;
     public static final int VERTICAL_RIGHT = 2;
+//    int TEXT_POSITION;
     ComplexShapeLight current;
 
     /**
@@ -69,10 +73,11 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
      * @param begin_n_ends_and_corresponding_text
      * @param ORIENTATION
      */
-    public TopBar(Row associated_row, HashMap<Point, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text, int ORIENTATION) {
+    public TopBar(Row associated_row, HashMap<Point3D.Integer, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text, int ORIENTATION) {
         this.associated_row = associated_row;
         this.begin_n_ends_and_corresponding_text = begin_n_ends_and_corresponding_text;
         this.ORIENTATION = ORIENTATION;
+//        this.TEXT_POSITION = TEXT_POSITION;
         if (ORIENTATION == HORIZONTAL) {
             current = getHorizontalBar();
         } else {
@@ -93,11 +98,19 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     private ComplexShapeLight getHorizontalBar() {
         ComplexShapeLight c = null;
         ArrayList<Object> texts = new ArrayList<Object>();
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-            Point pos = entry.getKey();
-            Rectangle2D bar = associated_row.getPositionForRows(pos.x, pos.y);
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+            Object val = entry.getKey();
+            /**
+             * added to support retrocompatibility
+             */
+            Point3D.Integer pos;
+            if (val instanceof Point3D.Integer)
+                pos= (Point3D.Integer)val;
+            else
+                pos = new Point3D.Integer((Point)val,0);
+            Rectangle2D bar = associated_row.getPositionForRows(pos.getX(), pos.getY());
             if (bar != null) {
-                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getWidth(), entry.getValue(), null, TextBar.HORIZONTAL));
+                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getWidth(), entry.getValue(), null, TextBar.HORIZONTAL, pos.getZ()));
             }
         }
         if (!texts.isEmpty()) {
@@ -133,8 +146,16 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     private ComplexShapeLight getVerticalBarLeft() {
         ComplexShapeLight c = null;
         ArrayList<Object> texts = new ArrayList<Object>();
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-            Point pos = entry.getKey();
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+   Object val = entry.getKey();
+            /**
+             * added to support retrocompatibility
+             */
+            Point3D.Integer pos;
+            if (val instanceof Point3D.Integer)
+                pos= (Point3D.Integer)val;
+            else
+                pos = new Point3D.Integer((Point)val,0);
             Rectangle2D bar = associated_row.getPositionForCols(pos.x, pos.y, TopBar.LEFT);
             /*
              * dirty fix to allow swapping of panels with text on the left --> erreur --> better fix needed some day, the thing is that it goes too far in the images, in the getpositionForCols --> il faudrait le bloquer avant
@@ -147,7 +168,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
                 if (bar.getX() != 0.) {
                     bar = new Rectangle2D.Double(0., bar.getY(), bar.getWidth(), bar.getHeight());
                 }
-                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getHeight(), entry.getValue(), null, TextBar.VERTICAL));
+                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getHeight(), entry.getValue(), null, TextBar.VERTICAL, pos.z));
             }
         }
         if (!texts.isEmpty()) {
@@ -159,14 +180,22 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     private ComplexShapeLight getVerticalBarRight() {
         ComplexShapeLight c = null;
         ArrayList<Object> texts = new ArrayList<Object>();
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-            Point pos = entry.getKey();
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        Object val = entry.getKey();
+            /**
+             * added to support retrocompatibility
+             */
+            Point3D.Integer pos;
+            if (val instanceof Point3D.Integer)
+                pos= (Point3D.Integer)val;
+            else
+                pos = new Point3D.Integer((Point)val,0);
             Rectangle2D bar = associated_row.getPositionForCols(pos.x, pos.y, TopBar.RIGHT);
             if (bar != null) {
                 if (bar.getX() != 0.) {
                     bar = new Rectangle2D.Double(0., bar.getY(), bar.getWidth(), bar.getHeight());
                 }
-                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getHeight(), entry.getValue(), null, TextBar.VERTICAL));
+                texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getHeight(), entry.getValue(), null, TextBar.VERTICAL, pos.z));
             }
         }
         if (!texts.isEmpty()) {
@@ -175,11 +204,11 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
         return c;
     }
 
-    public HashMap<Point, ColoredTextPaneSerializable> getBegin_n_ends_and_corresponding_text() {
+    public HashMap<Point3D.Integer, ColoredTextPaneSerializable> getBegin_n_ends_and_corresponding_text() {
         return begin_n_ends_and_corresponding_text;
     }
 
-    public void setBegin_n_ends_and_corresponding_text(HashMap<Point, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text) {
+    public void setBegin_n_ends_and_corresponding_text(HashMap<Point3D.Integer, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text) {
         this.begin_n_ends_and_corresponding_text = begin_n_ends_and_corresponding_text;
     }
 
@@ -246,7 +275,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     }
 
     public void getTextreadyForSerialization() {
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
             ColoredTextPaneSerializable ctps = entry.getValue();
             if (ctps != null) {
                 ctps.getReadyForSerialization();
@@ -255,7 +284,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     }
 
     void recreateStyledDoc() {
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
             ColoredTextPaneSerializable ctps = entry.getValue();
             if (ctps != null) {
                 ctps.recreateStyledDoc();
@@ -298,7 +327,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
 
     public boolean checkFonts(JournalParameters jp) {
         boolean modified = false;
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
             ColoredTextPaneSerializable txt = entry.getValue();
             if (txt.checkFont(null, jp.getOutterTextFont(), jp.getOutterTextFontName())) {
                 modified = true;
@@ -309,7 +338,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
 
     public boolean checkText(JournalParameters jp) {
         boolean modified = false;
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
             ColoredTextPaneSerializable txt = entry.getValue();
             if (txt.checkText(jp, null)) {
                 modified = true;
@@ -320,7 +349,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
 
     public boolean checkStyle() {
         boolean modified = false;
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
             ColoredTextPaneSerializable txt = entry.getValue();
             if (txt.checkStyle(null)) {
                 modified = true;
@@ -339,8 +368,7 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
 
         long start_time = System.currentTimeMillis();
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
+
         System.exit(0);
     }
 }
-
-

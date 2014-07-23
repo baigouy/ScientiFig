@@ -47,7 +47,7 @@ import Commons.MyBufferedImage;
 import Commons.SaverLight;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.Font; 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -1802,9 +1802,9 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
                 ArrayList<MyImage2D.Double> spliited_images = new ArrayList<MyImage2D.Double>();
                 if (object instanceof MyImage2D.Double) {
                     BufferedImage tmp = ((MyImage2D.Double) object).bimg.getBufferedImage();
-                    BufferedImage red = (ImageColors.forceWhite(ImageColors.RGB2R(tmp), ImageColors.RED_TO_WHITE));
-                    BufferedImage green = (ImageColors.forceWhite(ImageColors.RGB2G(tmp), ImageColors.GREEN_TO_WHITE));
-                    BufferedImage blue = (ImageColors.forceWhite(ImageColors.RGB2B(tmp), ImageColors.BLUE_TO_WHITE));
+                    BufferedImage red = (ImageColors.forceWhite(ImageColors.RGB2R(tmp), ImageColors.CH1_TO_WHITE));
+                    BufferedImage green = (ImageColors.forceWhite(ImageColors.RGB2G(tmp), ImageColors.CH2_TO_WHITE));
+                    BufferedImage blue = (ImageColors.forceWhite(ImageColors.RGB2B(tmp), ImageColors.CH3_TO_WHITE));
                     MyImage2D.Double redo = new MyImage2D.Double(0, 0, red);
                     String short_name = ((MyImage2D.Double) object).shortName;
                     redo.shortName = short_name + ":Red";

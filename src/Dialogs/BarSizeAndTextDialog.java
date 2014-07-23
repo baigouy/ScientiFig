@@ -33,14 +33,15 @@
  */
 package Dialogs;
 
+import Commons.Point3D;
 import MyShapes.ColoredTextPaneSerializable;
 import MyShapes.Montage;
 import MyShapes.MyImage2D;
 import MyShapes.Row;
+import MyShapes.TextBar;
 import MyShapes.TopBar;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -63,10 +64,11 @@ public class BarSizeAndTextDialog extends JPanel {
      * Variables
      */
     int max_end;
-    public static final int TOP = 0;
-    public static final int BOTTOM = 1;
-    public static final int LEFT = 2;
-    public static final int RIGHT = 3;
+    //public static final int TOP = 0;
+    public static final int CENTERED = 0;
+    //public static final int BOTTOM = 1;
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
     ColoredTextPaneSerializable ctps;
 
     /*
@@ -84,20 +86,22 @@ public class BarSizeAndTextDialog extends JPanel {
      * bar)
      * @param end last possible column (this number cannot exceed the max nb of
      * images in a row or a column)
-     * @param isHorizontalBar true if the text bar has to be an horizontal bar
      */
-    public BarSizeAndTextDialog(int begin, int end, boolean isHorizontalBar) {
+    public BarSizeAndTextDialog(int begin, int end, int alignment) {
         this();
         coloredTextPane1.setTitle("Text Bar Parameters");
-        jLabel3.setVisible(false);
-        jComboBox1.setVisible(false);
-        if (isHorizontalBar) {
-            jComboBox1.removeItem("Left");
-            jComboBox1.removeItem("Right");
-        } else {
-            jComboBox1.removeItem("Top");
-            jComboBox1.removeItem("Bottom");
-        }
+//        jLabel3.setVisible(false);
+//        jComboBox1.setVisible(false);
+
+        setAlignement(alignment);
+
+//        if (isHorizontalBar) {
+//            jComboBox1.removeItem("Left");
+//            jComboBox1.removeItem("Right");
+//        } else {
+//            jComboBox1.removeItem("Top");
+//            jComboBox1.removeItem("Bottom");
+//        }
         setBeginEnd(begin, end);
     }
 
@@ -110,10 +114,8 @@ public class BarSizeAndTextDialog extends JPanel {
             return LEFT;
         } else if (jComboBox1.getSelectedItem().toString().equals("Right")) {
             return RIGHT;
-        } else if (jComboBox1.getSelectedItem().toString().equals("Top")) {
-            return TOP;
         } else {
-            return BOTTOM;
+            return CENTERED;
         }
     }
 
@@ -220,7 +222,7 @@ public class BarSizeAndTextDialog extends JPanel {
 
         jLabel3.setText("Alignment:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Left", "Right", "Top", "Bottom" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Centered", "Left", "Right" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -229,20 +231,18 @@ public class BarSizeAndTextDialog extends JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jComboBox1, 0, 155, Short.MAX_VALUE)
+                .addContainerGap())
         );
-
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jSpinner1, jSpinner2});
-
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -296,6 +296,18 @@ public class BarSizeAndTextDialog extends JPanel {
         repaint();
     }
 
+    public void setAlignement(int alignment) {
+        if (alignment == TextBar.ALIGN_LEFT) {
+            jComboBox1.setSelectedIndex(1);
+        } 
+//        else if (alignment == TextBar.ALGN_RIGHT) {
+//            jComboBox1.setSelectedIndex(2);
+//        } 
+        else {
+            jComboBox1.setSelectedIndex(0);
+        }
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -343,22 +355,22 @@ public class BarSizeAndTextDialog extends JPanel {
         Graphics2D g2d = tmp.createGraphics();
         test_row.draw(g2d);
 
-        BarSizeAndTextDialog iopane = new BarSizeAndTextDialog(0, test_row.getImageCountInYDirectionLeft(), false);
+        BarSizeAndTextDialog iopane = new BarSizeAndTextDialog(0, test_row.getImageCountInYDirectionLeft(), 0);
         int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "Select a font", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point, ColoredTextPaneSerializable>();
-                pos_n_text.put(new Point(1, 1), iopane.getText());
-                pos_n_text.put(new Point(2, 2), iopane.getText());
-                pos_n_text.put(new Point(3, 4), iopane.getText());
+                HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
+                pos_n_text.put(new Point3D.Integer(1, 1, 0), iopane.getText());
+                pos_n_text.put(new Point3D.Integer(2, 2, 0), iopane.getText());
+                pos_n_text.put(new Point3D.Integer(3, 4, 0), iopane.getText());
                 TopBar tb = new TopBar(test_row, pos_n_text, TopBar.HORIZONTAL);
             }
             //vertical
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point, ColoredTextPaneSerializable>();
-                pos_n_text.put(new Point(1, 1), iopane.getText());
-                pos_n_text.put(new Point(2, 2), iopane.getText());
-                pos_n_text.put(new Point(3, 4), iopane.getText());
+                HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
+                pos_n_text.put(new Point3D.Integer(1, 1, 0), iopane.getText());
+                pos_n_text.put(new Point3D.Integer(2, 2, 0), iopane.getText());
+                pos_n_text.put(new Point3D.Integer(3, 4, 0), iopane.getText());
                 TopBar tb = new TopBar(test_row, pos_n_text, TopBar.VERTICAL_LEFT);
             }
 
@@ -377,6 +389,5 @@ public class BarSizeAndTextDialog extends JPanel {
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     // End of variables declaration//GEN-END:variables
+
 }
-
-

@@ -1,3 +1,21 @@
+11/07/14
+-added the possibility to copy/cut/paste formatted (and colored) text
+-miner layout fixes
+
+03/07/14
+-Ctrl + S should now be Apple/Command + S on mac OS X (not tested yet)
+-fixed minor memory leaks when software is closing
+
+20/06/14
+-fixed bugs and serialization errors associated to these external letters.
+
+17/06/14
+-added support for letters outside the rows (first try), since many users seem to like to do figures that way
+
+16/05/14
+-fixed a bug when trying to edit an existing journal style (casting error for DPI)
+-added a rule to bracket unique letters when a text contains only one letter
+
 20/03/14
 -fixed a big bug affecting 8 bit images (that made them appear black)
 -fixed a big bug prevented removal of images produced upon a color blind split

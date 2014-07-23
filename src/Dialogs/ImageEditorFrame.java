@@ -40,6 +40,8 @@ import MyShapes.MyPlotVector;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -125,9 +127,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             int width = curSel.getImageWidth();
             int height = curSel.getImageHeight();
             double AR = (double) width / (double) height;
-            ScientiFig_.imageWidth.setText(" "+width + " ");
-            ScientiFig_.imageHeight.setText(" "+height + " ");
-            ScientiFig_.AR.setText(" "+AR + " ");
+            ScientiFig_.imageWidth.setText(" " + width + " ");
+            ScientiFig_.imageHeight.setText(" " + height + " ");
+            NumberFormat formatter = new DecimalFormat("#.##");
+            ScientiFig_.AR.setText(" " + formatter.format(AR));// + " "
         }
     }
 
@@ -143,7 +146,6 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 jRadioButton6.setText("Upper Left Corner");
                 jRadioButton3.setText("Lower Left Corner");
                 jRadioButton5.setText("Lower Right Corner");
-
                 if (curSel instanceof MyPlotVector) {
                     jRadioButton12.setText("Graph Title");
                     jRadioButton6.setText("y Axis Title");
@@ -1379,6 +1381,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
     private int getGelBorderColor() {
         return paintedButton23.getColor();
     }
+
     /**
      *
      * @return inset border color
@@ -1471,5 +1474,3 @@ public class ImageEditorFrame extends javax.swing.JFrame {
     private javax.swing.JButton removePiP;
     // End of variables declaration//GEN-END:variables
 }
-
-

@@ -539,6 +539,19 @@ public class StyledDocTools {
         return "";
     }
 
+    public static String getText(StyledDocument doc, int begin, int end) {
+        try {
+            if (begin <= 0) {
+                begin = 0;
+            }
+            end = end <= 0 ? 0 : end;
+            end = end > begin + doc.getLength() ? doc.getLength() - begin : end;
+            return doc.getText(begin, end-begin);
+        } catch (Exception e) {
+        }
+        return "";
+    }
+
     /**
      * the replace is a very basic non regex based text replacement utility it
      * also does not support style (can I make it to support style or not ???
@@ -730,7 +743,6 @@ public class StyledDocTools {
 //        for (String string : text) {
 //            System.out.println("--> '" + string + "'");
 //        }
-
         ArrayList<String> replacements = new ArrayList<String>();
         LinkedHashMap<Point, ArrayList<AttributeSet>> pos_and_attributes = new LinkedHashMap<Point, ArrayList<AttributeSet>>();
         LinkedHashMap<Point, ArrayList<AttributeSet>> pos_and_attributes_from_html = new LinkedHashMap<Point, ArrayList<AttributeSet>>();
@@ -750,7 +762,6 @@ public class StyledDocTools {
                 }
                 Point pos = new Point(start, end);
                 pos_and_attributes.put(pos, ases);
-
 
                 if (replacementAlsoRegex) {
                     /**
@@ -904,6 +915,19 @@ public class StyledDocTools {
         return copy;
     }
 
+    public static StyledDocument insert(StyledDocument input, StyledDocument destination, int positionInDestination) {
+        try {
+        ArrayList<AttributeSet> attributes = getTextAttributes(input);
+        destination.insertString(positionInDestination, getText(input), null);
+        int pos = positionInDestination;
+        for (AttributeSet attributeSet : attributes) {
+            destination.setCharacterAttributes(pos++, 1, attributeSet, true);
+        }
+        } catch (Exception e) {
+        }
+        return destination;
+    }
+
     public static ArrayList<AttributeSet> getTextAttributes(StyledDocument doc) {
         if (doc == null || doc.getLength() == 0) {
             return null;
@@ -911,6 +935,21 @@ public class StyledDocTools {
         ArrayList<AttributeSet> ases = new ArrayList<AttributeSet>();
         int length = doc.getLength();
         for (int i = 0; i < length; i++) {
+            AttributeSet as = doc.getCharacterElement(i).getAttributes();
+            MutableAttributeSet attrs = new SimpleAttributeSet(as);
+            attrs.removeAttribute(TextAttribute.FOREGROUND);
+            ases.add(attrs);
+        }
+        return ases;
+    }
+    
+    //prendre juste le getext entre deux positions
+    public static ArrayList<AttributeSet> getTextAttributes(StyledDocument doc, int begin , int end) {
+        if (doc == null || doc.getLength() == 0) {
+            return null;
+        }
+        ArrayList<AttributeSet> ases = new ArrayList<AttributeSet>();
+        for (int i = begin; i < end; i++) {
             AttributeSet as = doc.getCharacterElement(i).getAttributes();
             MutableAttributeSet attrs = new SimpleAttributeSet(as);
             attrs.removeAttribute(TextAttribute.FOREGROUND);
@@ -1020,7 +1059,6 @@ public class StyledDocTools {
 
         //--> ca marche --> pas mal
         //peut etre ajouter deux tags --> <cap> <low> --> mais les implementer proprement et ils ne seront pas sauves mais c'est pas grave il faudrait juste pouvoir les parser et les appliquer tt de suite (rien de plus)
-
         //String cur = "   ttoot   toto  yuyq toto qs  ";
         String cur = "P&#xsup0.5 text P &#xinf 0.05 x plane T=0.3";//"<html> qsd qsd qqsdqd   <cap>tto<b><i>i</i></b>ot</cap>   <B>toto  <I>yuyq</I></B> 120µm/s toto <SuP>qs</sUp>  ";//"qsqsdqsd  qqsdqd qs sq 120s µm<sup>-1</sup> 30 s m-1 <i>300/60</i> 30s m-1 ouba toto/tutu";
         //"   ttoot toto yuyq qs  ".replaceAll("^ {1,}", "")
@@ -1037,7 +1075,6 @@ public class StyledDocTools {
         //ca marche mais voir comment gerer les 
 //        String noLeadingSpace = cur.replaceAll("toto", "zoumba");//.replaceAll(" {1,}$", "");//.replaceAll(" {2,}", " ");//"   ttoot toto yuyq qs    ".replaceAll("^ {1,}", "");
 //        System.out.println("\"" + noLeadingSpace + "\"");
-
         int result = JOptionPane.showOptionDialog(null, ctps, "text", JOptionPane.OK_CANCEL_OPTION, JOptionPane.NO_OPTION, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
             //doc = StyledDocTools.matchStyledDocumentContentToStringByDeleting(doc, noLeadingSpace);
@@ -1054,4 +1091,3 @@ public class StyledDocTools {
         System.exit(0);
     }
 }
-

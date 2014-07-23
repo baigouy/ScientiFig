@@ -43,6 +43,8 @@ import MyShapes.MyRectangle2D;
 import MyShapes.Row;
 import MyShapes.TopBar;
 import Commons.CommonClassesLight;
+import Commons.Point3D;
+import MyShapes.TextBar;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -594,41 +596,41 @@ public class WiseDebug {
         if (ScientiFig_.current_row instanceof Row) {
             Row row = (Row) ScientiFig_.current_row;
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> posNText = new HashMap<Point, ColoredTextPaneSerializable>();
+                 HashMap<Point3D.Integer, ColoredTextPaneSerializable> posNText = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
                 ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable("pos 1:1 top", Color.blue, new Font("Arial", Font.PLAIN, 12));
                 ctps.setFrame(true);
                 ctps.setTextBgColor(Color.ORANGE);
-                posNText.put(new Point(1, 1), ctps);
+                posNText.put(new  Point3D.Integer(1, 1,0), ctps);
                 row.setTopTextBar(new TopBar(row, posNText, TopBar.HORIZONTAL));
             }
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> posNText = new HashMap<Point, ColoredTextPaneSerializable>();
+           HashMap<Point3D.Integer, ColoredTextPaneSerializable> posNText = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
                 ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable("pos 1:1 bottom", Color.blue, new Font("Arial", Font.PLAIN, 12));
                 ctps.setFrame(true);
                 ctps.setTextBgColor(Color.ORANGE);
                 ColoredTextPaneSerializable ctps2 = new ColoredTextPaneSerializable("pos 2:4 bottom", Color.black, new Font("Arial", Font.PLAIN, 12));
                 ctps2.setTextBgColor(Color.black);
-                posNText.put(new Point(1, 1), ctps);
-                posNText.put(new Point(2, 4), ctps2);
+                posNText.put(new  Point3D.Integer(1, 1,0), ctps);
+                posNText.put(new  Point3D.Integer(2, 4,0), ctps2);
                 row.setBottomTextBar(new TopBar(row, posNText, TopBar.HORIZONTAL));
             }
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> posNText = new HashMap<Point, ColoredTextPaneSerializable>();
+                 HashMap<Point3D.Integer, ColoredTextPaneSerializable> posNText = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
                 ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable("pos 1:1 left", Color.blue, new Font("Arial", Font.PLAIN, 12));
                 ctps.setFrame(true);
                 ctps.setTextBgColor(Color.ORANGE);
-                posNText.put(new Point(1, 1), ctps);
+                posNText.put(new  Point3D.Integer(1, 1,0), ctps);
                 row.setLeftTextBar(new TopBar(row, posNText, TopBar.LEFT));
             }
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> posNText = new HashMap<Point, ColoredTextPaneSerializable>();
+                  HashMap<Point3D.Integer, ColoredTextPaneSerializable> posNText = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
                 ColoredTextPaneSerializable ctps2 = new ColoredTextPaneSerializable("pos 2:4 right", Color.black, new Font("Arial", Font.PLAIN, 12));
                 ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable("pos 1:1 right", Color.blue, new Font("Arial", Font.PLAIN, 12));
                 ctps.setFrame(true);
                 ctps.setTextBgColor(Color.ORANGE);
                 ctps2.setTextBgColor(Color.black);
-                posNText.put(new Point(1, 1), ctps);
-                posNText.put(new Point(2, 4), ctps2);
+                posNText.put(new Point3D.Integer(1, 1,0), ctps);
+                posNText.put(new Point3D.Integer(2, 4,0), ctps2);
                 row.setRightTextBar(new TopBar(row, posNText, TopBar.RIGHT));
             }
             row.arrangeRows();

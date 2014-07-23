@@ -40,6 +40,7 @@ import MyShapes.MyImage2D;
 import MyShapes.Row;
 import MyShapes.TopBar;
 import Commons.CommonClassesLight;
+import Commons.Point3D;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -68,6 +69,7 @@ public class SideBarDialog extends javax.swing.JPanel {
     private int max_val;
     public static final int HORIZONTAL_TOP = 0;
     public static final int HORIZONTAL_BOTTOM = 3;
+    public static final int ADDITIONAL_LETTER = 4;
     public static final int VERTICAL_LEFT = 1;
     public static final int VERTICAL_RIGHT = 2;
     public int ORIENTATION = HORIZONTAL_TOP;
@@ -92,7 +94,7 @@ public class SideBarDialog extends javax.swing.JPanel {
         /*
          * if side textbars exist we try to reload them
          */
-        if (ORIENTATION == HORIZONTAL_TOP || ORIENTATION == HORIZONTAL_BOTTOM) {
+        if (ORIENTATION == HORIZONTAL_TOP || ORIENTATION == HORIZONTAL_BOTTOM || ORIENTATION == ADDITIONAL_LETTER) {
             isHorizontal = true;
             this.max_val = r.getImageCountInXDirection();
         } else {
@@ -117,6 +119,7 @@ public class SideBarDialog extends javax.swing.JPanel {
             case HORIZONTAL_TOP:
                 if (r.getTopTextBar() != null) {
                     reloadLateralText(((TopBar) r.getTopTextBar()).getBegin_n_ends_and_corresponding_text());
+                    //also reaload position
                 }
                 break;
             case HORIZONTAL_BOTTOM:
@@ -134,6 +137,11 @@ public class SideBarDialog extends javax.swing.JPanel {
                     reloadLateralText(((TopBar) r.getRightTextBar()).getBegin_n_ends_and_corresponding_text());
                 }
                 break;
+            case ADDITIONAL_LETTER:
+                if (r.getAdditionbalLetterBar() != null) {
+                    reloadLateralText(((TopBar) r.getAdditionbalLetterBar()).getBegin_n_ends_and_corresponding_text());
+                }
+                break;
         }
     }
 
@@ -142,10 +150,21 @@ public class SideBarDialog extends javax.swing.JPanel {
      *
      * @param begin_n_ends_and_corresponding_text
      */
-    private void reloadLateralText(HashMap<Point, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text) {
+    private void reloadLateralText(HashMap<Point3D.Integer, ColoredTextPaneSerializable> begin_n_ends_and_corresponding_text) {
         boolean first_found = true;
-        for (Map.Entry<Point, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-            Point pos = entry.getKey();
+        for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
+            Object val = entry.getKey();
+            /**
+             * bug fix for retrocompatibility before alignment (assume centered
+             * --> alignment = 0 = centered
+             */
+            Point3D.Integer pos;
+            if (val instanceof Point3D.Integer) {
+                pos = (Point3D.Integer) val;
+            } else {
+                pos = new Point3D.Integer((Point) val, 0);
+            }
+
             ColoredTextPaneSerializable ctps = entry.getValue();
             if (ctps != null) {
                 /*
@@ -156,6 +175,7 @@ public class SideBarDialog extends javax.swing.JPanel {
                     bsatd.setColoredTextPaneSerializable(ctps);
                     bsatd.setMaxMin(1, max_val);
                     bsatd.setValuesDirectly(pos.x, pos.y);
+                    bsatd.setAlignement(pos.z);
                     if (first_found) {
                         bars.clear();
                         jPanel2.removeAll();
@@ -173,8 +193,8 @@ public class SideBarDialog extends javax.swing.JPanel {
      *
      * @return the text of the text bar and its begin and position
      */
-    public HashMap<Point, ColoredTextPaneSerializable> getPosAndText() {
-        HashMap<Point, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point, ColoredTextPaneSerializable>();
+    public HashMap<Point3D.Integer, ColoredTextPaneSerializable> getPosAndText() {
+        HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
         if (!bars.isEmpty()) {
             for (BarSizeAndTextDialog barSizeAndTextDialog : bars) {
                 ColoredTextPaneSerializable ctps = barSizeAndTextDialog.getText();
@@ -182,13 +202,28 @@ public class SideBarDialog extends javax.swing.JPanel {
                  * if text is empty --> ignore bar
                  */
                 if (ctps != null) {
-                    pos_n_text.put(new Point(barSizeAndTextDialog.getBarBegin(), barSizeAndTextDialog.getBarEnd()), ctps);
+                    pos_n_text.put(new Point3D.Integer(barSizeAndTextDialog.getBarBegin(), barSizeAndTextDialog.getBarEnd(), barSizeAndTextDialog.getAlignment()), ctps);
                 }
             }
         }
         return pos_n_text;
     }
 
+//    public HashMap<Point, Integer> getPosAndAlignment() {
+//        HashMap<Point, ColoredTextPaneSerializable> pos_n_text = new HashMap<Point, ColoredTextPaneSerializable>();
+//        if (!bars.isEmpty()) {
+//            for (BarSizeAndTextDialog barSizeAndTextDialog : bars) {
+//                ColoredTextPaneSerializable ctps = barSizeAndTextDialog.getText();
+//                /*
+//                 * if text is empty --> ignore bar
+//                 */
+//                if (ctps != null) {
+//                    pos_n_text.put(new Point(barSizeAndTextDialog.getBarBegin(), barSizeAndTextDialog.getBarEnd()), ctps);
+//                }
+//            }
+//        }
+//        return pos_n_text;
+//    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -249,8 +284,10 @@ public class SideBarDialog extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    //here the default stuff
+
     private void addAnotherBar(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAnotherBar
-        BarSizeAndTextDialog current = new BarSizeAndTextDialog(0, max_val, isHorizontal);
+        BarSizeAndTextDialog current = new BarSizeAndTextDialog(0, max_val, 0);
         if (jp != null) {
             current.setTextFont(jp.getOutterTextFont());
         }
@@ -312,16 +349,17 @@ public class SideBarDialog extends javax.swing.JPanel {
         test_row.draw(g2d);
 
         SideBarDialog iopane = new SideBarDialog(test_row, SideBarDialog.HORIZONTAL_TOP, null);
+
         int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "Additional Text Bars", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
             //horizontal
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
+                HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
                 TopBar tb = new TopBar(test_row, pos_n_text, TopBar.HORIZONTAL);
             }
             //vertical
             if (true) {
-                HashMap<Point, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
+                HashMap<Point3D.Integer, ColoredTextPaneSerializable> pos_n_text = iopane.getPosAndText();
                 TopBar tb = new TopBar(test_row, pos_n_text, TopBar.VERTICAL_LEFT);
             }
         }
@@ -337,5 +375,3 @@ public class SideBarDialog extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
-
-

@@ -766,18 +766,21 @@ public class StyledDoc2Html extends StyledDocTools {
         return htmlCode + FG_COLOR_OFF;
     }
 
+    public String convertStyledDocToHtml(StyledDocument doc) {
+        return convertStyledDocToHtml(doc, -1, -1);
+    }
+
     /**
      * Converts a StyleDocument to some html-like code
      *
      * @param doc
      * @return html-like code
      */
-    public String convertStyledDocToHtml(StyledDocument doc) {
+    public String convertStyledDocToHtml(StyledDocument doc, int begin, int end) {
         String html_text = "";
         if (doc == null) {
             return html_text;
         }
-
 
         String text = getText(doc);
 
@@ -794,7 +797,17 @@ public class StyledDoc2Html extends StyledDocTools {
         boolean isFontDefined = false;
         Color FgColor = null;
 
-        for (int i = 0; i < text.length(); i++) {
+        //or just copy selection, if selection is empty then copy all
+        
+        boolean samebeginAndEnd = begin == end;
+        if (begin <= 0 || samebeginAndEnd) {
+            begin = 0;
+        }
+        if (end <= 0 || samebeginAndEnd) {
+            end = text.length();
+        }
+
+        for (int i = begin; i < end; i++) {
             char c = text.charAt(i);
             Element el = doc.getCharacterElement(i);
             AttributeSet as = el.getAttributes();
@@ -875,7 +888,6 @@ public class StyledDoc2Html extends StyledDocTools {
                     isColored = false;
                 }
             }
-
             if (fgCol != null) {
                 if (!isColored) {
                     html_text = fgColor(html_text, (fgCol.getRGB() & 0x00FFFFFF));
@@ -944,13 +956,11 @@ public class StyledDoc2Html extends StyledDocTools {
 
         String txt = " <font face=\"Arial Black\" size=\"20\"><txtFgcolor color=\"#ff0000\">Zeommba</txtFgcolor><txtFgcolor color=\"#ffffff\"> <i>sdsqdsqdqsd</i></txtFgcolor></font>";
 
-
         if (true) {
             StyledDocument doc = new StyledDoc2Html().reparse(txt);
             System.out.println(new StyledDoc2Html().convertStyledDocToHtml(doc));
             return;
         }
-
 
 //        try {
 //            ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable();
@@ -962,7 +972,6 @@ public class StyledDoc2Html extends StyledDocTools {
 //            System.exit(0);
 //        } catch (Exception e) {
 //        }
-
         try {
 //            System.out.println(StyledDoc2Html.test());
             //ca marche tres bien --> tester en grandeur nature et remplacer les styled doc et les attributed string par ca --> bcp plus puissant et tres portable
@@ -991,5 +1000,3 @@ public class StyledDoc2Html extends StyledDocTools {
         System.exit(0);
     }
 }
-
-

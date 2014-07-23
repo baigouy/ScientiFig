@@ -614,6 +614,14 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         this.l2d = l2d;
     }
 
+    /**
+     * inverts the first and last coords of the line (useful if the line is a
+     * vector/arrow for example)
+     */
+    public void invertBeginAndEnd() {
+        this.l2d = new Line2D.Double(l2d.getP2(), l2d.getP1());
+    }
+
     @Override
     public Object clone() {
         MyLine2D.Double r2d = new MyLine2D.Double(l2d);
@@ -851,15 +859,18 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
 //        }
         g2d.draw(l2d);
         if (isArrow) {
-            /*
-             * fix for arrow layout/stroke pbs
-             */
-            g2d.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            Object head = arrowhead(true);
-            drawLineExtras(head, g2d);
-            if (ARROW_HEAD_TYPE == TYPE_DOUBLE_HEAD_FULL_ARROW || ARROW_HEAD_TYPE == TYPE_DOUBLE_HEADED_INIBITION) {
-                head = arrowhead(false);
+            //only draw arrowhead if not null length
+            if (getLength() != 0) {
+                /*
+                 * fix for arrow layout/stroke pbs
+                 */
+                g2d.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                Object head = arrowhead(true);
                 drawLineExtras(head, g2d);
+                if (ARROW_HEAD_TYPE == TYPE_DOUBLE_HEAD_FULL_ARROW || ARROW_HEAD_TYPE == TYPE_DOUBLE_HEADED_INIBITION) {
+                    head = arrowhead(false);
+                    drawLineExtras(head, g2d);
+                }
             }
         }
         if (isAccolade) {
@@ -1296,9 +1307,7 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
 //        new MyShapeTools().FillSkeletton((ArrayList<Object>) new Loader().loadObject("/D/sample_images_PA/egg_chambers/Series010/ROIs_004.roi"), tmp.createGraphics(), 0xFFFFFF);
 //        new MyShapeTools().drawSkeletton((ArrayList<Object>) new Loader().loadObject("/D/sample_images_PA/egg_chambers/Series010/ROIs_004.roi"), tmp.createGraphics(), 0x000000);
 //        Saver.save(tmp, "/D/sample_images_PA/egg_chambers/Series010/ROIs_004.png");
-
         //--> parfait en fait
-
         if (true) {
             return;
         }
@@ -1308,7 +1317,6 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
 
         BufferedImage test2 = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = test2.createGraphics();
-
 
 //        ArrayList<String> list = new LoadListeToArrayList().apply("/list.lst");
         long start_time = System.currentTimeMillis();
@@ -1325,5 +1333,3 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         System.exit(0);
     }
 }
-
-

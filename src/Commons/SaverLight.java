@@ -38,6 +38,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
 import ij.macro.Interpreter;
+import ij.process.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
@@ -165,7 +166,6 @@ public class SaverLight {
         }
         int width = bimgs[0].getWidth();
         int height = bimgs[0].getHeight();
-        
 
         ImageStack is = new ImageStack(width, height);
         if (bimgs[0].getType() != BufferedImage.TYPE_INT_RGB) {
@@ -446,6 +446,26 @@ public class SaverLight {
         }
     }
 
+    public static void save(String name, BufferedImage... images) {
+        if (images == null || images.length == 0) {
+            return;
+        }
+        BufferedImage first = images[0];
+        ImageStack is = new ImageStack(first.getWidth(), first.getHeight());
+        for (int i = 0; i < images.length; i++) {
+            BufferedImage img = images[i];
+            ImageProcessor ips = new ImagePlus(null, img).getProcessor();
+            is.addSlice(null, ips);
+        }
+        ImagePlus ip = new ImagePlus(null, is);
+        if (!name.toLowerCase().endsWith(".tiff") && !name.toLowerCase().endsWith(".tif")) {
+            name += ".tif";
+        }
+        ij.IJ.saveAs(ip, "tiff", name);
+        ip.close();
+        ip.flush();
+    }
+
     /**
      * Saves svg to a file
      *
@@ -503,5 +523,3 @@ public class SaverLight {
     public static void main(String args[]) {
     }
 }
-
-

@@ -397,6 +397,19 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         }
     }
 
+    public void setAdditionbalLetterBar(TopBar letterBar) {
+        extras.put("letter bar", letterBar);
+    }
+
+    public TopBar getAdditionbalLetterBar() {
+        Object tb = extras.get("letter bar");
+        if (tb != null) {
+            return (TopBar) tb;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Sets the text side bar on the right
      *
@@ -687,44 +700,62 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
      * updates the position of the extras (text side bars)
      */
     public void updateExtras() {
+        double extraY = 0;
+        if (extras.isEmpty()) {
+            return;
+        }
+        Rectangle2D mainSize = getCoreRect();
         if (extras.containsKey("top bar")) {
             TopBar tb = (TopBar) extras.get("top bar");
             if (tb != null) {
                 tb.associated_row = this;
                 tb.update();
-                Rectangle2D mainSize = getCoreRect();
                 tb.setY(mainSize.getY());
                 tb.translate(0, -tb.getHeight() - spaceFromExtra);
+                extraY = tb.getHeight();
                 tb.associated_row = null;
             }
         }
-        if (extras.containsKey("bottom bar")) {
-            TopBar tb = (TopBar) extras.get("bottom bar");
-            if (tb != null) {
-                tb.associated_row = this;
-                tb.update();
-                Rectangle2D mainSize = getCoreRect();
-                tb.setY(mainSize.getY() + mainSize.getHeight() + spaceFromExtra);
-                tb.associated_row = null;
-            }
-        }
+
+        double extraX = 0;
         if (extras.containsKey("left bar")) {
             TopBar tb = (TopBar) extras.get("left bar");
             if (tb != null) {
                 tb.associated_row = this;
                 tb.update();
-                Rectangle2D mainSize = getCoreRect();
                 tb.setX(mainSize.getX());
+                extraX = tb.getWidth();
                 tb.translate(0 - tb.getWidth() - spaceFromExtra, 0);
                 tb.associated_row = null;
             }
         }
+
+        if (extras.containsKey("letter bar")) {
+            TopBar tb = (TopBar) extras.get("letter bar");
+            if (tb != null) {
+                tb.associated_row = this;
+                tb.update();
+                tb.setY(mainSize.getY() - extraY);
+                tb.translate(0 - extraX, -tb.getHeight() - spaceFromExtra);
+                tb.associated_row = null;
+            }
+        }
+
+        if (extras.containsKey("bottom bar")) {
+            TopBar tb = (TopBar) extras.get("bottom bar");
+            if (tb != null) {
+                tb.associated_row = this;
+                tb.update();
+                tb.setY(mainSize.getY() + mainSize.getHeight() + spaceFromExtra);
+                tb.associated_row = null;
+            }
+        }
+
         if (extras.containsKey("right bar")) {
             TopBar tb = (TopBar) extras.get("right bar");
             if (tb != null) {
                 tb.associated_row = this;
                 tb.update();
-                Rectangle2D mainSize = getCoreRect();
                 tb.setX(mainSize.getX() + mainSize.getWidth() + spaceFromExtra);
                 tb.associated_row = null;
             }
@@ -1814,9 +1845,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
 //        test.add(b2);
 //        test.add(b3);
 //        test.add(b4);
-
 //        Row test_row = new Row(test, 1);
-
         String macro = "<Row data-spaceBetweenMontages=\"1.0\" data-widthInPx=\"1024\" >\n"
                 + "	<Montage data-nbCols=\"2\" data-nbRows=\"2\" data-order=\"comb\" data-spaceBetweenImages=\"3\" data-widthInPx=\"169.6637398373984\" >\n"
                 + "		<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series010.png\" />\n"
@@ -1847,16 +1876,13 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
 
         System.out.println(rec2d);
 
-
         Graphics2D g2d = tmp.createGraphics();
         test_row.draw(g2d);
         g2d.dispose();
 
         System.out.println(test_row.produceMacroCode(1));
 
-
 //        SaverLight.popJ(tmp);
-
         try {
             Thread.sleep(3000);
         } catch (Exception e) {
@@ -1866,5 +1892,3 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         System.exit(0);
     }
 }
-
-

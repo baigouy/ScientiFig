@@ -33,6 +33,7 @@
  */
 package Commons;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
@@ -327,7 +328,6 @@ public class Loader {
         if (!name.toLowerCase().endsWith(".tif") && !name.toLowerCase().endsWith(".tiff")) {
             return load(name, true);
         }
-
         if (!new File(name).exists()) {
             return null;
         }
@@ -349,8 +349,12 @@ public class Loader {
                     }
                 }
             } else if (original.getBitDepth() == 8) {
+                if (original.isComposite()) {
+                    ((CompositeImage) original).setMode(CompositeImage.COMPOSITE);
+                }
                 BufferedImage tmp = original.getBufferedImage();
                 img = CommonClassesLight.copyImg(tmp);
+
                 /**
                  * bug fix for 8 bits images not loading
                  */
@@ -383,7 +387,10 @@ public class Loader {
         if (!new File(name).exists()) {
             return null;
         }
+
+        //si image est 48bits --> faire un overlay
         ImagePlus original = ij.IJ.openImage(CommonClassesLight.change_path_separators_to_system_ones(name));
+
         MyBufferedImage img = null;
         if (original != null) {
             fifo = original.getFileInfo();
@@ -391,10 +398,21 @@ public class Loader {
             int bit_depth = original.getBitDepth();
             if (bit_depth == 16) {
                 img.set16Bits(true);
-                if (original.getNChannels() >= 3 && original.getBitDepth() == 16) {
+                //bug fiw for images with two 16bits channels
+                if (original.getNChannels() >= 2 && original.getBitDepth() == 16) {
                     img.set48Bits(true);
+                    /**
+                     * we force the compoosite image to be displayed
+                     */
+//                          int nChannels = original.getNChannels();
+//                for (int i = 1; i <= nChannels; i++) {
+//                    original.setC(i);
+//                    original.resetDisplayRange();
+//                }
+                    ((CompositeImage) original).setMode(CompositeImage.COMPOSITE);
                 }
                 img.set8BitsImage(original.getBufferedImage());
+
             }
             if (original.getNSlices() != 1 || img.is48Bits) {
                 /**

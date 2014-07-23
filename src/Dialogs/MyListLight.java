@@ -60,7 +60,7 @@ public class MyListLight extends javax.swing.JPanel {
     public DefaultListModel listModel;
     public IconListCellRenderer iconListCellRenderer = new IconListCellRenderer();
     public ArrayList<String> list_of_elements_to_add = new ArrayList<String>();
-    private String[] supportedExtensions = {".figur", ".svg", ".jpg", ".yf5m", ".jpeg", ".png", ".bmp", ".gif", ".tga", ".tif"};
+    private String[] supportedExtensions = {".figur", ".svg", ".jpg", ".yf5m", ".jpeg", ".png", ".bmp", ".gif", ".tga", ".tif", ".tiff"};
     private static final int ALPHABETICAL_ORDER = 0;
     private static final int REVERSE = 1;
 
@@ -435,11 +435,13 @@ public class MyListLight extends javax.swing.JPanel {
     }
 
     /**
-     * removes the content of the list
+     * Empties the list
      */
     public void clearList() {
-        list.clearSelection();
+//        list.clearSelection();
         listModel.clear();
+//        list.updateUI();
+        updateList();
     }
 
     /**
