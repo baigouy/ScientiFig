@@ -1,5 +1,6 @@
 package Commons;
 
+import GUIs.LogFrame;
 import R.RSession.MyRsessionLogger;
 import ij.*;
 import ij.io.FileInfo;
@@ -221,6 +222,7 @@ public class CommonClassesLight {
      */
     public static ImageJ ij;
     public static MyRsessionLogger r;
+    public static LogFrame logger;
     public static boolean ErrorLoggerActivated = false;
     public static boolean LogLoggerActivated = false;
     /*
@@ -441,6 +443,14 @@ public class CommonClassesLight {
             is48Bits = ((MyBufferedImage) bimg).is48Bits();
         }
         return is48Bits;
+    }
+    
+    public static boolean is96Bits(BufferedImage bimg) {
+        boolean is96Bits = false;
+        if (bimg instanceof MyBufferedImage) {
+            is96Bits = ((MyBufferedImage) bimg).is96Bits();
+        }
+        return is96Bits;
     }
 
     /**
@@ -1597,6 +1607,10 @@ public class CommonClassesLight {
         ip.show();
     }
 
+    
+            public static boolean isImageJEmbedded = true;
+        
+    
     /**
      * Opens ImageJ
      */
@@ -1609,15 +1623,19 @@ public class CommonClassesLight {
             if (CommonClassesLight.GUI != null) {
                 System.getProperties().setProperty("plugins.dir", CommonClassesLight.getApplicationFolder(CommonClassesLight.GUI.getClass()));
             }
+            
             if (ij == null) {
                 ij = new ImageJ();
                 ij.exitWhenQuitting(false);
+                isImageJEmbedded = true;
             }
         }
         if (ij != null && !ij.isVisible()) {
             ij.setVisible(true);
         }
     }
+    
+
 
     /**
      * Selects a directory

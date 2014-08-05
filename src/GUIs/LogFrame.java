@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -38,11 +38,10 @@
  */
 package GUIs;
 
-import Commons.CommonClassesLight;
-import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import javax.swing.SwingUtilities;
 
 /**
@@ -52,12 +51,16 @@ import javax.swing.SwingUtilities;
  */
 public class LogFrame extends javax.swing.JFrame {
 
-    public static final int ERROR_LOGGER = 0;
-    public static final int SOUT_LOGGER = 1;
     /**
-     * Sets the type of the logger window
+     * we backup serr and sout and we'll restore it in the end
      */
-    int MODE = SOUT_LOGGER;
+    PrintStream soutBckup = System.out;
+    PrintStream serrBckup = System.err;
+
+    OutputStream log;
+    OutputStream out;
+    static HashSet<String> lockers = new HashSet<String>();
+
     /**
      * Variables
      */
@@ -65,50 +68,82 @@ public class LogFrame extends javax.swing.JFrame {
     /**
      *
      */
-    public boolean also_write_to_command_line = true;
-    int counter = 0;
+    int counter_err = 0;
+    int counter_sout = 0;
     int max_size = -1;
 
     /**
      * Constructor
      *
-     * @param also_write_to_command_line if true then error is also written to
-     * system.in
      * @param max_size the max number of characters before erase (-1 --> never
      * erase)
-     * @param txtColor the color of the text
      */
-    public LogFrame(int MODE, boolean also_write_to_command_line, int max_size, int txtColor) {
-        this.MODE = MODE;
+    public LogFrame(int max_size) {
         initComponents();
-        this.setSize(860, 512);
+        //this.setSize(860, 512);
         redirectStream();
         this.setFocusable(false);
-        jTextArea1.setForeground(new Color(txtColor));
+//        jTextArea1.setForeground(new Color(txtColor));
+        setVisible(true);
 
+    }
+
+    public boolean isLocked() {
+        return !lockers.isEmpty();
+    }
+
+    public void addLocker(String name) {
+        lockers.add(name);
+    }
+
+    public void removeLocker(String name) {
+        lockers.remove(name);
     }
 
     /**
      * Ads a string to the textarea
      *
-     * @param error the error string
+     * @param text the error string
      */
-    public void append(String text) {
-        counter++;
+    public void appendErr(String text) {
+        counter_err++;
         if (max_size > 0) {
-            if (counter > max_size) {
+            if (counter_err > max_size) {
                 jTextArea1.setText("");
-                counter = 0;
+                counter_err = 0;
             }
         }
-        if (also_write_to_command_line && MODE == ERROR_LOGGER) {
-            System.out.print(text);
-        }
-        if (CommonClassesLight.isErrorLoggerActivated() && !isVisible()) {
-            this.setVisible(true);
+        if (!isVisible()) {
+            jTextArea1.setText("");
+            jTextArea2.setText("");
+            setVisible(true);
+            toFront();
         }
         jTextArea1.append(text);
         jTextArea1.setCaretPosition(jTextArea1.getText().length());
+    }
+
+    /**
+     * Ads a string to the textarea
+     *
+     * @param text the error string
+     */
+    public void appendLog(String text) {
+        counter_sout++;
+        if (max_size > 0) {
+            if (counter_sout > max_size) {
+                jTextArea2.setText("");
+                counter_sout = 0;
+            }
+        }
+        if (!isVisible()) {
+            jTextArea2.setText("");
+            jTextArea1.setText("");
+            setVisible(true);
+            toFront();
+        }
+        jTextArea2.append(text);
+        jTextArea2.setCaretPosition(jTextArea2.getText().length());
     }
 
     public static void fakeLog() {
@@ -123,95 +158,126 @@ public class LogFrame extends javax.swing.JFrame {
     }
 
     private void redirectStream() {
-        OutputStream out = new OutputStream() {
+        log = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                append(String.valueOf((char) b));
+                appendLog(String.valueOf((char) b));
             }
         };
-        switch (MODE) {
-            case ERROR_LOGGER:
-                setTitle("Error Logger");
-                System.setErr(new PrintStream(out, true));
-                break;
-            case SOUT_LOGGER:
-                setTitle("Logger");
-                System.setOut(new PrintStream(out, true));
-                break;
-        }
+        out = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                appendErr(String.valueOf((char) b));
+            }
+        };
+
+//        switch (MODE) {
+//            case DUAL_LOGGER:
+        setTitle("Logger");
+        System.setErr(new PrintStream(out, true));
+        System.setOut(new PrintStream(log, true));
+//                break;
+//            case ERROR_LOGGER:
+//                setTitle("Error Logger");
+//                System.setErr(new PrintStream(out, true));
+//                break;
+//            case SOUT_LOGGER:
+//                setTitle("Logger");
+//                System.setOut(new PrintStream(out, true));
+//                break;
+//        }
+    }
+
+    public void restoreSystem() {
+        System.setErr(serrBckup);
+        System.setOut(soutBckup);
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
-        setTitle("Error Logger");
+        setTitle("Logger");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 onQuit(evt);
             }
         });
 
+        jSplitPane1.setName("jSplitPane1"); // NOI18N
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Log"));
+        jPanel1.setName("jPanel1"); // NOI18N
+
+        jScrollPane2.setName("jScrollPane2"); // NOI18N
+
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jTextArea2.setName("jTextArea2"); // NOI18N
+        jScrollPane2.setViewportView(jTextArea2);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2)
+        );
+
+        jSplitPane1.setLeftComponent(jPanel1);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Error"));
+        jPanel2.setName("jPanel2"); // NOI18N
+
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
         jTextArea1.setColumns(20);
+        jTextArea1.setForeground(new java.awt.Color(255, 0, 0));
         jTextArea1.setRows(5);
         jTextArea1.setName("jTextArea1"); // NOI18N
         jScrollPane1.setViewportView(jTextArea1);
 
-        jButton2.setText("Empty");
-        jButton2.setName("jButton2"); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                erase(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+        );
 
-        jButton1.setText("Copy to ClipBoard");
-        jButton1.setName("jButton1"); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toClipBoard(evt);
-            }
-        });
+        jSplitPane1.setRightComponent(jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jSplitPane1)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)))
+                .addComponent(jSplitPane1)
+                .addGap(0, 0, 0))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * the button empty has been pressed so we clear the textArea
-     *
-     * @param evt
-     */
-    private void erase(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_erase
-        jTextArea1.setText("");
-    }//GEN-LAST:event_erase
 
     /**
      * The user closed the window so we empty it
@@ -223,11 +289,8 @@ public class LogFrame extends javax.swing.JFrame {
          * We erase all previous errors because they did not interest the user
          */
         jTextArea1.setText("");
+        jTextArea2.setText("");
     }//GEN-LAST:event_onQuit
-
-    private void toClipBoard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toClipBoard
-        CommonClassesLight.sendTextToClipboard(jTextArea1.getText());
-    }//GEN-LAST:event_toClipBoard
 
     /**
      * The main function is used to test the class and its methods
@@ -239,17 +302,19 @@ public class LogFrame extends javax.swing.JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new LogFrame(ERROR_LOGGER, false, 10000, 0xFF0000).setVisible(true);
+                new LogFrame(10000).setVisible(true);
                 LogFrame.fakeError();
+                LogFrame.fakeLog();
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
 }
-
-

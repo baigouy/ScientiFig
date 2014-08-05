@@ -1,6 +1,13 @@
+04/08/14
+-restored/improved loggers
+-fixed closing errors
+
+23/07/14
+-added support for 96bit RGB images
+
 11/07/14
 -added the possibility to copy/cut/paste formatted (and colored) text
--miner layout fixes
+-minor layout changes/fixes
 
 03/07/14
 -Ctrl + S should now be Apple/Command + S on mac OS X (not tested yet)

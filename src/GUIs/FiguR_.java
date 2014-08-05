@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -64,7 +64,6 @@ import Commons.SaverLight;
 import Dialogs.RLabelEditor;
 import R.RSession.MyRsessionLogger;
 import R.String.RLabel;
-import ij.ImageJ;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import java.awt.Dimension;
@@ -96,6 +95,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     /**
      * Variables
      */
+    String lockerID = "FR";//short for FiguR
     boolean loading = false;
     ThemeGraph theme;
     LinkedHashMap<String, String> tags_and_commands = new LinkedHashMap<String, String>();
@@ -110,13 +110,11 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     String textDelimtor;
     String decimal;
     String lastPath = null;
-    public static LogFrame errorFrame;
+    public static LogFrame logger;
     ArrayList<String> column_names = new ArrayList<String>();
     ArrayList<String> alreadyFactorizableColumns = new ArrayList<String>();
     ArrayList<Integer> nb_of_factors = new ArrayList<Integer>();
-//    public static PopulateJournalStyles styles = getStyles();
     int counter = 0;
-//    GraphFont defautGraphParameters = new GraphFont();
     MyRsessionLogger rsession;
     String R_code = "";
     String last_folder = null;
@@ -158,6 +156,11 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         }
         initComponents();
         pack();
+        redirectErrorStream();
+        if (logger != null) {
+            logger.addLocker(lockerID);
+        }
+        System.out.println("Opening R connection.\nPlease Wait...");
         if (!isVisible()) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -166,21 +169,17 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 }
             });
         }
-        if (ScientiFig_.logErrors) {
-            redirectErrorStream();
-        } else {
-            CommonClassesLight.ErrorLoggerActivated = true;
+        if (CommonClassesLight.ij == null) {
+            CommonClassesLight.ij = ij.IJ.getInstance();
+            if (CommonClassesLight.ij != null) {
+                CommonClassesLight.isImageJEmbedded = false;
+            }
         }
-        //redirectSystemStream();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-//                styles.reloadStyles(jComboBox2);
-//                loading = true;
-//                jComboBox2.setSelectedIndex(-1);
-//                loading = false;
                 if (CommonClassesLight.ij == null) {
-                    jMenu12.setVisible(false);
+                    openWithIJ.setVisible(false);
                 }
                 checkRstatus();
             }
@@ -290,9 +289,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jButton9 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         imagePaneLight1 = new Dialogs.ImagePaneLight();
-        jPanel4 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
@@ -343,7 +339,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jMenuItem3 = new javax.swing.JMenuItem();
         showYAxisTile = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jMenu12 = new javax.swing.JMenu();
+        openWithIJ = new javax.swing.JMenu();
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenu8 = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
@@ -648,27 +644,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         );
         imagePaneLight1Layout.setVerticalGroup(
             imagePaneLight1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 521, Short.MAX_VALUE)
+            .addGap(0, 757, Short.MAX_VALUE)
         );
 
         jScrollPane5.setViewportView(imagePaneLight1);
-
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Rsession/FiguR Output"));
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-        );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Current Plot code"));
 
@@ -1014,7 +993,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
 
         jMenuBar1.add(flipXY);
 
-        jMenu12.setText("ScientiFig");
+        openWithIJ.setText("ScientiFig");
 
         jMenuItem9.setText("Launch");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -1022,9 +1001,9 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 launchScientiFig(evt);
             }
         });
-        jMenu12.add(jMenuItem9);
+        openWithIJ.add(jMenuItem9);
 
-        jMenuBar1.add(jMenu12);
+        jMenuBar1.add(openWithIJ);
 
         jMenu8.setText("About/Citations");
 
@@ -1066,9 +1045,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE))
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -1083,10 +1060,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jScrollPane5)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1100,14 +1074,12 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             } catch (Exception e) {
             }
             try {
-                rsession.setLogger(jTextArea1);
                 rsession.reopenConnection();
             } catch (Exception e) {
             }
         } else {
             if (CommonClassesLight.r != null) {
                 rsession = CommonClassesLight.r;
-                rsession.setLogger(jTextArea1);
                 try {
                     rsession.reopenConnection();
                 } catch (REXPMismatchException ex) {
@@ -1115,7 +1087,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             } else {
                 try {
                     rsession = new MyRsessionLogger();
-                    rsession.setLogger(jTextArea1);
                     rsession.reopenConnection();
                 } catch (Exception e) {
                 }
@@ -1130,9 +1101,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     public MyRsessionLogger getRserver() {
         if (rsession == null || !rsession.isRserverRunning()) {
             reinitRsession();
-        }
-        if (rsession != null) {
-            rsession.setTextArea(jTextArea1);
         }
         return rsession;
     }
@@ -1149,12 +1117,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
          */
         if (rsession != null && rsession.isRserverRunning()) {
             Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
-            rsession.setTextArea(jTextArea1);
             return;
         }
         if (CommonClassesLight.r != null && CommonClassesLight.r.isRserverRunning()) {
             this.rsession = CommonClassesLight.r;
-            rsession.setTextArea(jTextArea1);
             if (rsession.isRserverRunning()) {
                 Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
             }
@@ -1243,7 +1209,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
 
     //can't do this in a string --> improve this
     public String italicizeSingleLetterVariable(String in) {
-
         return in;
     }
 
@@ -1263,35 +1228,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         }
         warnForSave = true;
         checkRstatus();
-//        if (source == jComboBox2) {
-//            if (loading) {
-//                return;
-//            }
-//            /*
-//             * we hide the annoying combo popup before opening a jdialog (suggestion from Falko)
-//             */
-//            jComboBox2.hidePopup();
-//            /*
-//             * apply a journal style to the current graph
-//             */
-//            int idx = jComboBox2.getSelectedIndex();
-//            if (idx != -1) {
-//                defautGraphParameters = PopulateJournalStyles.journalStyles.get(idx).getGf();
-//                int pos = 0;
-//                /*
-//                 * we apply the parameters to all graphs
-//                 */
-//                for (Object obj : plots) {
-//                    int pos2 = plotsListModel.indexOf(obj);
-//                    GeomPlot gp = (GeomPlot) obj;
-//                    gp.changeLineSize(defautGraphParameters);
-//                    gp.changePointSize(defautGraphParameters);
-//                    plots.set(pos, gp);
-//                    plotsListModel.setElementAt(gp, pos2);
-//                    pos++;
-//                }
-//            }
-//        }
         if (source == quit) {
             closing(null);
             return;
@@ -1302,71 +1238,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
              * formats all the text for nature related journals
              */
         }
-
-//        if (source == jMenuItem10) {
-//            /*
-//             * we create a new unique journal style that will then be loaded to a combo
-//             */
-//            JournalParametersDialog iopane = new JournalParametersDialog();
-//            iopane.hideJournalParameters(true);
-//            int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Journal Parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-//            if (result == JOptionPane.OK_OPTION) {
-//                iopane.saveStyle(PopulateJournalStyles.journalStyleFolder);
-//                PopulateJournalStyles.journalStyles.add(iopane.getJournalStyle());
-//                loading = true;
-//                String style = null;
-//                if (jComboBox2.getSelectedIndex() != -1) {
-//                    style = jComboBox2.getSelectedItem().toString();
-//                }
-//                styles.reloadStyles(jComboBox2);
-//                if (style != null) {
-//                    jComboBox2.setSelectedItem(style);
-//                } else {
-//                    jComboBox2.setSelectedIndex(-1);
-//                }
-//                loading = false;
-//            }
-//        }
-//        if (source == jMenuItem11) {
-//            /* 
-//             * we edit the current journal style
-//             */
-//            int style_pos = jComboBox2.getSelectedIndex();
-//            if (style_pos != -1 && PopulateJournalStyles.journalStyles != null && !PopulateJournalStyles.journalStyles.isEmpty()) {
-//                JournalParameters jp = PopulateJournalStyles.journalStyles.get(style_pos);
-//                JournalParametersDialog iopane = new JournalParametersDialog(jp);
-//                iopane.hideJournalParameters(true);
-//                int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Journal Parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-//                if (result == JOptionPane.OK_OPTION) {
-//                    iopane.overWriteStyle(PopulateJournalStyles.journalStyleFolder, jp.getPath());
-//                    JournalParameters jpMod = iopane.getJournalStyle();
-//                    jpMod.setPath(jp.getPath());
-//                    PopulateJournalStyles.journalStyles.set(style_pos, jpMod);
-//                    defautGraphParameters = jpMod.getGf(); //--> on change le default style du truc --> a faire
-//                    styles.reloadStyles(jComboBox2);
-//                    jComboBox2.setSelectedIndex(style_pos);
-//                }
-//            } else {
-//                CommonClassesLight.Warning(this, "No Journal Style could be found\nin the folder entitled '" + PopulateJournalStyles.journalStyleFolder + "'");
-//            }
-//        }
-//        if (source == jMenuItem162) {
-//            /*
-//             * we delete a journal style
-//             */
-//            JLabel iopane = new JLabel("<html>The file will be permanently deleted<BR>Are you sure you want to continue ?</html>");
-//            int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-//            if (result == JOptionPane.OK_OPTION) {
-//                int pos = jComboBox2.getSelectedIndex();
-//                if (pos != -1) {
-//                    JournalParameters jp = PopulateJournalStyles.journalStyles.get(pos);
-//                    PopulateJournalStyles.journalStyles.remove(pos);
-//                    new File(jp.getPath()).renameTo(new File(jp.getPath() + ".old"));//comme ca c'est pas trop mechant
-//                    styles.reloadStyles(jComboBox2);
-//                    jComboBox1.setSelectedIndex(-1);
-//                }
-//            }
-//        }
         if (source == openFigurFile) {
             /*
              * we reopen and reload an existing .figur file
@@ -1547,14 +1418,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             ThemeEditor iopane = new ThemeEditor(rsession);
             int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Theme preferences", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
             if (result == JOptionPane.OK_OPTION) {
-//                ArrayList<Object> to_remove = new ArrayList<Object>();
-//                for (Object obj : extras) {
-//                    if (obj instanceof ThemeGraph) {
-//                        to_remove.add(obj);
-//                    }
-//                }
-//                extras.removeAll(to_remove);
-//                extras.add(iopane.getTheme());
                 theme = iopane.getTheme();
             } else {
                 return;
@@ -1607,50 +1470,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
         }
-//        if (source == addVerticalErrorBars || source == addHorizontalErrorBars) {
-//            /*
-//             * add error bars to the plots
-//             */
-//            if (jList1.getSelectedIndex() == -1) {
-//                CommonClassesLight.Warning(this, "Please select one of the plots of the 'Plots List' first");
-//                return;
-//            }
-//            GeomPlot gp = (GeomPlot) plotsListModel.getElementAt(jList1.getSelectedIndex());
-//            Aes aes = null;
-//            if (gp.getAes() != null) {
-//                aes = (Aes) gp.getAes().clone();
-//            }
-//            String x_or_y = "y";
-//            if (source == addHorizontalErrorBars) {
-//                x_or_y = "x";
-//            }
-//            ErrorBarDialog iopane = new ErrorBarDialog(aes, x_or_y, column_names);
-//            int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Error Bars", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-//            if (result == JOptionPane.OK_OPTION) {
-//                GeomErrorBars err = iopane.getErrorBar();
-//                err.setWidth(iopane.getBarWidth());
-//                err.setLineType(gp.getLineType());
-//                err.setSize(gp.getSize());
-//                err.setColor(gp.getColor());
-//                err.setAxis(iopane.getX_or_y());
-//                gp.setError_bars(err);
-//                plotsListModel.setElementAt(gp, jList1.getSelectedIndex());
-//            } else {
-//                return;
-//            }
-//        }
-//        if (source == removeErrorBars) {
-//            /*
-//             * removes all error bars
-//             */
-//            if (jList1.getSelectedIndex() == -1) {
-//                CommonClassesLight.Warning(this, "Please select one of the plots of the 'Plots List' first");
-//                return;
-//            }
-//            GeomPlot gp = (GeomPlot) plotsListModel.getElementAt(jList1.getSelectedIndex());
-//            gp.setError_bars(null);
-//            plotsListModel.setElementAt(gp, jList1.getSelectedIndex());
-//        }
         if (source == xintercept || source == yintercept) {
             /*
              * add x or y intercepts
@@ -2075,10 +1894,16 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * The user quits the soft --> we do a bit of cleaning
      */
     private void onQuit(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onQuit
+        if (logger != null) {
+            logger.removeLocker(lockerID);
+            if (!logger.isLocked()) {
+                logger.restoreSystem();
+                logger.dispose();
+                CommonClassesLight.logger = null;
+            }
+        }
         this.setVisible(false);
-
-        if (CommonClassesLight.ij != null && !ScientiFig_.isInstanceAlreadyExisting()) {
-
+        if (CommonClassesLight.isImageJEmbedded && !ScientiFig_.isInstanceAlreadyExisting()) {
             System.exit(0);
         }
     }//GEN-LAST:event_onQuit
@@ -2151,7 +1976,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      */
     private void closing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closing
         if (warnForSave && !plotsListModel.isEmpty() && !jTextArea3.getText().trim().equals("")) {
-            //CommonClasses2.Warning(this, "ouh pas bo l'a pas sauvé le vilain");
             JLabel jl = new JLabel("<html><font color=\"#FF0000\">FiguR thinks you are about to quit without saving, do you want to continue ?<BR><BR>-Click 'Ok' to quit without saving<br>-Or click 'Cancel' to abort</font></html>");
             int result = JOptionPane.showOptionDialog(this, new Object[]{jl}, "Warning...", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
             if (result != JOptionPane.OK_OPTION) {
@@ -2161,6 +1985,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         if (!ScientiFig_.isInstanceAlreadyExisting()) {
             try {
                 rsession.close();
+                CommonClassesLight.r = null;
             } catch (Exception e) {
             }
         }
@@ -2307,23 +2132,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     public String getFormattedGraph(/*boolean include_fonts*/) {
         if (isCustomCode()) {
             String txt = jTextArea3.getText();
-//            if (include_fonts) {
-//                if (defautGraphParameters != null) {
-//                    txt = txt.trim();
-//                    if (txt.endsWith(";")) {
-//                        txt = txt.substring(0, txt.length() - 1);
-//                    }
-//                    if (theme != null) {
-//                        txt += "\n+ " + theme.toString();
-//                    }
-//                    return txt + "\n+ " + defautGraphParameters.toString();
-//                }
-//            } else {
             if (theme != null) {
                 txt += "\n+ " + theme.toString();
             }
             return txt;
-//            }
         }
         String mainTitle = title.getText();
         String legendtitle = legendTitle.getText();
@@ -2390,11 +2202,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         while (R_code.endsWith("\n+ ")) {
             R_code = R_code.substring(0, R_code.length() - 3);
         }
-//        if (include_fonts) {
-//            if (defautGraphParameters != null) {
-//                R_code += "\n+ " + defautGraphParameters.toString();
-//            }
-//        }
         if (!showXAxisTile.isSelected()) {
             R_code += "\n+ theme(axis.title.x = element_blank()) ";
         }
@@ -2498,19 +2305,23 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 rsession = fR.rsession;
                 if (CommonClassesLight.r != null && CommonClassesLight.isRReady()) {
                     rsession = CommonClassesLight.r;
-                    rsession.setTextArea(jTextArea1);
                 }
             }
         });
     }
 
     /**
-     * we redirect the error stream to the error logger window
+     * we redirect the serr and sout streams to the log window
      */
     private void redirectErrorStream() {
-        if (CommonClassesLight.ErrorLoggerActivated != true) {
-            errorFrame = new LogFrame(LogFrame.ERROR_LOGGER, false, -1, 0xFF0000);
-            CommonClassesLight.ErrorLoggerActivated = true;
+        if (CommonClassesLight.logger == null) {
+            logger = new LogFrame(-1);
+            CommonClassesLight.logger = logger;
+        }
+        logger = CommonClassesLight.logger;
+        if (logger != null) {
+            logger.setVisible(true);
+            logger.toFront();
         }
     }
 
@@ -2568,27 +2379,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         if (legendLabel != null) {
             legendTitle.setText(legendLabel.toRExpression());
         }
-//        if (extras != null) {
-//            for (Object object : extras) {
-//                if (object instanceof GGtitles) {
-//                    if (object instanceof GGtitles) {
-//                        GGtitles t = (GGtitles) object;
-//                        if (t.getMainTitle() != null) {
-//                            title.setText(t.getMainTitle());
-//                        }
-//                        if (t.getXlabel() != null) {
-//                            xAxisTitle.setText(t.getXlabel());
-//                        }
-//                        if (t.getYlabel() != null) {
-//                            yAxisTitle.setText(t.getYlabel());
-//                        }
-//                        if (t.getLegendlabel() != null) {
-//                            legendTitle.setText(t.getLegendlabel());
-//                        }
-//                    }
-//                }
-//            }
-//        }
         if (plots != null) {
             Collections.reverse(plots);
             for (Object plot : plots) {
@@ -2709,7 +2499,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
-    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -2731,24 +2520,22 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JRadioButton jRadioButton4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTextField legendTitle;
     private javax.swing.JButton noColors;
     private javax.swing.JMenuItem openFigurFile;
+    private javax.swing.JMenu openWithIJ;
     private javax.swing.JMenuItem quit;
     private javax.swing.JMenuItem remove_intercept;
     private javax.swing.JMenuItem save;

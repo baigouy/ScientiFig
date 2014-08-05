@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -396,11 +396,18 @@ public class Loader {
             fifo = original.getFileInfo();
             img = ImagePlusToRaster(original);
             int bit_depth = original.getBitDepth();
-            if (bit_depth == 16) {
+            /**
+             * partial bug fix for 32 bits channel, ultimately need a better fix
+             * and will require full support of 32 bits
+             */
+            if (bit_depth >= 16) {
                 img.set16Bits(true);
                 //bug fiw for images with two 16bits channels
-                if (original.getNChannels() >= 2 && original.getBitDepth() == 16) {
+                if (original.getNChannels() >= 2 && bit_depth >= 16) {
+                    if (bit_depth == 16)
                     img.set48Bits(true);
+                    else
+                    img.set96Bits(true);    
                     /**
                      * we force the compoosite image to be displayed
                      */
@@ -412,9 +419,8 @@ public class Loader {
                     ((CompositeImage) original).setMode(CompositeImage.COMPOSITE);
                 }
                 img.set8BitsImage(original.getBufferedImage());
-
             }
-            if (original.getNSlices() != 1 || img.is48Bits) {
+            if (original.getNSlices() != 1 || img.is48Bits || img.is96Bits ) {
                 /**
                  * removed because it apparently is useless and prevented proper
                  * loading of images

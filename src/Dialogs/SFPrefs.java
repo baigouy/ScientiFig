@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -51,7 +51,7 @@ public class SFPrefs extends javax.swing.JPanel {
      * @param remove_from_list
      * @param max_nb
      */
-    public SFPrefs(boolean isUndoRedoActivated, int max_nb, boolean remove_from_list, boolean warn_on_save, boolean use_native_dialogs, boolean showHelpInfoWindow, boolean logErrors, boolean showHints, boolean autoScroll, boolean useAllCores, int max_nb_of_cores) {
+    public SFPrefs(boolean isUndoRedoActivated, int max_nb, boolean remove_from_list, boolean warn_on_save, boolean use_native_dialogs, boolean showHelpInfoWindow, boolean showHints, boolean autoScroll, boolean useAllCores, int max_nb_of_cores) {
         initComponents();
         max_nb = max_nb < 1 ? 1 : max_nb;
         jSpinner1.setValue(max_nb);
@@ -60,7 +60,6 @@ public class SFPrefs extends javax.swing.JPanel {
         jCheckBox3.setSelected(warn_on_save);
         jCheckBox4.setSelected(use_native_dialogs);
         jCheckBox5.setSelected(showHelpInfoWindow);
-        jCheckBox6.setSelected(logErrors);
         jCheckBox7.setSelected(showHints);
         jCheckBox8.setSelected(autoScroll);
         jCheckBox9.setSelected(useAllCores);
@@ -83,7 +82,6 @@ public class SFPrefs extends javax.swing.JPanel {
         jCheckBox3 = new javax.swing.JCheckBox();
         jCheckBox4 = new javax.swing.JCheckBox();
         jCheckBox5 = new javax.swing.JCheckBox();
-        jCheckBox6 = new javax.swing.JCheckBox();
         jCheckBox7 = new javax.swing.JCheckBox();
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
@@ -115,8 +113,6 @@ public class SFPrefs extends javax.swing.JPanel {
 
         jCheckBox5.setSelected(true);
         jCheckBox5.setText("Show help info window");
-
-        jCheckBox6.setText("Log errors (requires standalone ImageJ/FIJI restart)");
 
         jCheckBox7.setSelected(true);
         jCheckBox7.setText("Show hints");
@@ -155,7 +151,6 @@ public class SFPrefs extends javax.swing.JPanel {
                     .addComponent(jCheckBox3)
                     .addComponent(jCheckBox4)
                     .addComponent(jCheckBox5)
-                    .addComponent(jCheckBox6)
                     .addComponent(jCheckBox7)
                     .addComponent(jCheckBox8)
                     .addGroup(layout.createSequentialGroup()
@@ -182,8 +177,6 @@ public class SFPrefs extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox8)
@@ -192,7 +185,7 @@ public class SFPrefs extends javax.swing.JPanel {
                     .addComponent(jCheckBox9)
                     .addComponent(jLabel2)
                     .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 1, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -215,14 +208,6 @@ public class SFPrefs extends javax.swing.JPanel {
      */
     public boolean getRemoveFromList() {
         return jCheckBox2.isSelected();
-    }
-
-    /**
-     * @return whether the errors should be logged (unfortunately it will log
-     * all system.err not only errors linked to the soft
-     */
-    public boolean islogErrors() {
-        return jCheckBox6.isSelected();
     }
 
     /**
@@ -311,7 +296,7 @@ public class SFPrefs extends javax.swing.JPanel {
      * @author Benoit Aigouy
      */
     public static void main(String args[]) {
-        SFPrefs iopane = new SFPrefs(true, WIDTH, true, true, true, true, true, true, true, true, WHEN_FOCUSED);
+        SFPrefs iopane = new SFPrefs(true, WIDTH, true, true, true, true, true, true, true, WHEN_FOCUSED);
         int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "SFPrefs", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
         }
@@ -323,7 +308,6 @@ public class SFPrefs extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
     private javax.swing.JCheckBox jCheckBox7;
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;

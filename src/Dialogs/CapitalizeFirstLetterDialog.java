@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are

@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2013 Benoit Aigouy 
+ Copyright (C) 2012-2014 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -61,6 +61,7 @@ public class MyBufferedImage extends BufferedImage {
     private int height = -1;
     boolean is16Bits = false;
     boolean is48Bits = false;
+    boolean is96Bits = false;
     boolean isFloat = false;
     boolean isDouble = false;
     int cur_px_pos = 0;
@@ -276,8 +277,8 @@ public class MyBufferedImage extends BufferedImage {
         return null;
     }
 
-    private BufferedImage get16BitsCh(int chNb) {
-        if (is48Bits) {
+    private BufferedImage get16_or_32BitsCh(int chNb) {
+        if (is48Bits || is96Bits) {
             ImageStack stack = ip.getStack();
             ImageProcessor ch = stack.getProcessor(chNb);
             /**
@@ -293,16 +294,16 @@ public class MyBufferedImage extends BufferedImage {
         }
     }
 
-    public BufferedImage get16bitsCh1() {
-        return get16BitsCh(1);
+    public BufferedImage get16_or_32bitsCh1() {
+        return get16_or_32BitsCh(1);
     }
 
-    public BufferedImage get16bitsCh2() {
-        return get16BitsCh(2);
+    public BufferedImage get16_or_32bitsCh2() {
+        return get16_or_32BitsCh(2);
     }
 
-    public BufferedImage get16bitsCh3() {
-        return get16BitsCh(3);
+    public BufferedImage get16_or_32bitsCh3() {
+        return get16_or_32BitsCh(3);
     }
 
     /**
@@ -436,13 +437,16 @@ public class MyBufferedImage extends BufferedImage {
     }
 
     public boolean is48Bits() {
-//        if (is16Bits) {
-//            if (ip.getNChannels() >= 3 && ip.getBitDepth() == 16) {
-//                return true;
-//            }
-//        }
-//        return false;.
         return is48Bits;
+    }
+
+    /**
+     * support for 32bits images
+     *
+     * @return
+     */
+    public boolean is96Bits() {
+        return is96Bits;
     }
 
     /**
@@ -456,6 +460,10 @@ public class MyBufferedImage extends BufferedImage {
 
     public void set48Bits(boolean is48Bits) {
         this.is48Bits = is48Bits;
+    }
+
+    public void set96Bits(boolean is96Bits) {
+        this.is96Bits = is96Bits;
     }
 
     /**
@@ -537,13 +545,16 @@ public class MyBufferedImage extends BufferedImage {
 
     //ça marche mais c'est super slow n'y aurait il pas un moyen d'accéder rapidement et directement aux pixels peu importe la couleur en plus dans setC il y a plein d'etapes inutiles comme le refresh de l'image qui ne sert à rien
     //now this is a much faster version of it
+    
+    //what if px is 32 bits --> is there a pb --> add full support for 32bits images --> TODO
     public int getRGB(int i, int j, int c) {
 //        System.out.println(ip);
         if (ip != null) {
             /**
              * ip.setC is very slow and makes the recovery of pixels very long
              * so I simpy store 16 bits processors in a short array
-             * corresponding to the channel and then I just recover the pixels from this array
+             * corresponding to the channel and then I just recover the pixels
+             * from this array
              */
             if (chs == null || chs[c - 1] == null) {
                 ip.setC(c);
@@ -905,7 +916,6 @@ public class MyBufferedImage extends BufferedImage {
     }
 
     public static void main(String args[]) {
-
         if (true) {
             int test = 10;
             System.out.println((Integer) test);
