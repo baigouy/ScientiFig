@@ -958,10 +958,13 @@ public class ColoredTextPaneSerializable implements Serializable {
             if (doc == null) {
                 recreateStyledDoc();
             }
-            doc.remove(0, doc.getLength());
-            doc.insertString(0, string, null);
-        } catch (BadLocationException ex) {
+            //doc.insertString(0, string, null);//apply existing attributes to all
+//            doc.remove(0, doc.getLength());
+            StyledDocTools.replace(doc, StyledDocTools.getText(doc), string);
+        } catch (Exception ex) {
         }
+        
+        
     }
 
     public boolean checkCase(BufferedImage img, String caseOfTheFirstLetter) {

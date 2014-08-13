@@ -1,5 +1,9 @@
 //TODO aussi permettre de copier le formattage des textes quand celui ci est complexe --> overrider le truc de copy et de paste pour passer du texte html que je pourrais ensuite réimporter dans l'autre textarea
 //TODO add full support for 32 bits images
+//TODO fix erroneous warn for save when loading an image and there was nothing in the lists before
+//TODO allow for ROIs to be copied
+//TODO fix bug of text color when updating the letter 
+//upload changes to github
 /*
  * obfuscateSFnZIP --> compile then obfuscate n compress
  * dlSF --> dl and opens all files on the website
@@ -111,6 +115,7 @@ import javax.swing.ComponentInputMap;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -1521,7 +1526,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        OpenYF5M = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
         Save = new javax.swing.JMenuItem();
         SaveAs = new javax.swing.JMenuItem();
@@ -2775,14 +2780,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         });
         jMenu1.add(New);
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Open (or drag and drop)");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        OpenYF5M.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        OpenYF5M.setText("Open (or drag and drop)");
+        OpenYF5M.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu1.add(OpenYF5M);
 
         jMenuItem19.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem19.setText("Import images (or drag and drop)");
@@ -4217,6 +4222,10 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @param add_backup if true creates a backup before loading new file
      */
     public void loadNonMTFile(String name, boolean add_backup) {
+        /**
+         * bug fix for erroneous saving of files
+         */
+        warnForSave = isThereAnythingInTheLists();//force save if there was already something in the list and we load another on top
         JDialog jd = null;
         try {
             loading = true;
@@ -5391,10 +5400,68 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
             return;
         }
-        warnForSave = true;
-        if (source == Rstatus) {
-            warned_once = false;
-            checkRstatus();
+        /**
+         * bug fix that prevents export to be considered as an image
+         * modification
+         */
+        if (source == exportAsTiff) {
+            /*
+             * Save selected panel or figure to a tif file
+             */
+            export(FORMAT_TIFF, null);
+            return;
+        }
+        if (source == exportAsPNG) {
+            /*
+             * Save selected panel or figure to a png file
+             */
+            export(FORMAT_PNG, null);
+            return;
+        }
+        if (source == exportAsJpeg) {
+            /*
+             * Save selected panel or figure to a jpg file
+             */
+            export(FORMAT_JPEG, null);
+            return;
+        }
+        if (source == exportAsSVG) {
+            /*
+             * Save selected panel or figure to an svg file
+             */
+            export(FORMAT_SVG, null);
+            return;
+        }
+        /**
+         * allows to skip asking for save when the image is not changed
+         */
+        boolean ignoreWarnForSave = false;
+
+        if (source == New) {
+            /**
+             * New is going to erase everything so we warn the user if he hasn't
+             * saved his image
+             */
+            if (warnForSave && (isThereAnythingInTheLists())) {
+                blinkAnything(jButton7);
+                JLabel jl = new JLabel("<html><font color=\"#FF0000\">You are about to create a new Figure,<br>i.e. all unsaved images/panels and figures will be lost.<br><br>Do you really want to continue ?<br>(click cancel to abort)</font></html>");
+                int result = JOptionPane.showOptionDialog(this, new Object[]{jl}, "Warning...", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+                if (result != JOptionPane.OK_OPTION) {
+                    return;
+                } else {
+                    /*
+                     * we stop the blinking
+                     */
+                    blinker.stop();
+                    glasspane.setBlink(null);
+                    glasspane.repaint();
+                }
+            }
+            /**
+             * clears all lists and resets everything so that the user can start
+             * a brand new figure
+             */
+            clearAll();
         }
         if (source == zoomPlus) {
             /**
@@ -5412,6 +5479,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     doubleLayerPane2.incrementZoom();
                     break;
             }
+            ignoreWarnForSave = true;
         }
 
         if (source == showShortcuts) {
@@ -5435,6 +5503,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     doubleLayerPane2.decrementZoom();
                     break;
             }
+            ignoreWarnForSave = true;
         }
         if (source == bestFitZoom) {
             /**
@@ -5452,6 +5521,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     doubleLayerPane2.best_fit_zoom(jScrollPane16.getViewportBorderBounds().width, jScrollPane16.getViewportBorderBounds().height);
                     break;
             }
+            ignoreWarnForSave = true;
         }
         if (source == realSizeZoom) {
             /**
@@ -5469,6 +5539,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     doubleLayerPane2.setZoom(1.);
                     break;
             }
+            ignoreWarnForSave = true;
         }
         if (source == jMenuItem2) {
             CommonClassesLight.Warning2(this, MyRsessionLogger.generateRInstallationText());
@@ -5514,6 +5585,40 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
             return;
         }
+
+        if (source == OpenYF5M || source == jButton11 || (source instanceof String && source.toString().toLowerCase().contains("import"))) {
+            /*
+             * load a .yf5m file
+             */
+            String inputFolder = null;
+            if (lastSaveName != null) {
+                inputFolder = new File(lastSaveName).getParent();
+            }
+            String name;
+            if (source == jButton11) {
+                name = (name_to_load);
+            } else {
+                name = CommonClassesLight.openFile(this, inputFolder, "yf5m", !CommonClassesLight.isWindows() && useNativeDialog);
+            }
+            loadFile(name, true, true);
+            /**
+             * bug fix for erroneous asking to save files
+             */
+            ignoreWarnForSave = true;
+        }
+
+        /**
+         * bug fix for erroneous asking to save files
+         */
+        if (!ignoreWarnForSave && !((source instanceof JComboBox) && loading)) {
+            warnForSave = true;
+        }
+
+        if (source == Rstatus) {
+            warned_once = false;
+            checkRstatus();
+        }
+
         if (source == addEmptyImageToCurrentBlock) {
             /*
              * here we add an empty image that can be replaced by a real image later on
@@ -5778,8 +5883,12 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              * we popup citations
              */
             CommonClassesLight.infos(this, "To cite ScientiFig in publications, please use:"
-                    + "\n\nB. Aigouy and V. Mirouse. ScientiFig: a tool for fast creation of publication-ready scientific figures, 2013."
-                    + "\nhttp://srv-gred.u-clermont1.fr/labmirouse/software/"
+                    + "\n\nScientiFig: a tool to build publication-ready scientific figures.\n"
+                    + "Aigouy B, Mirouse V.\n"
+                    + "Nat Methods.\n"
+                    + "2013 Oct 30;10(11):1048.\n"
+                    + "doi: 10.1038/nmeth.2692.\n"
+                    + "\nweb: http://srv-gred.u-clermont1.fr/labmirouse/software/"
                     + "\n\nTo cite FiguR please launch FiguR and click on About/Citations>Citations to get a full list of citations");
         }
         if ((source == updateLetters || source == jTextField1) && jTabbedPane1.getSelectedIndex() == 1) {
@@ -7755,28 +7864,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             pane[0] = apane;
             JOptionPane.showMessageDialog(this, pane, "About " + software_name + " ...", JOptionPane.PLAIN_MESSAGE);
         }
-        if (source == New) {
-            /*
-             * clears all lists and resets everything so that the user can start a brand new figure
-             */
-            clearAll();
-        }
-        if (source == jMenuItem1 || source == jButton11 || (source instanceof String && source.toString().toLowerCase().contains("import"))) {
-            /*
-             * load a .yf5m file
-             */
-            String inputFolder = null;
-            if (lastSaveName != null) {
-                inputFolder = new File(lastSaveName).getParent();
-            }
-            String name;
-            if (source == jButton11) {
-                name = (name_to_load);
-            } else {
-                name = CommonClassesLight.openFile(this, inputFolder, "yf5m", !CommonClassesLight.isWindows() && useNativeDialog);
-            }
-            loadFile(name, true, true);
-        }
+
         if (source == jMenuItem19) {
             /*
              * import images to the 'image list' for heroic people who don't want to use DND
@@ -7953,12 +8041,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             closing(null);
             return;
         }
-        if (source == exportAsSVG) {
-            /*
-             * export selected panel or figure as svg
-             */
-            export(FORMAT_SVG, null);
-        }
         if (source == undo) {
             /*
              * undo 
@@ -7988,15 +8070,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 loadFile(last_file, false, true);
             }
         }
-        if (source == exportAsTiff) {
-            export(FORMAT_TIFF, null);//15
-        }
-        if (source == exportAsPNG) {
-            export(FORMAT_PNG, null);
-        }
-        if (source == exportAsJpeg) {
-            export(FORMAT_JPEG, null);
-        }
+
         if (source == AddTextLeftOfRow || source == AddTextRightOfRow) {
             /*
              * add text boxes on the left or on the right of the selected row
@@ -9145,6 +9219,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JButton DeleteSelectedBlock;
     private javax.swing.JButton Flip;
     public javax.swing.JMenuItem New;
+    private javax.swing.JMenuItem OpenYF5M;
     public static javax.swing.JButton PIP;
     public javax.swing.JMenuItem Quit;
     public javax.swing.JList RowContentList;
@@ -9224,7 +9299,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;

@@ -546,7 +546,7 @@ public class StyledDocTools {
             }
             end = end <= 0 ? 0 : end;
             end = end > begin + doc.getLength() ? doc.getLength() - begin : end;
-            return doc.getText(begin, end-begin);
+            return doc.getText(begin, end - begin);
         } catch (Exception e) {
         }
         return "";
@@ -619,9 +619,11 @@ public class StyledDocTools {
                  */
                 ArrayList<AttributeSet> asses = pos_n_styles.get(point);
                 int lastAs = asses.size() - 1;
-                for (int i = start, j = 0; j < replacement.length(); i++, j++) {
-                    AttributeSet curAs = j < asses.size() ? asses.get(j) : asses.get(lastAs);
-                    doc.setCharacterAttributes(i, 1, curAs, false);
+                if (lastAs != -1) {
+                    for (int i = start, j = 0; j < replacement.length(); i++, j++) {
+                        AttributeSet curAs = j < asses.size() ? asses.get(j) : asses.get(lastAs);
+                        doc.setCharacterAttributes(i, 1, curAs, false);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -917,12 +919,12 @@ public class StyledDocTools {
 
     public static StyledDocument insert(StyledDocument input, StyledDocument destination, int positionInDestination) {
         try {
-        ArrayList<AttributeSet> attributes = getTextAttributes(input);
-        destination.insertString(positionInDestination, getText(input), null);
-        int pos = positionInDestination;
-        for (AttributeSet attributeSet : attributes) {
-            destination.setCharacterAttributes(pos++, 1, attributeSet, true);
-        }
+            ArrayList<AttributeSet> attributes = getTextAttributes(input);
+            destination.insertString(positionInDestination, getText(input), null);
+            int pos = positionInDestination;
+            for (AttributeSet attributeSet : attributes) {
+                destination.setCharacterAttributes(pos++, 1, attributeSet, true);
+            }
         } catch (Exception e) {
         }
         return destination;
@@ -942,9 +944,9 @@ public class StyledDocTools {
         }
         return ases;
     }
-    
+
     //prendre juste le getext entre deux positions
-    public static ArrayList<AttributeSet> getTextAttributes(StyledDocument doc, int begin , int end) {
+    public static ArrayList<AttributeSet> getTextAttributes(StyledDocument doc, int begin, int end) {
         if (doc == null || doc.getLength() == 0) {
             return null;
         }

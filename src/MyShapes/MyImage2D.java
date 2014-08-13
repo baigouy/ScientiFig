@@ -553,12 +553,13 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
      * @param letter
      */
     public void setLetter(String letter) {
-        Color tmp = null;
-        if (this.letter != null) {
-            tmp = this.letter.getTextBgColor();
+//        Color tmp = null;
+        if (this.letter == null || letter.equals(" ") || letter.equals("")) {
+//            tmp = this.letter.getTextBgColor();
+            this.letter = new ColoredTextPaneSerializable(letter);
         }
-        this.letter = new ColoredTextPaneSerializable(letter);
-        this.letter.setTextBgColor(tmp);
+        else this.letter.setText(letter);
+        //this.letter.setTextBgColor(tmp);
     }
 
     /**

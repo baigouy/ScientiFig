@@ -278,7 +278,7 @@ public class CommonClassesLight {
         clipboard.setContents(ss, ss);
     }
 
-        /**
+    /**
      * Gets a string from the system clipboard
      *
      * @return a string if clipboard conatins a string or null otherwise
@@ -293,7 +293,7 @@ public class CommonClassesLight {
         }
         return null;//return ""; //think what's best
     }
-    
+
     /**
      * System independent way to get the control/command key --> test on windows
      * and on macs
@@ -444,7 +444,7 @@ public class CommonClassesLight {
         }
         return is48Bits;
     }
-    
+
     public static boolean is96Bits(BufferedImage bimg) {
         boolean is96Bits = false;
         if (bimg instanceof MyBufferedImage) {
@@ -1607,10 +1607,8 @@ public class CommonClassesLight {
         ip.show();
     }
 
-    
-            public static boolean isImageJEmbedded = true;
-        
-    
+    public static boolean isImageJEmbedded = true;
+
     /**
      * Opens ImageJ
      */
@@ -1623,7 +1621,7 @@ public class CommonClassesLight {
             if (CommonClassesLight.GUI != null) {
                 System.getProperties().setProperty("plugins.dir", CommonClassesLight.getApplicationFolder(CommonClassesLight.GUI.getClass()));
             }
-            
+
             if (ij == null) {
                 ij = new ImageJ();
                 ij.exitWhenQuitting(false);
@@ -1634,8 +1632,6 @@ public class CommonClassesLight {
             ij.setVisible(true);
         }
     }
-    
-
 
     /**
      * Selects a directory
@@ -2591,6 +2587,23 @@ public class CommonClassesLight {
             return true;
         }
         return false;
+    }
+
+    /**
+     *
+     * @return the java version running the executable
+     * @since TA 1.0 beta 18
+     */
+    public static String getJavaVersion() {
+        return System.getProperty("java.version");
+    }
+
+    /**
+     *
+     * @return the java version (in 1.x format) running the executable
+     */
+    public static String getJavaVersionShort() {
+        return getJavaVersion().substring(0, 3);
     }
 
     /**

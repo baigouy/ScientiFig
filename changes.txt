@@ -1,3 +1,12 @@
+12/08/14
+-prevents File>Export from generating an "image has not been saved" warning
+-fixed changing letter color when pressing "Update letters"
+
+06/08/14
+-added a warning if "new"/ctrl+N is pressed and the image has not been saved
+-fixed (maybe) erroneous asking for saving the file even when the file is unchanged
+-updated and improved the launcher
+
 04/08/14
 -restored/improved loggers
 -fixed closing errors
