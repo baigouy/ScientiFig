@@ -1,17 +1,6 @@
-//TODO aussi permettre de copier le formattage des textes quand celui ci est complexe --> overrider le truc de copy et de paste pour passer du texte html que je pourrais ensuite réimporter dans l'autre textarea
 //TODO add full support for 32 bits images
-//TODO fix erroneous warn for save when loading an image and there was nothing in the lists before
-//TODO allow for ROIs to be copied
-//TODO fix bug of text color when updating the letter 
-//upload changes to github
 /*
  * obfuscateSFnZIP --> compile then obfuscate n compress
- * dlSF --> dl and opens all files on the website
- * obfuscation/compression depuis linux
- * normal
- * obfuscateSF && rm /C/mon_prog/ImageJPluins/ScientiFig_/dist/ScientiFig_.jar && mv /C/mon_prog/ImageJPluins/ScientiFig_/dist/ScientiFig_Final.jar /C/mon_prog/ImageJPluins/ScientiFig_/dist/ScientiFig_.jar
- * single jar
- * obfuscateSFSingleJar && rm  /C/mon_prog/ImageJPluins/ScientiFig_/dist/ScientiFigOneJar.jar && rm -rf /C/mon_prog/ImageJPluins/ScientiFig_/dist/lib
  */
 package GUIs;
 
