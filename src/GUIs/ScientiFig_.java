@@ -1,4 +1,5 @@
 //TODO add full support for 32 bits images
+//TODO implement clean split of IJ images by channel rather than by color
 /*
  * obfuscateSFnZIP --> compile then obfuscate n compress
  */
