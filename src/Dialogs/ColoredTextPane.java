@@ -764,7 +764,9 @@ public class ColoredTextPane extends JPanel {
                     StyledDoc2Html test = new StyledDoc2Html();
                     setStyledDocument(StyledDocTools.insert(test.reparse(serializedStyledDocumentContent), getStyledDocument(), getSelectionStart()));
                 }
+                fontChanged(null);
                 FakeMoveSelection();
+
             }
 
             @Override

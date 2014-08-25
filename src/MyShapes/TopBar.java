@@ -51,8 +51,6 @@ import java.util.Map;
  */
 public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawable, Serializable, Incompressible {
 
-    
-    
     /**
      * Variables
      */
@@ -104,10 +102,11 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
              * added to support retrocompatibility
              */
             Point3D.Integer pos;
-            if (val instanceof Point3D.Integer)
-                pos= (Point3D.Integer)val;
-            else
-                pos = new Point3D.Integer((Point)val,0);
+            if (val instanceof Point3D.Integer) {
+                pos = (Point3D.Integer) val;
+            } else {
+                pos = new Point3D.Integer((Point) val, 0);
+            }
             Rectangle2D bar = associated_row.getPositionForRows(pos.getX(), pos.getY());
             if (bar != null) {
                 texts.add(new TextBar.Double(bar.getX(), bar.getY(), bar.getWidth(), entry.getValue(), null, TextBar.HORIZONTAL, pos.getZ()));
@@ -147,15 +146,16 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
         ComplexShapeLight c = null;
         ArrayList<Object> texts = new ArrayList<Object>();
         for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-   Object val = entry.getKey();
+            Object val = entry.getKey();
             /**
              * added to support retrocompatibility
              */
             Point3D.Integer pos;
-            if (val instanceof Point3D.Integer)
-                pos= (Point3D.Integer)val;
-            else
-                pos = new Point3D.Integer((Point)val,0);
+            if (val instanceof Point3D.Integer) {
+                pos = (Point3D.Integer) val;
+            } else {
+                pos = new Point3D.Integer((Point) val, 0);
+            }
             Rectangle2D bar = associated_row.getPositionForCols(pos.x, pos.y, TopBar.LEFT);
             /*
              * dirty fix to allow swapping of panels with text on the left --> erreur --> better fix needed some day, the thing is that it goes too far in the images, in the getpositionForCols --> il faudrait le bloquer avant
@@ -181,15 +181,16 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
         ComplexShapeLight c = null;
         ArrayList<Object> texts = new ArrayList<Object>();
         for (Map.Entry<Point3D.Integer, ColoredTextPaneSerializable> entry : begin_n_ends_and_corresponding_text.entrySet()) {
-        Object val = entry.getKey();
+            Object val = entry.getKey();
             /**
              * added to support retrocompatibility
              */
             Point3D.Integer pos;
-            if (val instanceof Point3D.Integer)
-                pos= (Point3D.Integer)val;
-            else
-                pos = new Point3D.Integer((Point)val,0);
+            if (val instanceof Point3D.Integer) {
+                pos = (Point3D.Integer) val;
+            } else {
+                pos = new Point3D.Integer((Point) val, 0);
+            }
             Rectangle2D bar = associated_row.getPositionForCols(pos.x, pos.y, TopBar.RIGHT);
             if (bar != null) {
                 if (bar.getX() != 0.) {

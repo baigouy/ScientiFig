@@ -1,3 +1,10 @@
+21/08/14
+-fixed a minor row selection error
+-fixed text misalignment in left/right text bars when they contain line breaks
+
+20/08/14
+-added support for ROI/annotation copy/paste within an image and between images
+
 12/08/14
 -prevents File>Export from generating an "image has not been saved" warning
 -fixed changing letter color when pressing "Update letters"

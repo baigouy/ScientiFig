@@ -103,7 +103,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         public Double(Point2D.Double l2d) {
             this.el2d = new Ellipse2D.Double(l2d.x - 0.5, l2d.y - 0.5, 1, 1);
         }
-        
+
         /**
          * Constructor
          *
@@ -140,7 +140,20 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
 
         @Override
         public Object clone() {
-            return new MyPoint2D.Double(this);
+            //return new MyPoint2D.Double(this);
+            MyPoint2D.Double clone = new MyPoint2D.Double(this);
+                        /**
+             * bug fix for duplicated text
+             */
+            if (clone.text != null)
+            {
+//        StyledDoc2Html test = new StyledDoc2Html();
+////        myel.text.getReadyForSerialization();
+//        clone.text = new ColoredTextPaneSerializable(test.reparse(clone.text.getFormattedText()), clone.text.getTitle());
+                clone.text = clone.text.clone();
+               }
+            
+            return clone;
         }
     }
 
@@ -333,7 +346,6 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
                 //draw(final_text, as, g2d, _LEFT, TOP_, translation_because_of_the_letter, upper_left_text.getTextBgColor());
                 //en gros c'est du top centered qu'il me faut comme draw --> a faire
                 //TODO appliquer aussi la stroke size aux tetes de fleches histoire que ca ne se voit pas qd on retaille qu'il y a une couille --> a faire car vraiment tres simple
-
                 //toute petite couille de position
                 //si c'est du texte il faut que je modifie le bounding rect pour qu'il devienne sensible sur une plus grande distance en fait --> a faire
 
@@ -431,7 +443,6 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         double height = 0;
 
         for (AttributedString attributedString : as) {
-
 
             AttributedCharacterIterator aci = attributedString.getIterator();
             if (aci == null || aci.getRunLimit() == 0) {
@@ -568,5 +579,3 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         System.exit(0);
     }
 }
-
-

@@ -79,7 +79,7 @@ import javax.swing.text.StyledDocument;
 /*
  * quick fix to set the bg of jtextpane
  */
-public class ColoredTextPaneSerializable implements Serializable {
+public class ColoredTextPaneSerializable implements Serializable, Cloneable {
 
     /**
      * Variables
@@ -963,8 +963,7 @@ public class ColoredTextPaneSerializable implements Serializable {
             StyledDocTools.replace(doc, StyledDocTools.getText(doc), string);
         } catch (Exception ex) {
         }
-        
-        
+
     }
 
     public boolean checkCase(BufferedImage img, String caseOfTheFirstLetter) {
@@ -1066,6 +1065,22 @@ public class ColoredTextPaneSerializable implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     *
+     * @return a clone of the current ColoredTextPaneSerializable (the styled
+     * doc is copied to avoid problems)
+     */
+    public ColoredTextPaneSerializable clone() {
+        ColoredTextPaneSerializable clone = new ColoredTextPaneSerializable();
+        clone.setDoc(StyledDocTools.copy(doc, clone.doc));
+        clone.ft = ft;
+        clone.textBgColor = textBgColor;
+        clone.isFrame = isFrame;
+        clone.title = title;
+        clone.serializedStyledDocumentContent = serializedStyledDocumentContent;
+        return clone;
     }
 
     /**

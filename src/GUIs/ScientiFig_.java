@@ -176,6 +176,10 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * Variables
      */
     String lockerID = "SF";
+    /**
+     * allows for ROIs to be copied bewteen images
+     */
+    public ArrayList<Object> copiedROIs = new ArrayList<Object>();
     public static Object cur_sel_image1;
     public static Object cur_sel_image2;
     public static Montage curPanel;
@@ -203,7 +207,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.92";
+    public static final String version = "2.94";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -7054,7 +7058,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
             if (cur_sel instanceof MyImage2D) {
-                AnnotateCurrentImage iopane = new AnnotateCurrentImage((MyImage2D) cur_sel);
+                AnnotateCurrentImage iopane = new AnnotateCurrentImage((MyImage2D) cur_sel, copiedROIs);
                 int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Annotate The Image", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 if (result == JOptionPane.OK_OPTION) {
                     ((MyImage2D) cur_sel).setAssociatedObjects(iopane.getAssociatedObjects());
@@ -7068,6 +7072,15 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         updateFigure();
                         doubleLayerPane2.ROIS.setSelectedShape(cur_sel);
                     }
+
+                }
+                /**
+                 * we keep the copied ROIs so that we can paste them on another
+                 * image
+                 */
+                try {
+                    this.copiedROIs = iopane.getCopiedROIs();
+                } catch (Exception e) {
                 }
             } else {
                 if (jTabbedPane1.getSelectedIndex() == 1) {

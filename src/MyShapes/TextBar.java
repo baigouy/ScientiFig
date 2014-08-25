@@ -235,6 +235,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
                             xPos = (rec2d.getWidth() - bounds.getX()) / 2.;
                             break;
                         case ALIGN_LEFT:
+//                              xPos = (rec2d.getWidth() - bounds.getWidth());
                             break;
 //                        case ALGN_RIGHT:
 //                            System.out.println("here " +" "+bounds.getWidth()+ " "+rec2d.getWidth());
@@ -293,7 +294,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
                     float x = (float) ((rec2d.getWidth() / 2. - bounds.getY() / 2.) + rec2d.x);
                     //float y = (float) (rec2d.getHeight() / 2. - bounds.getX() / 2. + rec2d.y + bounds.getX());//rec2d.getHeight() / 2. - bounds.getY() / 2.;
                     float y = (float) (xPos + rec2d.y + bounds.getX());//rec2d.getHeight() / 2. - bounds.getY() / 2.;
-                    float x_backup = x;
+                    float y_backup = y;
                     ArrayList<AttributedString> as = text.createAttributedString();
                     ArrayList<ArrayList<MyFormattedString>> final_text = text.simplify_text(as);
 
@@ -318,8 +319,12 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
                             y -= curpos.getWidth();
                         }
                         pos++;
-                        x = x_backup;
-                        y += ascent + descent + leading;
+                        /**
+                         * dirty fix for textbar containing line breaks, the
+                         * code really needs to be checked and cleaned
+                         */
+                        x += ascent + descent + leading;
+                        y = y_backup;
                     }
                 }
                 break;

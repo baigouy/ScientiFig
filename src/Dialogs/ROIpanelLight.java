@@ -79,6 +79,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     public boolean clicked_on_a_shape = false;
     public Color ROIColor = Color.yellow;
     public ArrayList<Object> ROIS;
+    public ArrayList<Object> copy = new ArrayList<Object>();
     public double zoom = 1.;
     public Object cur_shape = null;
     public boolean show_base_of_line = true;
@@ -1280,7 +1281,13 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                                 if (selected_shape_or_group == shp) {
                                     goToLowerOrder = true;
                                 } else {
-                                    if (selected_shape_or_group != null && shp != null && ((PARoi) shp).intersects(((PARoi) selected_shape_or_group).getBounds())) {
+                                    /**
+                                     * fix for multiple selection error
+                                     * (Arraylist is wrongly assigned to
+                                     * selected_shape_or_group) --> check why in
+                                     * the code when I have time
+                                     */
+                                    if (selected_shape_or_group != null && shp != null && !(selected_shape_or_group instanceof ArrayList) && ((PARoi) shp).intersects(((PARoi) selected_shape_or_group).getBounds())) {
                                         if (((PARoi) selected_shape_or_group).contains(click_point_corrected)) {//|| ((PARoi) shp).contains(click_point_corrected)
                                             /**
                                              * we should nevertheless check that
@@ -1540,6 +1547,11 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     @Override
     public void mouseEntered(MouseEvent e) {
         this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        /**
+         * force this component to steal the focus
+         */
+        this.requestFocusInWindow();
+        this.requestFocus();
     }
 
     @Override
@@ -1833,6 +1845,43 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         this.output_name = output_name;
     }
 
+    /**
+     * Copy selection
+     */
+    public void copy() {
+        if (selected_shape_or_group != null) {
+            copy.clear();
+            if (selected_shape_or_group instanceof ComplexShapeLight) {
+                HashSet<Object> Rois = ((ComplexShapeLight) selected_shape_or_group).getGroup();
+                for (Object object : Rois) {
+                    copy.add(((PARoi) object).clone());
+                }
+            } else {
+                copy.add(((PARoi) selected_shape_or_group).clone());
+            }
+        } else {
+            CommonClassesLight.Warning("please select some shapes first");
+        }
+    }
+
+    /**
+     * paste selection if the ROIPanel does not contain any ROI
+     */
+    public void pasteIfEmpty() {
+        if (ROIS == null || ROIS.isEmpty()) {
+            addROIs(copy, true);
+            selected_shape_or_group = null;
+        }
+    }
+
+    /**
+     * Paste the selection
+     */
+    public void paste() {
+        addROIs(copy, true);
+        selected_shape_or_group = null;
+    }
+
     /*
      * keyboard shortcuts
      */
@@ -1850,20 +1899,36 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                 }
                 break;
             case KeyEvent.VK_A:
-                if (e.getModifiers() == 2) {
+                if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
                     selectAll();
                 }
                 break;
             case KeyEvent.VK_R:
-                if (e.getModifiers() == 2) {
+                if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
                     recolorSel(lastcolorused);
+                }
+                break;
+            /**
+             * ctrl + C copies ROIs
+             */
+            case KeyEvent.VK_C:
+                if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
+                    copy();
+                }
+                break;
+            /**
+             * ctrl + V pastes ROIs
+             */
+            case KeyEvent.VK_V:
+                if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
+                    paste();
                 }
                 break;
             case KeyEvent.VK_S:
                 if (MODE == EDIT_MODE) {
                     setEditMode(DEFAULT_MODE);
                 } else {
-                    if (e.getModifiers() == 2) {
+                    if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
                         if (output_name == null) {
                             JFileChooser fc;
                             fc = new JFileChooser(".");

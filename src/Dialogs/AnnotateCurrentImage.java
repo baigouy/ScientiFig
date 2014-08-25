@@ -83,7 +83,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      * @param bg_image backround image over which various vectorial shapes will
      * be added
      */
-    public AnnotateCurrentImage(MyImage2D bg_image) {
+    public AnnotateCurrentImage(MyImage2D bg_image, ArrayList<Object> copiedROIs) {
         initComponents();
         rOIpanelLight1.setROIPanelActive(true);
         rOIpanelLight1.addKeyLisetener(true);
@@ -113,6 +113,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/inhibition_arrow.png")));
         arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_inhibition_arrow.png")));
         jComboBox2.setModel(new DefaultComboBoxModel(arrows));
+        if (copiedROIs != null && (copiedROIs instanceof ArrayList)) {
+            rOIpanelLight1.copy = copiedROIs;
+        }
+    }
+
+    public ArrayList<Object> getCopiedROIs() {
+        return rOIpanelLight1.copy;
     }
 
     /**
@@ -122,8 +129,8 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      * be added
      * @param contained_shapes vectorial objects to associate to the image
      */
-    public AnnotateCurrentImage(MyImage2D bg_image, ArrayList<Object> contained_shapes) {
-        this(bg_image);
+    public AnnotateCurrentImage(MyImage2D bg_image, ArrayList<Object> contained_shapes, ArrayList<Object> copiedROIs) {
+        this(bg_image, copiedROIs);
         rOIpanelLight1.setROIS(contained_shapes);
     }
 
@@ -1232,7 +1239,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         //--> si ROI --> recup image
 
         tmp.addAssociatedObject(new MyLine2D.Double(0, 0, 256, 128));
-        AnnotateCurrentImage fp = new AnnotateCurrentImage(tmp);
+        AnnotateCurrentImage fp = new AnnotateCurrentImage(tmp, null);
         int result = JOptionPane.showOptionDialog(null, new Object[]{fp}, "Add Extra Objects To The Image", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
             //
@@ -1293,5 +1300,3 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JButton zoomplus;
     // End of variables declaration//GEN-END:variables
 }
-
-
