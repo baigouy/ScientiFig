@@ -104,8 +104,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
             this.rec2d = myel.rec2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.text = myel.text;
             this.ORIENTATION = myel.ORIENTATION;
             this.isFrame = myel.isFrame;
@@ -159,15 +158,15 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
         text.setJournalStyle(jp, false, false);
     }
 
-    @Override
-    public void drawTransparent(Graphics2D g2d) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d) {
-        fillTransparent(g2d, transparency);
-    }
+//    @Override
+//    public void drawTransparent(Graphics2D g2d) {
+//        drawTranspatransparencyd, opacity);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d) {
+//        fillTrtransparencynt(g2d, opacity);
+//    }
 
     @Override
     public boolean isWidthIncompressible() {
@@ -213,7 +212,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         g2d.setStroke(new BasicStroke(1f));
         Color frame_color = text.getTextBgColor();
         if (frame_color != null) {
@@ -386,7 +385,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
         System.out.println(test.isHeightIncompressible() + " " + test.isWidthIncompressible() + " " + test.getIncompressibleWidth() + " " + test.getIncompressibleHeight());
         test.scale(0.5);
         System.out.println(test.isHeightIncompressible() + " " + test.isWidthIncompressible() + " " + test.getIncompressibleWidth() + " " + test.getIncompressibleHeight());
-        test.draw(g2d);
+//      drawAndFillst.draw(g2d);
 
         coloredTextPaneSerializable = new ColoredTextPaneSerializable("sdqsdqsdq  sdqsd");
         coloredTextPaneSerializable.setFontToAllText(new Font("Arial", Font.ITALIC, 50), false, false);
@@ -395,7 +394,7 @@ public abstract class TextBar extends MyRectangle2D implements PARoi, Transforma
         System.out.println(test3.isHeightIncompressible() + " " + test3.isWidthIncompressible() + " " + test3.getIncompressibleWidth() + " " + test3.getIncompressibleHeight());
         test3.scale(0.5);
         System.out.println(test3.isHeightIncompressible() + " " + test3.isWidthIncompressible() + " " + test3.getIncompressibleWidth() + " " + test3.getIncompressibleHeight());
-        test3.draw(g2d);
+//drawAndFill    test3.draw(g2d);
 
         g2d.dispose();
 

@@ -114,8 +114,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             this.rec2d = myel.rec2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.bimg = myel.bimg;
             this.letter = myel.letter;
             this.scale_bar_size_in_px_of_the_real_image = myel.scale_bar_size_in_px_of_the_real_image;
@@ -249,7 +248,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
                 init_transX = -r.getX();
                 init_transY = -r.getY();
                 super.fullName = name;
-                super.shortName = CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_last(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), ".");
+                super.shortName = CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightLast(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), ".");
                 setFirstCorner(new Point2D.Double(0, 0));
                 doc2String(true);
                 continue;
@@ -578,7 +577,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         if (document == null) {
             reloadDocFromString();
         }
@@ -610,7 +609,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         g2d.setClip(null);
         g2d.setTransform(at2);
         g2d.setPaint(pt);
-        super.draw(g2d);
+        super.drawAndFill(g2d);
         g2d.setClip(clip);
     }
 
@@ -679,10 +678,10 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         Graphics2D g2d = tmp.createGraphics();
         test.setFirstCorner(new Point2D.Double(256, 256));
         test.setToWidth(128);
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         test.setFirstCorner(new Point2D.Double(0, 0));
         test.setToWidth(256);
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         g2d.dispose();
         SaverLight.popJ(tmp);
         try {

@@ -261,8 +261,11 @@ public class DoubleLayerPane extends javax.swing.JLayeredPane {
         resizePanel(this, width, height);
         resizePanel(original_pane, width, height);
         resizePanel(ROIS, width, height);
-        ROIS.setROIPanelActive(true);
-        ROIS.setDraggable(false);
+        /**
+         * no clue why I ever added those two lines here, must have been tired
+         */
+//        ROIS.setROIPanelActive(true);
+//        ROIS.setDraggable(false);
     }
 
     /**
@@ -324,5 +327,3 @@ public class DoubleLayerPane extends javax.swing.JLayeredPane {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
-
-

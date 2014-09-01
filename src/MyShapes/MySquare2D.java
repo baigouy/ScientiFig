@@ -33,6 +33,8 @@
  */
 package MyShapes;
 
+import Commons.CommonClassesLight;
+import Dialogs.ROIpanelLight;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -89,9 +91,10 @@ public abstract class MySquare2D extends MyRectangle2D implements PARoi, Seriali
         public Double(MySquare2D.Double myel) {
             this.rec2d = myel.rec2d;
             this.color = myel.color;
+            this.fillColor = myel.fillColor;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
+            this.fillOpacity = myel.fillOpacity;
             this.LINESTROKE = myel.LINESTROKE;
             this.dashSize = myel.dashSize;
             this.dotSize = myel.dotSize;
@@ -99,6 +102,11 @@ public abstract class MySquare2D extends MyRectangle2D implements PARoi, Seriali
             this.angle = myel.angle;
         }
 
+        /**
+         * I can probably remove this clone and only keep the parent one
+         *
+         * @return
+         */
         @Override
         public Object clone() {
             return new MySquare2D.Double(this).setZpos(ZstackPos);
@@ -115,6 +123,21 @@ public abstract class MySquare2D extends MyRectangle2D implements PARoi, Seriali
         }
     }
 
+    @Override
+    public String getShapeName() {
+        return "Rectangle";
+    }
+
+    @Override
+    public int getShapeType() {
+        return ROIpanelLight.RECTANGLE;
+    }
+
+    @Override
+    public String toString() {
+        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -126,11 +149,9 @@ public abstract class MySquare2D extends MyRectangle2D implements PARoi, Seriali
         Graphics2D g2d = test2.createGraphics();
         long start_time = System.currentTimeMillis();
         MySquare2D.Double test = new MySquare2D.Double(10, 10, 40, 60);
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         g2d.dispose();
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
         System.exit(0);
     }
 }
-
-

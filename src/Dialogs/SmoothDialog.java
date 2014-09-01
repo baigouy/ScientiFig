@@ -55,7 +55,7 @@ public class SmoothDialog extends javax.swing.JPanel {
      * @return the type of regression
      */
     public String getSmoothType() {
-        return CommonClassesLight.strcutl_first(jComboBox1.getSelectedItem().toString(), " ");
+        return CommonClassesLight.strCutLeftFirst(jComboBox1.getSelectedItem().toString(), " ");
     }
 
     /**

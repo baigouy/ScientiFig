@@ -97,7 +97,7 @@ public class RTools {
         if (!command.contains("aes")) {
             return "";
         }
-        return "aes" + CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(command, "aes"), ")") + ")";
+        return "aes" + CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(command, "aes"), ")") + ")";
     }
 
     /**

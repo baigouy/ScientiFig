@@ -159,8 +159,8 @@ public class ComponentBlinker {
                          * we force pos to update in case the window has been resized while blinking for example
                          */
                         pos = new MyRectangle2D.Double(getComponentPosition(c));
-                        pos.setColor(0x00FF00);
-                        pos.setTransparency(0.3f);
+                        pos.setDrawColor(0x00FF00);
+                        pos.setDrawOpacity(0.3f);
                     } else {
                         pos = null;
                     }

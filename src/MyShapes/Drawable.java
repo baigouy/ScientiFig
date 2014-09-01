@@ -53,110 +53,116 @@ public interface Drawable extends Serializable {
     public static final int RIGHT = 3;
     public static final float[] dottedSelection = {2, 5, 1, 6};
 
-    /**
-     *
-     * @param g2d
-     * @param color
-     * @param transparency
-     * @param strokeSize
-     */
-    public void draw(Graphics2D g2d, int color, float transparency, float strokeSize);
-
-    /**
-     *
-     * @param g2d
-     * @param color
-     * @param transparency
-     * @param strokeSize
-     */
-    public void fill(Graphics2D g2d, int color, float transparency, float strokeSize);
-
-    /**
-     *
-     * @param g2d
-     * @param color
-     * @param transparency
-     * @param strokeSize
-     */
-    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSize);
-
-    /**
-     *
-     * @param g2d
-     * @param color
-     */
-    public void draw(Graphics2D g2d, int color);
-
-    /**
-     *
-     * @param g2d
-     * @param color
-     */
-    public void fill(Graphics2D g2d, int color);
-
-    /**
-     *
-     * @param g2d
-     * @param color
-     */
-    public void drawAndFill(Graphics2D g2d, int color);
-
-    /**
-     *
-     * @param g2d
-     * @param transparency
-     */
-    public void drawTransparent(Graphics2D g2d, float transparency);
-
-    /**
-     *
-     * @param g2d
-     * @param transparency
-     */
-    public void fillTransparent(Graphics2D g2d, float transparency);
-
-    /**
-     *
-     * @param g2d
-     * @param transparency
-     */
-    public void drawAndFillTransparent(Graphics2D g2d, float transparency);
-
-    /**
-     *
-     * @param g2d
-     */
-    public void draw(Graphics2D g2d);
-
-    /**
-     *
-     * @param g2d
-     */
-    public void fill(Graphics2D g2d);
-
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     * @param transparency
+//     * @param strokeSize
+//     */
+//    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSize);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     * @param transparency
+//     * @param strokeSize
+//     */
+//    public void fill(Graphics2D g2d, int color, float transparency, float strokeSize);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     * @param transparency
+//     * @param strokeSize
+//     */
+//    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSize);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     */
+//    public void drawAndFill(Graphics2D g2d, int color);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     */
+//    public void fill(Graphics2D g2d, int color);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param color
+//     */
+//    public void drawAndFill(Graphics2D g2d, int color);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param transparency
+//     */
+//    public void drawTransparent(Graphics2D g2d, float transparency);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param transparency
+//     */
+//    public void fillTransparent(Graphics2D g2d, float transparency);
+//
+//    /**
+//     *
+//     * @param g2d
+//     * @param transparency
+//     */
+//    public void drawAndFillTransparent(Graphics2D g2d, float transparency);
+//
     /**
      *
      * @param g2d
      */
     public void drawAndFill(Graphics2D g2d);
 
+        /**
+     *
+     * @param g2d
+     */
+    public void draw(Graphics2D g2d);
+    
     /**
      *
      * @param g2d
      */
-    public void drawTransparent(Graphics2D g2d);
-
-    /**
-     *
-     * @param g2d
-     */
-    public void fillTransparent(Graphics2D g2d);
-
-    /**
-     *
-     * @param g2d
-     */
-    public void drawAndFillTransparent(Graphics2D g2d);
+    public void fill(Graphics2D g2d);
+//
+//    /**
+//     *
+//     * @param g2d
+//     */
+//    public void drawAndFill(Graphics2D g2d);
+//
+//    /**
+//     *
+//     * @param g2d
+//     */
+//    public void drawTransparent(Graphics2D g2d);
+//
+//    /**
+//     *
+//     * @param g2d
+//     */
+//    public void fillTransparent(Graphics2D g2d);
+//
+//    /**
+//     *
+//     * @param g2d
+//     */
+//    public void drawAndFillTransparent(Graphics2D g2d);
 
     /**
      *

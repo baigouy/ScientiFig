@@ -59,6 +59,7 @@ public class Exportable implements Serializable {
      * Variables
      */
     public static final long serialVersionUID = 5209962906960838061L;
+    int version = 1;//allows for support of retrocompatibility
     HashMap<Integer, Montage> tables = new HashMap<Integer, Montage>();
     ArrayList<Object> rows = new ArrayList<Object>();
     ArrayList<String> list_of_files = new ArrayList<String>();
@@ -235,6 +236,7 @@ public class Exportable implements Serializable {
              */
             this.rows = ex.getRows();
             this.tables = ex.getTables();
+            this.version = ex.version;
             if (rows != null) {
                 for (Object row : rows) {
                     ((Row) row).recreateStyledDocForExtras();
@@ -247,6 +249,19 @@ public class Exportable implements Serializable {
                 }
 
             }
+            if (version < 1) {
+                /**
+                 * allows for retrocompatibility of files saved using SF
+                 * versions < v2.95 i.e. before the introcdution of transparency
+                 * and filling of shapes
+                 */
+                if (tables != null) {
+                    for (Montage object : tables.values()) {
+                        object.setROIDrawOpacity(1f);
+                    }
+                }
+            }
+
             pr.setProgress(90);
             this.list_of_files = ex.getList_of_files();
             /**
@@ -313,6 +328,10 @@ public class Exportable implements Serializable {
         return importJPixelSize;
     }
 
+    public int getVersion() {
+        return version;
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -348,5 +367,3 @@ public class Exportable implements Serializable {
         System.exit(0);
     }
 }
-
-

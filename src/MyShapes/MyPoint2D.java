@@ -113,8 +113,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
             this.el2d = myel.el2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.isAsterisk = myel.isAsterisk;
             this.text = myel.text;
         }
@@ -142,17 +141,16 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         public Object clone() {
             //return new MyPoint2D.Double(this);
             MyPoint2D.Double clone = new MyPoint2D.Double(this);
-                        /**
+            /**
              * bug fix for duplicated text
              */
-            if (clone.text != null)
-            {
+            if (clone.text != null) {
 //        StyledDoc2Html test = new StyledDoc2Html();
 ////        myel.text.getReadyForSerialization();
 //        clone.text = new ColoredTextPaneSerializable(test.reparse(clone.text.getFormattedText()), clone.text.getTitle());
                 clone.text = clone.text.clone();
-               }
-            
+            }
+
             return clone;
         }
     }
@@ -226,6 +224,10 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         this.isAsterisk = isAsterisk;
     }
 
+    public boolean isText() {
+        return isAsterisk || text != null;
+    }
+
     @Override
     public boolean contains(Point p) {
         return contains(p.x, p.y);
@@ -294,10 +296,10 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
 //        System.out.println(text);
         if (!isAsterisk && text == null) {
-            super.draw(g2d);
+            super.drawAndFill(g2d);
         } else {
             //le mieux serait de mettre un coloredtext pane serializable afin que je puisse l'editer et connaitre sa taille, etc
 
@@ -344,7 +346,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
                 //TODO faire un self dessinateur dans le formatted string ? 
                 //trouver comment recuperer la taille des objets pour pouvoir le positionner correctement
                 //draw(final_text, as, g2d, _LEFT, TOP_, translation_because_of_the_letter, upper_left_text.getTextBgColor());
-                //en gros c'est du top centered qu'il me faut comme draw --> a faire
+                //en gros c'est du top centered qu'il me faut comme drawAndFill --> a faire
                 //TODO appliquer aussi la stroke size aux tetes de fleches histoire que ca ne se voit pas qd on retaille qu'il y a une couille --> a faire car vraiment tres simple
                 //toute petite couille de position
                 //si c'est du texte il faut que je modifie le bounding rect pour qu'il devienne sensible sur une plus grande distance en fait --> a faire
@@ -404,7 +406,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
                  * we update the bounding rect
                  */
                 el2d = new Ellipse2D.Double(bounds.x, bounds.y, bounds.width, bounds.height);
-//                g2d.draw(el2d.getBounds2D());
+//                g2d.drawAndFill(el2d.getBounds2D());
 
                 //TODO lui faire calculer le bounding rect 
 //                double min_x = Integer.MAX_VALUE;
@@ -420,7 +422,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
 //                el2d = new Ellipse2D.Double(min_x, min_y, max_x - min_x, max_y - min_y);
 //                //el2d.x = x_begin;
 //                //el2d.y = y_begin;
-//                g2d.draw(el2d.getBounds2D());
+//                g2d.drawAndFill(el2d.getBounds2D());
             }
             g2dparams.restore(g2d);
         }
@@ -492,12 +494,29 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
 
     @Override
     public String getShapeName() {
+        if (text != null || isAsterisk) {
+            return "Floating Text";
+        }
         return "Point";
     }
 
     @Override
     public int getShapeType() {
         return ROIpanelLight.POINT;
+    }
+
+    @Override
+    public String toString() {
+        String txt = "<font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
+        if (txt != null) {
+            txt = text.getText();
+            int size = txt.length();
+            txt = txt.substring(0, 10 >= size ? size : 10);
+            if (size > txt.length()) {
+                txt += "...";
+            }
+        }
+        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() +" "+ txt;
     }
 
     @Override
@@ -525,6 +544,10 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         return IJ_ROI;
     }
 
+    /**
+     * erosion and dilatation for a vectorial point does not make any sense so
+     * we do nothing
+     */
     @Override
     public void erode(int nb_erosions) {
     }
@@ -567,7 +590,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
         g2d.setColor(Color.red);
         g2d.drawLine(x, y, x, y);
         //--> ça marche vraiment bien
-        test.draw(g2d);
+        test.drawAndFill(g2d);
 
         SaverLight.popJ(test2);
         try {

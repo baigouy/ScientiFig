@@ -47,7 +47,7 @@ import Commons.MyBufferedImage;
 import Commons.SaverLight;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font; 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -233,8 +233,7 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         this.rec2d = myel.rec2d;
         this.color = myel.color;
         this.strokeSize = myel.strokeSize;
-        this.isTransparent = myel.isTransparent;
-        this.transparency = myel.transparency;
+        this.opacity = myel.opacity;
         this.nb_cols = myel.nb_cols;
         this.nb_rows = myel.nb_rows;
         updateMasterRect();
@@ -250,8 +249,8 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         parameterDispatcher(params);
         ArrayList<String> images = new ArrayList<String>();
         while (macro.toLowerCase().contains("data-src=")) {
-            macro = CommonClassesLight.strcutr_fisrt(macro, "img");
-            String current_image = CommonClassesLight.strcutl_first(macro, "/>");
+            macro = CommonClassesLight.strCutRightFisrt(macro, "img");
+            String current_image = CommonClassesLight.strCutLeftFirst(macro, "/>");
             if (current_image.contains("data-src=")) {
                 images.add(current_image);
             }
@@ -405,11 +404,11 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         HashMap<String, String> detected_parameters = new HashMap<String, String>();
         for (String string : splitters) {
             if (txt.contains(parameters.get(string))) {
-                String cur_parameters = CommonClassesLight.strcutr_fisrt(txt, parameters.get(string));
+                String cur_parameters = CommonClassesLight.strCutRightFisrt(txt, parameters.get(string));
                 if (cur_parameters.contains(" data-")) {
-                    cur_parameters = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(CommonClassesLight.strcutl_first(cur_parameters, " data-"), "\""), "\"");
+                    cur_parameters = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutLeftFirst(cur_parameters, " data-"), "\""), "\"");
                 } else {
-                    cur_parameters = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(cur_parameters, "\""), "\"");
+                    cur_parameters = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(cur_parameters, "\""), "\"");
                 }
                 detected_parameters.put(string, cur_parameters);
             }
@@ -976,11 +975,11 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
             for (Object object : pos_n_shapes) {
                 if (object instanceof PARoi) {
                     if (!draw_shape_only_when_in_visible_area) {
-                        ((PARoi) object).draw(g2d);
+                        ((PARoi) object).drawAndFill(g2d);
                         continue;
                     }
                     if (((PARoi) object).intersects(visible_rect)) {
-                        ((PARoi) object).draw(g2d);
+                        ((PARoi) object).drawAndFill(g2d);
                     }
                 }
             }
@@ -988,9 +987,9 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         for (Object object : pos_n_shapes) {
-            ((Drawable) object).draw(g2d);
+            ((Drawable) object).drawAndFill(g2d);
         }
     }
 
@@ -1144,8 +1143,8 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
              * draw diagonals over selection
              */
 //            Line2D.Double diag1 = new Line2D.Double(rec2d.x, rec2d.y, rec2d.x + rec2d.width, rec2d.y + rec2d.height);
-//            Line2D.Double diag2 = new Line2D.Double(rec2d.x + rec2d.width, rec2d.y, rec2d.x, rec2d.y + rec2d.height);
-//            g2d.draw(diag1);
+//            Line2D.Double diag2 = new Line2D.Double(rec2d.x + rec2d.width, rec2d.y, rec2d.x, rec2d.y drawAndFillc2d.height);
+//     drawAndFill   g2d.draw(diag1);
 //            g2d.draw(diag2);
             g2dParams.restore(g2d);
         }
@@ -1239,7 +1238,7 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
     @Override
     public String toString() {
 //        /*
-//         * if the montage is engaged in a figure we add a lock symbol to it maybe I could also draw a lock icon somewhere
+//         * if the montage is engaged in a figudrawAndFille add a lock symbol to it maybe I could also draw a lock icon somewhere
 //         */
         return montageID + "";//+ (isUsedInAFigure ? "locked" : "locked");//"\uD83D\uDD12" \u02DF
     }
@@ -1468,11 +1467,10 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         return center;
     }
 
-    @Override
-    public void setColor(int color) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+//    @Override
+//    public void setColor(int color) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
     @Override
     public void flipHorizontally() {
         for (Object object : pos_n_shapes) {
@@ -1672,6 +1670,22 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         for (Object object : pos_n_shapes) {
             if (object instanceof MyImage2D) {
                 ((MyImage2D) object).recreateStyledDoc();
+            }
+        }
+    }
+
+    public void setROIDrawOpacity(float opacity) {
+        for (Object object : pos_n_shapes) {
+            if (object instanceof MyImage2D) {
+                ((MyImage2D) object).setROIDrawOpacity(opacity);
+            }
+        }
+    }
+
+    public void setROIFillOpacity(float opacity) {
+        for (Object object : pos_n_shapes) {
+            if (object instanceof MyImage2D) {
+                ((MyImage2D) object).setROIFillOpacity(opacity);
             }
         }
     }
@@ -2407,23 +2421,21 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         BufferedImage test2 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = test2.createGraphics();
 //        Montage test = new Montage(shapes, 2, 2, false, true, 3);
-        Montage test = new Montage(macro_montage);
+//        Montage test = new Montage(null);
 //        test.setToWidth(512);
-        test.draw(g2d);
-
-        System.out.println(test.produceMacroCode(1));
-
-        g2d.dispose();
-
-        SaverLight.popJ(test2);
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-        }
+//        test.draw(g2d);
+//
+//        System.out.println(test.produceMacroCode(1));
+//
+//        g2d.dispose();
+//
+//        SaverLight.popJ(test2);
+//        try {
+//            Thread.sleep(3000);
+//        } catch (Exception e) {
+//        }
 
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
         System.exit(0);
     }
 }
-
-

@@ -54,7 +54,7 @@ import org.apache.batik.ext.awt.geom.Polygon2D;
  * @since <B>Packing Analyzer 5.0</B>
  * @author Benoit Aigouy
  */
-public abstract class MyLine2D extends Line2D implements PARoi, Serializable, LineStrokable, Morphable {
+public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Serializable, LineStrokable, Morphable {
 
     /**
      * Variables
@@ -78,10 +78,9 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
     double rescaledAccoladeSize = 12;
     boolean is_real_contain = false;
     int color = 0xFFFF00;
-    float transparency = 1.f;
+    float opacity = 1.f;
     public Line2D.Double l2d;
     float strokeSize = 0.65f;
-    public boolean isTransparent = false;
     public int ARROW_HEAD_TYPE = TYPE_FULL_ARROW;
     public static final int TYPE_FULL_ARROW = 0;
     public static final int TYPE_HALF_HEAD_UP_ARROW = 1;
@@ -214,8 +213,7 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
             this.l2d = myel.l2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.show_base = myel.show_base;
             this.isAccolade = myel.isAccolade;
             this.isArrow = myel.isArrow;
@@ -245,20 +243,49 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         }
     }
 
+    /**
+     * erosion/dilatation for a line does not make sense but we could have it to
+     * shrink/grow by exactly 1 pixel in each direction (we can use scaling to
+     * do that, so that we keep the code simple)
+     */
     @Override
     public void erode(int nb_erosions) {
+        computeNewMorphology(-nb_erosions);
     }
 
     @Override
     public void erode() {
+        erode(1);
     }
 
     @Override
     public void dilate(int nb_dilatations) {
+        computeNewMorphology(nb_dilatations);
     }
 
     @Override
     public void dilate() {
+        dilate(1);
+    }
+
+    private void computeNewMorphology(int sizeChange) {
+        Rectangle2D currentBoundingRect = getBounds2D();
+        double curWidth = currentBoundingRect.getWidth();
+        double finalWitdth = curWidth + 2. * sizeChange;
+        /**
+         * just a security to prevent the shape from disappearing
+         */
+        if (finalWitdth < 1) {
+            finalWitdth = 1;
+        }
+        Point2D.Double center2D = new Point2D.Double(currentBoundingRect.getCenterX(), currentBoundingRect.getCenterY());
+        /**
+         * since scaling is isotropic we only need to do it in one dimension
+         * (e.g. in x)
+         */
+        double scale = finalWitdth / curWidth;
+        scale(scale);
+        setCenter(center2D);
     }
 
     @Override
@@ -626,10 +653,9 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
     public Object clone() {
         MyLine2D.Double r2d = new MyLine2D.Double(l2d);
         r2d.color = color;
-        r2d.transparency = transparency;
+        r2d.opacity = opacity;
         r2d.ZstackPos = ZstackPos;
         r2d.strokeSize = strokeSize;
-        r2d.isTransparent = isTransparent;
         r2d.isAccolade = isAccolade;
         r2d.isArrow = isArrow;
         r2d.barbEndSize = barbEndSize;
@@ -712,26 +738,24 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         return l2d.intersects(r);
     }
 
-    @Override
-    public int getColor() {
-        return color & 0x00FFFFFF;
-    }
-
-    @Override
-    public void setColor(int color) {
-        this.color = color & 0x00FFFFFF;
-    }
-
-    @Override
-    public int getColorIn() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int getColorOut() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+//    @Override
+//    public int getColor() {
+//        return color & 0x00FFFFFF;
+//    }
+//
+//    @Override
+//    public void setColor(int color) {
+//        this.color = color & 0x00FFFFFF;
+//    }
+//    @Override
+//    public int getColorIn() {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//
+//    @Override
+//    public int getColorOut() {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
     /**
      *
      * @return the length of the line
@@ -741,18 +765,23 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
     }
 
     @Override
-    public float getTransparency() {
-        return transparency;
+    public int getDrawColor() {
+        return color & 0x00FFFFFF;
     }
 
     @Override
-    public void setTransparency(float transparency) {
-        this.transparency = transparency;
-        if (transparency != 1.f) {
-            isTransparent = true;
-        } else {
-            isTransparent = false;
-        }
+    public void setDrawColor(int color) {
+        this.color = color & 0x00FFFFFF;
+    }
+
+    @Override
+    public float getDrawOpacity() {
+        return opacity;
+    }
+
+    @Override
+    public void setDrawOpacity(float opacity) {
+        this.opacity = opacity <= 0f ? 0f : opacity > 1f ? 1f : opacity;
     }
 
     @Override
@@ -765,11 +794,10 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         this.strokeSize = strokeSize;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return isTransparent;
-    }
-
+//    @Override
+//    public boolean isTransparent() {
+//        return isTransparent;
+//    }
     @Override
     public void drawSkeletton(Graphics2D g2d, int color) {
         G2dParameters g2dparams = new G2dParameters(g2d);
@@ -785,99 +813,125 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
 
     }
 
-    @Override
-    public void drawTransparent(Graphics2D g2d, float transparency) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.draw(l2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d, float transparency) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d, float transparency) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d) {
-        fillTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d) {
-        drawTransparent(g2d);
-    }
-
-    @Override
-    public void draw(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.draw(l2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void fill(Graphics2D g2d, int color, float transparency, float stroke_size) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.fill(l2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color, float transparency, float stroke_size) {
-        draw(g2d, color, transparency, stroke_size);
-        fill(g2d, color, transparency, stroke_size);
-    }
-
+//    @Override
+//    public void drawTransparent(Graphics2D g2d, float transparency) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+//        g2d.drawAndFill(l2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d, float transparency) {
+//        drawTransparent(g2d, transparency);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d, float transparency) {
+//        drawTransparent(g2d, transparency);
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d) {
+//        drawTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d) {
+//        fillTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d) {
+//        drawTransparent(g2d);
+//    }
+//
+//    @Override
+//    publidrawAndFillid draw(Graphics2D g2d, int color, float transparency, float strokeSize) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+//drawAndFill      g2d.draw(l2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void fill(Graphics2D g2d, int color, float transparency, float stroke_size) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+//        g2d.fill(l2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strodrawAndFillize) {
+//        draw(g2d, color, transparency, stroke_size);
+//        fill(g2d, color, transparency, stroke_size);
+//    }
     @Override
     public void draw(Graphics2D g2d) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(getLineStroke());
-//        if (isArrow) {
-            /*
-         * fix for arrow layout/stroke pbs
-         */
-//            g2d.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-//        }
-        g2d.draw(l2d);
-        if (isArrow) {
-            //only draw arrowhead if not null length
-            if (getLength() != 0) {
-                /*
-                 * fix for arrow layout/stroke pbs
+        drawAndFill(g2d, opacity > 0f, true);
+    }
+
+    @Override
+    public void fill(Graphics2D g2d) {
+        drawAndFill(g2d, opacity > 0f, true);
+    }
+
+    @Override
+    public void drawAndFill(Graphics2D g2d) {
+        drawAndFill(g2d, opacity > 0f, true);
+    }
+
+    private void drawAndFill(Graphics2D g2d, boolean drawOpacity, boolean forceShowShape) {
+        if (drawOpacity) {
+            forceShowShape = false;
+            G2dParameters g2dparams = new G2dParameters(g2d);
+            g2d.setColor(new Color(color));
+            g2d.setStroke(getLineStroke());
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+            g2d.draw(l2d);
+            if (isArrow) {
+                /**
+                 * only draw arrowhead if not null length
                  */
-                g2d.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                Object head = arrowhead(true);
-                drawLineExtras(head, g2d);
-                if (ARROW_HEAD_TYPE == TYPE_DOUBLE_HEAD_FULL_ARROW || ARROW_HEAD_TYPE == TYPE_DOUBLE_HEADED_INIBITION) {
-                    head = arrowhead(false);
+                if (getLength() != 0) {
+                    /*
+                     * fix for arrow layout/stroke pbs
+                     */
+                    g2d.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    Object head = arrowhead(true);
                     drawLineExtras(head, g2d);
+                    if (ARROW_HEAD_TYPE == TYPE_DOUBLE_HEAD_FULL_ARROW || ARROW_HEAD_TYPE == TYPE_DOUBLE_HEADED_INIBITION) {
+                        head = arrowhead(false);
+                        drawLineExtras(head, g2d);
+                    }
                 }
             }
+            if (isAccolade) {
+                Object head = bracket();
+                drawLineExtras(head, g2d);
+            }
+            g2dparams.restore(g2d);
         }
-        if (isAccolade) {
-            Object head = bracket();
-            drawLineExtras(head, g2d);
+        if (forceShowShape) {
+            /**
+             * if both are transparent we just draw the skeletton or maybe not
+             * maybe draw bounding box with a cross
+             */
+            G2dParameters g2dparams = new G2dParameters(g2d);
+            g2d.setColor(new Color(0xFFFF00));
+            g2d.setStroke(new BasicStroke(1));
+            Rectangle2D r2d = getBounds2D();
+            g2d.draw(r2d);
+            g2d.draw(new Line2D.Double(r2d.getX(), r2d.getY(), r2d.getX() + r2d.getWidth(), r2d.getY() + r2d.getHeight()));
+            g2dparams.restore(g2d);
         }
-        g2dparams.restore(g2d);
     }
 
     /**
@@ -898,40 +952,34 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
         }
     }
 
-    @Override
-    public void fill(Graphics2D g2d) {
-        draw(g2d);
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d) {
-        draw(g2d);
-    }
-
-    @Override
-    public void draw(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        draw(g2d);
-        this.color = bckup;
-    }
-
-    @Override
-    public void fill(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        fill(g2d);
-        this.color = bckup;
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        drawAndFill(g2d);
-        this.color = bckup;
-    }
-
+//    @Override
+//drawAndFillpublic void drawAndFill(Graphics2D g2d) {
+// drawAndFill   draw(g2d);
+//    }
+//
+//    @Override
+//    public void draw(Graphics2D g2d, int color) {
+//  drawAndFill  int bckup = this.color;
+//        this.color = color;
+//        draw(g2d);
+//        this.color = bckup;
+//    }
+//
+//    @Override
+//    public void fill(Graphics2D g2d, int color) {
+//        int bckup = this.color;
+//        this.color = color;
+//        fill(g2d);
+//        this.color = bckup;
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color) {
+//        int bckup = this.color;
+//        this.color = color;
+//        drawAndFill(g2d);
+//        this.color = bckup;
+//    }
     @Override
     public void drawIfVisibleWhenDragged(Graphics2D g2d, Rectangle visibleRect) {
         drawIfVisible(g2d, visibleRect);
@@ -940,7 +988,7 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
     @Override
     public void drawIfVisible(Graphics2D g2d, Rectangle visibleRect) {
         if (visibleRect.intersects(this.getBounds2D()) || visibleRect.contains(l2d.getP1()) || visibleRect.contains(l2d.getP2())) {
-            draw(g2d);
+            drawAndFill(g2d);
         }
     }
 
@@ -1132,11 +1180,19 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
 
     @Override
     public void setShapeWidth(double width, boolean keepAR) {
+        /**
+         * can be implemented using scaling, and using two scales when keepAR is
+         * false, see computeNewMorphology
+         */
         System.out.println("Not supported yet.");
     }
 
     @Override
     public void setShapeHeight(double width, boolean keepAR) {
+        /**
+         * can be implemented using scaling, and using two scales when keepAR is
+         * false, see computeNewMorphology
+         */
         System.out.println("Not supported yet.");
     }
 
@@ -1236,6 +1292,11 @@ public abstract class MyLine2D extends Line2D implements PARoi, Serializable, Li
     @Override
     public String getShapeName() {
         return "Line";
+    }
+
+    @Override
+    public String toString() {
+        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + "</html>";
     }
 
     @Override

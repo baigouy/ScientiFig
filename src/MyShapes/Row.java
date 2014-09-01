@@ -171,9 +171,9 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         parameterDispatcher(parameters);
         ArrayList<String> montages = new ArrayList<String>();
         while (macro.toLowerCase().contains("/montage")) {
-            macro = CommonClassesLight.strcutr_fisrt(macro, "ontage");
-            String current_montage = CommonClassesLight.strcutl_first(macro, "</Montage");//tag de fin
-            macro = CommonClassesLight.strcutr_fisrt(macro, "</Montage");
+            macro = CommonClassesLight.strCutRightFisrt(macro, "ontage");
+            String current_montage = CommonClassesLight.strCutLeftFirst(macro, "</Montage");//tag de fin
+            macro = CommonClassesLight.strCutRightFisrt(macro, "</Montage");
             if (current_montage.contains("data-nbCols")) {
                 montages.add(current_montage);
             }
@@ -239,11 +239,11 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         HashMap<String, String> detected_parameters = new HashMap<String, String>();
         for (String string : splitters) {
             if (txt.contains(parameters.get(string))) {
-                String cur_parameters = CommonClassesLight.strcutr_fisrt(txt, parameters.get(string));
+                String cur_parameters = CommonClassesLight.strCutRightFisrt(txt, parameters.get(string));
                 if (cur_parameters.contains(" data-")) {
-                    cur_parameters = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(CommonClassesLight.strcutl_first(cur_parameters, " data-"), "\""), "\"");
+                    cur_parameters = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutLeftFirst(cur_parameters, " data-"), "\""), "\"");
                 } else {
-                    cur_parameters = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(cur_parameters, "\""), "\"");
+                    cur_parameters = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(cur_parameters, "\""), "\"");
                 }
                 detected_parameters.put(string, cur_parameters);
             }
@@ -994,122 +994,114 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         return finalLog;
     }
 
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color, float opacity, float strokeSize) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawAndFill(g2d, color, transopacityokeSize);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFill(g2d, color, transparenopacityze);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void fill(Graphics2D g2d, int color, float transparency, fopacityize) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).fill(g2d, color, transparency, strokeopacity     }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).fill(g2d, color, transparency, strokeSize)opacity    }
+//        }
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSizeopacity  for (Object block : blocks) {
+//            ((Drawable) block).drawAndFill(g2d, color, transparency, strokeSize);
+//      opacity  for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFill(g2d, color, transparency, strokeSize);
+//           opacity }
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawAndFill(g2d, color);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFill(g2d, color);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void fill(Graphics2D g2d, int color) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).fill(g2d, color);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).fill(g2d, color);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawAndFill(g2d, color);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFill(g2d, color);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d, float transparency) {
+//        for (Object block :opacity/            ((Drawable) block).drawTransparent(g2d, transparency);
+//        }
+//        for (Object oopacityas.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawTransparent(g2d, transparency);
+//            }
+//        }
+//    }
+//
+///opacityde
+//    public void fillTransparent(Graphics2D g2d, float transparency) {
+//        for (Object block : blocks) {
+//  opacityDrawable) block).fillTransparent(g2d, transparency);
+//        }
+//        for (Object object : extras.opacity//            if (object instanceof Drawable) {
+//                ((Drawable) object).fillTransparent(g2d, transparency);
+//            }
+//        }
+//    }
+//
+//    @Override
+//opacity void drawAndFillTransparent(Graphics2D g2d, float transparency) {
+//        for (Object block : blocks) {
+//            ((Draopacity).drawAndFillTransparent(g2d, transparency);
+//        }
+//        for (Object object : extras.values()) {
+// opacityf (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFillTransparent(g2d, transparency);
+//            }
+//        }
+//    }
     @Override
-    public void draw(Graphics2D g2d, int color, float transparency, float strokeSize) {
+    public void drawAndFill(Graphics2D g2d) {
         for (Object block : blocks) {
-            ((Drawable) block).draw(g2d, color, transparency, strokeSize);
+            ((Drawable) block).drawAndFill(g2d);
         }
         for (Object object : extras.values()) {
             if (object instanceof Drawable) {
-                ((Drawable) object).draw(g2d, color, transparency, strokeSize);
-            }
-        }
-    }
-
-    @Override
-    public void fill(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        for (Object block : blocks) {
-            ((Drawable) block).fill(g2d, color, transparency, strokeSize);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).fill(g2d, color, transparency, strokeSize);
-            }
-        }
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawAndFill(g2d, color, transparency, strokeSize);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawAndFill(g2d, color, transparency, strokeSize);
-            }
-        }
-    }
-
-    @Override
-    public void draw(Graphics2D g2d, int color) {
-        for (Object block : blocks) {
-            ((Drawable) block).draw(g2d, color);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).draw(g2d, color);
-            }
-        }
-    }
-
-    @Override
-    public void fill(Graphics2D g2d, int color) {
-        for (Object block : blocks) {
-            ((Drawable) block).fill(g2d, color);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).fill(g2d, color);
-            }
-        }
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawAndFill(g2d, color);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawAndFill(g2d, color);
-            }
-        }
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d, float transparency) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawTransparent(g2d, transparency);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawTransparent(g2d, transparency);
-            }
-        }
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d, float transparency) {
-        for (Object block : blocks) {
-            ((Drawable) block).fillTransparent(g2d, transparency);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).fillTransparent(g2d, transparency);
-            }
-        }
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d, float transparency) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawAndFillTransparent(g2d, transparency);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawAndFillTransparent(g2d, transparency);
-            }
-        }
-    }
-
-    @Override
-    public void draw(Graphics2D g2d) {
-        for (Object block : blocks) {
-            ((Drawable) block).draw(g2d);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).draw(g2d);
+                ((Drawable) object).drawAndFill(g2d);
             }
         }
     }
@@ -1126,54 +1118,53 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         }
     }
 
-    @Override
-    public void drawAndFill(Graphics2D g2d) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawAndFill(g2d);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawAndFill(g2d);
-            }
-        }
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawTransparent(g2d);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawTransparent(g2d);
-            }
-        }
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d) {
-        for (Object block : blocks) {
-            ((Drawable) block).fillTransparent(g2d);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).fillTransparent(g2d);
-            }
-        }
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d) {
-        for (Object block : blocks) {
-            ((Drawable) block).drawAndFillTransparent(g2d);
-        }
-        for (Object object : extras.values()) {
-            if (object instanceof Drawable) {
-                ((Drawable) object).drawAndFillTransparent(g2d);
-            }
-        }
-    }
-
+//    @Override
+//    public void drawAndFill(Graphics2D g2d) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawAndFill(g2d);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFill(g2d);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawTransparent(g2d);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawTransparent(g2d);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).fillTransparent(g2d);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).fillTransparent(g2d);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d) {
+//        for (Object block : blocks) {
+//            ((Drawable) block).drawAndFillTransparent(g2d);
+//        }
+//        for (Object object : extras.values()) {
+//            if (object instanceof Drawable) {
+//                ((Drawable) object).drawAndFillTransparent(g2d);
+//            }
+//        }
+//    }
     @Override
     public void drawIfVisible(Graphics2D g2d, Rectangle visibleRect) {
         for (Object block : blocks) {
@@ -1194,8 +1185,8 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
 //            Line2D.Double diag1 = new Line2D.Double(rec2d.x, rec2d.y, rec2d.x + rec2d.width, rec2d.y + rec2d.height);
 //            Line2D.Double diag2 = new Line2D.Double(rec2d.x + rec2d.width, rec2d.y, rec2d.x, rec2d.y + rec2d.height);
             g2d.draw(rec2d);
-//            g2d.draw(diag1);
-//            g2d.draw(diag2);
+//            g2d.drawAndFill(diag1);
+//            g2d.drawAndFill(diag2);
         }
     }
 
@@ -1502,7 +1493,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
             }
         }
     }
-
+    
     /**
      *
      * @return the space between rows
@@ -1649,7 +1640,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
                 }
             }
             Graphics2D g2d = out.createGraphics();
-            draw(g2d);
+            drawAndFill(g2d);
             g2d.dispose();
         } catch (Exception e) {
         } finally {
@@ -1877,7 +1868,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         System.out.println(rec2d);
 
         Graphics2D g2d = tmp.createGraphics();
-        test_row.draw(g2d);
+        test_row.drawAndFill(g2d);
         g2d.dispose();
 
         System.out.println(test_row.produceMacroCode(1));

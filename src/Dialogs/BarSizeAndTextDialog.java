@@ -353,7 +353,7 @@ public class BarSizeAndTextDialog extends JPanel {
         BufferedImage tmp = new BufferedImage((int) (rec2d.getX() + rec2d.getWidth() + 1.), (int) (rec2d.getY() + rec2d.getHeight() + 1.), BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2d = tmp.createGraphics();
-        test_row.draw(g2d);
+        test_row.drawAndFill(g2d);
 
         BarSizeAndTextDialog iopane = new BarSizeAndTextDialog(0, test_row.getImageCountInYDirectionLeft(), 0);
         int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "Select a font", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);

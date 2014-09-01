@@ -174,7 +174,7 @@ public class MySpacer extends MyImage2D implements Drawable, Serializable, Namab
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         G2dParameters g2dparams = new G2dParameters(g2d);
         g2d.setColor(Color.ORANGE);
         g2d.setStroke(getLineStroke());
@@ -184,7 +184,7 @@ public class MySpacer extends MyImage2D implements Drawable, Serializable, Namab
         g2d.draw(diagonale1);
         g2d.draw(diagonale2);
         g2dparams.restore(g2d);
-        super.draw(g2d);
+        super.drawAndFill(g2d);
         super.drawInset(g2d);
     }
 
@@ -228,9 +228,9 @@ public class MySpacer extends MyImage2D implements Drawable, Serializable, Namab
         }
         Graphics2D g2d = tmp.createGraphics();
         test.setFirstCorner(new Point2D.Double(256, 256));
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         test.setFirstCorner(new Point2D.Double(0, 0));
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         g2d.dispose();
         SaverLight.popJ(tmp);
         try {

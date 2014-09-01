@@ -36,6 +36,7 @@ package Dialogs;
 import MyShapes.*;
 import Commons.CommonClassesLight;
 import Commons.SaverLight;
+import Tools.ROITools;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -52,10 +53,11 @@ import java.util.LinkedHashSet;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import java.util.List;
 
 /**
- * ROIpanelLight is the scientiFig vectorial panel (can be used to draw, move,
- * edit, ... vectorial objects)
+ * ROIpanelLight is the scientiFig vectorial panel (can be used to drawAndFill,
+ * ve, edit, ... vectorial objects)
  *
  * @since Packing Analyzer 5.0
  * @author Benoit Aigouy
@@ -78,6 +80,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     public boolean verbose_mode = false;
     public boolean clicked_on_a_shape = false;
     public Color ROIColor = Color.yellow;
+    public Color ROIFillColor = Color.yellow;
     public ArrayList<Object> ROIS;
     public ArrayList<Object> copy = new ArrayList<Object>();
     public double zoom = 1.;
@@ -100,7 +103,8 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     public boolean generateNewUniqueColorForEachShape = false;
     public boolean draw_only_mode = false;
     public boolean isDrawingPolyLine = false;
-    public int lastcolorused = 0xFFFF00;
+    public int lastDrawColorUsed = 0xFFFF00;
+    public int lastFillColorUsed = 0xFFFF00;
     float stroke_size = 0.65f;
     public int dotSize = 1;
     public int dashSize = 6;
@@ -241,18 +245,18 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
 
     /**
      *
-     * @return whether the ROIpanel is in draw only MODE (draw only means that
-     * the user is not allowed to move objects, but it can draw new ones, pretty
-     * useful in an overcrowded drawing area)
+     * @return whether the ROIpanel idrawAndFill drawdrawAndFilly MODE (d means
+     * that the user is not allowed to move objectsdrawAndFillt it can d ones,
+     * pretty useful in an overcrowded drawing area)
      */
     public boolean isDraw_only_mode() {
         return draw_only_mode;
     }
 
     /**
-     * Defines whether the ROIpanel should be in draw only MODE or not (draw
-     * only means that the user is not allowed to move objects, but it can draw
-     * new ones, pretty useful in an overcrowded drawing area)
+     * Defines whether the ROIpaneldrawAndFilluld be in drdrawAndFill or not
+     * (draw only means that the user is not allowed to movdrawAndFill ut it can
+     * draw new ones, pretty useful in an overcrowded drawing area)
      *
      * @param draw_only_mode
      */
@@ -290,12 +294,12 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         switch (MODE) {
             case EDIT_MODE:
                 if (selected_shape_or_group == null) {
-                    CommonClassesLight.Warning("please select a Shape first");
+                    CommonClassesLight.Warning(this, "please select a Shape first");
                     setEditMode(DEFAULT_MODE);
                     return;
                 }
                 if (selected_shape_or_group instanceof ComplexShapeLight) {
-                    CommonClassesLight.Warning("You cannot edit a group, please select a single shape");
+                    CommonClassesLight.Warning(this, "You cannot edit a group, please select a single shape");
                     setEditMode(DEFAULT_MODE);
                     return;
                 }
@@ -304,7 +308,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                  */
                 if (selected_shape_or_group instanceof MyPolygon2D) {
                     PolygonSimplifierDialog iopane = new PolygonSimplifierDialog();
-                    int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Edit Shape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                    int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Edit Shape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                     if (result == JOptionPane.OK_OPTION) {
                         ((MyPolygon2D) selected_shape_or_group).setMinimum_distance_between_points(iopane.getDistance());
                         setShapeToEdit(null, selected_shape_or_group);
@@ -333,7 +337,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void bringToFront() {
         if (selected_shape_or_group == null) {
-            CommonClassesLight.Warning("please select a Shape first");
+            CommonClassesLight.Warning(this, "please select a Shape first");
             return;
         }
         if (selected_shape_or_group instanceof ComplexShapeLight) {
@@ -350,6 +354,18 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             ROIS.add(selected_shape_or_group);
             Collections.rotate(ROIS, -1);
         }
+        repaint();
+        /**
+         * send signal that order of ROIs has changed
+         */
+        ROIOrderChanged();
+    }
+
+    /**
+     * override this to handle ROI order change
+     */
+    public void ROIOrderChanged() {
+
     }
 
     /**
@@ -357,7 +373,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void sendToBack() {
         if (selected_shape_or_group == null) {
-            CommonClassesLight.Warning("please select a Shape first");
+            CommonClassesLight.Warning(this, "please select a Shape first");
             return;
         }
         if (selected_shape_or_group instanceof ComplexShapeLight) {
@@ -374,6 +390,11 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             ROIS.add(selected_shape_or_group);
             Collections.rotate(ROIS, 1); //--> ca ca a marche
         }
+        repaint();
+        /**
+         * send signal that order of ROIs has changed
+         */
+        ROIOrderChanged();
     }
 
     /**
@@ -425,10 +446,10 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * (reversible if called again)
      */
     public void makeAllNegativeColor() {
-        int color = ((PARoi) shape_to_edit).getColor();
+        int color = ((Contourable) shape_to_edit).getDrawColor();
         color = CommonClassesLight.negative_color(color);
         for (Object object : sensitive_points) {
-            ((PARoi) object).setColor(color);
+            ((Contourable) object).setDrawColor(color);
         }
     }
 
@@ -438,12 +459,44 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * @param new_color
      */
     public void recolorSel(int new_color) {
-        if (selected_shape_or_group != null) {
-            ((PARoi) selected_shape_or_group).setColor(new_color);
-            lastcolorused = new_color;
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Contourable)) {
+            ((Contourable) selected_shape_or_group).setDrawColor(new_color);
+            lastDrawColorUsed = new_color;
             repaint();
         } else {
-            CommonClassesLight.Warning("please select a shape first");
+            CommonClassesLight.Warning(this, "please select a shape first");
+        }
+    }
+
+    public boolean changeSelDrawOpacity(float opacity) {
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Contourable) && !ROITools.isFloatingText(selected_shape_or_group)) {
+            ((Contourable) selected_shape_or_group).setDrawOpacity(opacity);
+            repaint();
+            return true;
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape first");
+        }
+        return false;
+    }
+
+    public boolean changeSelFillOpacity(float opacity) {
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Fillable) && !ROITools.isFloatingText(selected_shape_or_group)) {
+            ((Fillable) selected_shape_or_group).setFillOpacity(opacity);
+            repaint();
+            return true;
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape fillable shape first");
+        }
+        return false;
+    }
+
+    public void recolorFillSel(int new_color) {
+        if (selected_shape_or_group != null) {
+            ((Fillable) selected_shape_or_group).setFillColor(new_color);
+            lastFillColorUsed = new_color;
+            repaint();
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape first");
         }
     }
 
@@ -453,7 +506,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             dotSize = size;
             repaint();
         } else {
-            CommonClassesLight.Warning("please select a shape first");
+            CommonClassesLight.Warning(this, "please select a shape first");
         }
     }
 
@@ -463,7 +516,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             dashSize = size;
             repaint();
         } else {
-            CommonClassesLight.Warning("please select a shape first");
+            CommonClassesLight.Warning(this, "please select a shape first");
         }
     }
 
@@ -473,7 +526,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             skipSize = size;
             repaint();
         } else {
-            CommonClassesLight.Warning("please select a shape first");
+            CommonClassesLight.Warning(this, "please select a shape first");
         }
     }
 
@@ -483,7 +536,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             LINESTROKE = type;
             repaint();
         } else {
-            CommonClassesLight.Warning("please select a shape first");
+            CommonClassesLight.Warning(this, "please select a shape first");
         }
     }
 
@@ -526,6 +579,10 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             ROIS = new ArrayList<Object>();
         }
         ROIS.add(shape);
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         repaint();
     }
 
@@ -574,7 +631,54 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void setROIColor(int color) {
         ROIColor = new Color(color);
-        repaint();
+        //repaint();
+    }
+
+    /**
+     * Sets the default ROI color
+     *
+     * @param color
+     */
+    public void setROIFillColor(int color) {
+        ROIFillColor = new Color(color);
+        //repaint();
+    }
+
+    /**
+     * Dilate a shape (mathematical morphology)/grow a ROI
+     *
+     * @param nb_of_dilats number of dilatations
+     */
+    public void dilate(int nb_of_dilats) {
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Morphable)) {
+            ((Morphable) selected_shape_or_group).dilate(nb_of_dilats);
+            repaint();
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape or a group first");
+        }
+    }
+
+    public void recenter(double centerX, double centerY) {
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Transformable)) {
+            ((Transformable) selected_shape_or_group).setCenter(new Point2D.Double(centerX, centerY));
+            repaint();
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape or a group first");
+        }
+    }
+
+    /**
+     * Erode a shape (mathematical morphology)/shrink a ROI
+     *
+     * @param nb_of_erosions number of erosions
+     */
+    public void erode(int nb_of_erosions) {
+        if (selected_shape_or_group != null && (selected_shape_or_group instanceof Morphable)) {
+            ((Morphable) selected_shape_or_group).erode(nb_of_erosions);
+            repaint();
+        } else {
+            CommonClassesLight.Warning(this, "please select a shape or a group first");
+        }
     }
 
     /**
@@ -701,7 +805,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * @param shp
      * @param clone
      */
-    public void addROIs(ArrayList<Object> shp, boolean clone) {
+    public void addROIs(List<Object> shp, boolean clone) {
         if (shp == null) {
             return;
         }
@@ -716,6 +820,10 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         } else {
             ROIS.addAll(shp);
         }
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         repaint();
     }
 
@@ -723,7 +831,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      *
      * @param shp
      */
-    public void addROIs(ArrayList<Object> shp) {
+    public void addROIs(List<Object> shp) {
         addROIs(shp, false);
     }
 
@@ -742,11 +850,22 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             ROIS.add(shp);
         }
         if (generateNewUniqueColorForEachShape) {
-            if (shp instanceof PARoi) {
-                random_unique_colors.add(((PARoi) shp).getColor());
+            if (shp instanceof Contourable) {
+                random_unique_colors.add(((Contourable) shp).getDrawColor());
             }
         }
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         repaint();
+    }
+
+    /**
+     * override this to detect when list have changed
+     */
+    public void ROINumberChanged() {
+
     }
 
     /**
@@ -763,11 +882,15 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         ROIS.remove(selected_shape_or_group);
         ROIS.remove(cur_shape);
         ROIS.remove(selected_shape_or_group);
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         selected_shape_or_group = null;
         cur_shape = null;
         if (generateNewUniqueColorForEachShape) {
-            if (selected_shape_or_group instanceof PARoi) {
-                random_unique_colors.remove(((PARoi) selected_shape_or_group).getColor());
+            if (selected_shape_or_group instanceof Contourable) {
+                random_unique_colors.remove(((Contourable) selected_shape_or_group).getDrawColor());
             }
         }
         repaint();
@@ -777,8 +900,20 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * Remove selected dhape
      */
     public void deleteSelectedShape() {
-        ROIS.remove(selected_shape_or_group);
-        ROIS.remove(cur_shape);
+        if (selected_shape_or_group instanceof ComplexShapeLight) {
+            ROIS.removeAll(((ComplexShapeLight) selected_shape_or_group).getGroup());
+        } else {
+            ROIS.remove(selected_shape_or_group);
+        }
+        if (cur_shape instanceof ComplexShapeLight) {
+            ROIS.removeAll(((ComplexShapeLight) selected_shape_or_group).getGroup());
+        } else {
+            ROIS.remove(cur_shape);
+        }
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         selected_shape_or_group = null;
         cur_shape = null;
         repaint();
@@ -791,9 +926,13 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void removeROI(Object shp) {
         ROIS.remove(shp);
+        /**
+         * send signal that nb of ROI has changed
+         */
+        ROINumberChanged();
         if (generateNewUniqueColorForEachShape) {
-            if (shp instanceof PARoi) {
-                random_unique_colors.remove(((PARoi) shp).getColor());
+            if (shp instanceof Contourable) {
+                random_unique_colors.remove(((Contourable) shp).getDrawColor());
             }
         }
     }
@@ -868,7 +1007,6 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             return;
         }
         super.paint(g);
-
 //        AffineTransform at = new AffineTransform();
 //        at.setToTranslation(25, 10);
 //        ((Graphics2D)g).setTransform(at);
@@ -953,8 +1091,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                     g2d.setTransform(trans);
                 }
                 if (ROIS != null && !ROIS.isEmpty()) {
-                    for (int i = 0; i < ROIS.size(); i++) {
-                        Object cur_shape2 = ROIS.get(i);
+                    for (Object cur_shape2 : ROIS) {
                         drawShape(cur_shape2, g2d, r);
                     }
                 }
@@ -1022,7 +1159,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         if (!dragging) {
             if (sensitive_points != null) {
                 for (Object object : sensitive_points) {
-                    fillShapeEditMode(object, g2d, r);
+                    drawShapeEditMode(object, g2d, r);
                 }
             }
         }
@@ -1191,7 +1328,6 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             }
 
             ArrayList<Object> points_below = new ArrayList<Object>();
-            loop1:
             for (int i = sensitive_points.size() - 1; i >= 0; i--) {
                 Object shp = sensitive_points.get(i);
                 if (!finger_mode) {
@@ -1199,7 +1335,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                         if (((PARoi) shp).contains(click_point_corrected)) {
                             clicked_on_a_shape = true;
                             selected_shape_or_group = shp;
-                            break loop1;
+                            break;
                         }
                     }
                 } else {
@@ -1416,7 +1552,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                     cur_shape = new MyPoint2D.Double(X_clicked, Y_clicked);
 //                    ((MyPoint2D.Double) cur_shape).setIsAsterisk(true);
                     ColoredTextPane iopane = new ColoredTextPane();
-                    int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Please enter your text here", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                    int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Please enter your text here", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
                     if (result == JOptionPane.OK_OPTION) {
                         if (iopane.ctps.hasText()) {
                             ((MyPoint2D.Double) cur_shape).setText(iopane.ctps);
@@ -1522,11 +1658,9 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             selected_shape_or_group = null;
         }
         random_unique_colors = new HashSet<Integer>(CommonClassesLight.forbiddenColors());
-        for (int i = 0; i < ROIS.size(); i++) {
-            Object shape = ROIS.get(i);
-            if (shape instanceof PARoi) {
-                PARoi shat = (PARoi) shape;
-                random_unique_colors.add(shat.getColor());
+        for (Object shape : ROIS) {
+            if (shape instanceof Contourable) {
+                random_unique_colors.add(((Contourable) shape).getDrawColor());
             }
         }
     }
@@ -1586,18 +1720,18 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     public void releaseMouseListeners() {
         MouseListener[] l = this.getMouseListeners();
         MouseMotionListener[] l2 = this.getMouseMotionListeners();
-        for (int i = 0; i < l.length; i++) {
-            this.removeMouseListener(l[i]);
+        for (MouseListener l1 : l) {
+            this.removeMouseListener(l1);
         }
-        for (int i = 0; i < l2.length; i++) {
-            this.removeMouseMotionListener(l2[i]);
+        for (MouseMotionListener l21 : l2) {
+            this.removeMouseMotionListener(l21);
         }
     }
 
     public void releaseKeyListeners() {
         KeyListener[] k3 = this.getKeyListeners();
-        for (int i = 0; i < k3.length; i++) {
-            this.removeKeyListener(k3[i]);
+        for (KeyListener k31 : k3) {
+            this.removeKeyListener(k31);
         }
     }
 
@@ -1767,8 +1901,8 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * @param color
      */
     public void setShapeColor(Object shape, int color) {
-        if (shape instanceof PARoi) {
-            ((PARoi) shape).setColor(color);
+        if (shape instanceof Contourable) {
+            ((Contourable) shape).setDrawColor(color);
         }
     }
 
@@ -1860,7 +1994,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                 copy.add(((PARoi) selected_shape_or_group).clone());
             }
         } else {
-            CommonClassesLight.Warning("please select some shapes first");
+            CommonClassesLight.Warning(this, "please select some shapes first");
         }
     }
 
@@ -1905,7 +2039,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                 break;
             case KeyEvent.VK_R:
                 if (e.getModifiers() == InputEvent.CTRL_MASK || e.getModifiers() == InputEvent.META_MASK) {
-                    recolorSel(lastcolorused);
+                    recolorSel(lastDrawColorUsed);
                 }
                 break;
             /**

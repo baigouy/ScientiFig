@@ -557,8 +557,9 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         if (this.letter == null || letter.equals(" ") || letter.equals("")) {
 //            tmp = this.letter.getTextBgColor();
             this.letter = new ColoredTextPaneSerializable(letter);
+        } else {
+            this.letter.setText(letter);
         }
-        else this.letter.setText(letter);
         //this.letter.setTextBgColor(tmp);
     }
 
@@ -705,7 +706,6 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         lower_left_text.setText("");
         lower_right_text.setText("");
         scale_bar_text.setText("");
-
 
         if (associatedObjects != null && !associatedObjects.isEmpty()) {
             ArrayList<Object> textsToRemove = new ArrayList<Object>();
@@ -1021,7 +1021,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
             if (precise) {
                 CommonClassesLight.setHighQualityAndLowSpeedGraphics(g2d);
             }
-            draw(g2d);
+            drawAndFill(g2d);
             g2d.dispose();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1177,8 +1177,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
             this.rec2d = myel.rec2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.bimg = myel.bimg;
             this.letter = myel.letter;
             this.scale_bar_size_in_px_of_the_real_image = myel.scale_bar_size_in_px_of_the_real_image;
@@ -1231,6 +1230,26 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         public Double setZpos(int ZstackNb) {
             this.ZstackPos = ZstackNb;
             return this;
+        }
+    }
+
+    public void setROIDrawOpacity(float opacity) {
+        if (associatedObjects != null && !associatedObjects.isEmpty()) {
+            for (Object object : associatedObjects) {
+                if (object instanceof Contourable) {
+                    ((Contourable) object).setDrawOpacity(opacity);
+                }
+            }
+        }
+    }
+
+    public void setROIFillOpacity(float opacity) {
+        if (associatedObjects != null && !associatedObjects.isEmpty()) {
+            for (Object object : associatedObjects) {
+                if (object instanceof Fillable) {
+                    ((Fillable) object).setFillOpacity(opacity);
+                }
+            }
         }
     }
 
@@ -1355,7 +1374,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         g2.setComposite(myAlpha);
         createSelectedShape(g2, getBounds2D());
         g2.setStroke(new BasicStroke((float) getStrokeSize()));
-        myAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) getTransparency());
+        myAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) getDrawOpacity());
         g2.setComposite(myAlpha);
         if (cur_shp != null) {
             g2.draw(cur_shp);
@@ -1470,63 +1489,63 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         g2dparams.restore(g2d);
     }
 
-    @Override
-    public void drawTransparent(Graphics2D g2d, float transparency) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(Color.WHITE);
-        g2d.setStroke(new BasicStroke(1));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        if (bimg != null) {
-            if (!(g2d instanceof MyGraphics2D)) {
-                g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
-                high_pres = false;
-            } else {
-                MyGraphics2D tmp = ((MyGraphics2D) g2d);
-                if (tmp.isSVGPrecision()) {
-                    tmp.drawImage(bimg.getBufferedImage(), rec2d.x, rec2d.y, rec2d.width, rec2d.height);
-                    high_pres = true;
-                } else {
-                    g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
-                    high_pres = false;
-                }
-            }
-        }
-        addLetter(g2d);
-        addScalebar(g2d);
-        addTextLowerLeftCorner(g2d);
-        addTextUpperRightCorner(g2d);
-        addTextLowerRightCorner(g2d);
-        addTextUpperLeftCorner(g2d);
-        g2dparams.restore(g2d);
-        high_pres = false;
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d, float transparency) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d, float transparency) {
-        drawTransparent(g2d, transparency);
-        fillTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d) {
-        fillTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d) {
-        drawTransparent(g2d);
-        fillTransparent(g2d);
-    }
+//    @Override
+//    public void drawTransparent(Graphics2D g2d, float opacity) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(Color.WHITE);
+//        g2d.setStroke(new BasicStroke(1));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+//        if (bimg != null) {
+//            if (!(g2d instanceof MyGraphics2D)) {
+//                g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
+//                high_pres = false;
+//            } else {
+//                MyGraphics2D tmp = ((MyGraphics2D) g2d);
+//                if (tmp.isSVGPrecision()) {
+//                    tmp.drawImage(bimg.getBufferedImage(), rec2d.x, rec2d.y, rec2d.width, rec2d.height);
+//                    high_pres = true;
+//                } else {
+//                    g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
+//                    high_pres = false;
+//                }
+//            }
+//        }
+//        addLetter(g2d);
+//        addScalebar(g2d);
+//        addTextLowerLeftCorner(g2d);
+//        addTextUpperRightCorner(g2d);
+//        addTextLowerRightCorner(g2d);
+//        addTextUpperLeftCorner(g2d);
+//        g2dparams.restore(g2d);
+//        high_pres = false;
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d, float opacity) {
+//        drawTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d, float opacity) {
+//        drawTransparent(g2d, opacity);
+//        fillTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d) {
+//        drawTranspatransparencyd, opacity);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d) {
+//        fillTrtransparencynt(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d) {
+//        drawTransparent(g2d);
+//        fillTransparent(g2d);
+//    }
     int INSET_POSITION = 0;
 
     public int getINSET_POSITION() {
@@ -1558,7 +1577,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
     }
 
     /**
-     * here we draw the inset if it exists
+     * hdrawAndFillwe draw the inset if it exists
      *
      * @param g2d
      */
@@ -1724,6 +1743,11 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 
     @Override
     public void draw(Graphics2D g2d) {
+        drawAndFill(g2d);
+    }
+
+    @Override
+    public void drawAndFill(Graphics2D g2d) {
         G2dParameters g2dparams = new G2dParameters(g2d);
         g2d.setStroke(new BasicStroke(1));
         if (bimg != null) {
@@ -1779,7 +1803,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
                      * not needed anymore but keep in case I want to reactivate this for future development
                      */
                     shape.setFirstCorner(new Point2D.Double(getX() + (bounds.getX() - left_crop) / scale, getY() + (bounds.getY() - up_crop) / scale));
-                    shape.draw(g2d);
+                    shape.drawAndFill(g2d);
                 }
             }
         }
@@ -1796,7 +1820,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
     @Override
     public void drawIfVisible(Graphics2D g2d, Rectangle visibleRect) {
         if (rec2d != null && visibleRect.intersects(rec2d.getBounds2D())) {
-            draw(g2d);
+            drawAndFill(g2d);
         }
     }
 
@@ -2510,11 +2534,11 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         HashMap<String, String> detected_parameters = new HashMap<String, String>();
         for (String string : splitters) {
             if (txt.contains(parameters.get(string))) {
-                String curParams = CommonClassesLight.strcutr_fisrt(txt, parameters.get(string));
+                String curParams = CommonClassesLight.strCutRightFisrt(txt, parameters.get(string));
                 if (curParams.contains(" data-")) {
-                    curParams = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(CommonClassesLight.strcutl_first(curParams, " data-"), "\""), "\"");
+                    curParams = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutLeftFirst(curParams, " data-"), "\""), "\"");
                 } else {
-                    curParams = CommonClassesLight.strcutr_fisrt(CommonClassesLight.strcutl_last(curParams, "\""), "\"");
+                    curParams = CommonClassesLight.strCutRightFisrt(CommonClassesLight.strCutLeftLast(curParams, "\""), "\"");
                 }
                 detected_parameters.put(string, curParams);
             }
@@ -2546,7 +2570,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
                 this.bimg = new SerializableBufferedImage2(new Loader().load(name));
                 this.rec2d = new Rectangle2D.Double(0, 0, bimg.getWidth(), bimg.getHeight());
                 this.fullName = name;
-                this.shortName = CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_last(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), ".");
+                this.shortName = CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightLast(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), ".");
                 continue;
             }
             if (string.equals(("LFormattedText"))) {
@@ -2671,8 +2695,8 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
             g2d.setColor(Color.red);
             g2d.draw(rec);
 //            Line2D.Double diag1 = new Line2D.Double(rec.x, rec.y, rec.x + rec.width, rec.y + rec.height);
-//            Line2D.Double diag2 = new Line2D.Double(rec.x + rec.width, rec.y, rec.x, rec.y + rec.height);
-//            g2d.draw(diag1);            
+//            Line2D.Double diag2 = new Line2D.Double(rec.x + rec.width, rec.y, rec.x, rec.drawAndFillrec.height);
+//            g2d.ddrawAndFilldiag1);            
 //            g2d.draw(diag2);
             g2dParams.restore(g2d);
         }
@@ -2700,7 +2724,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
             img.scale(0.5);
             //--> TODO gerer les erreurs d'arrondi derriere --> puis ce sera tt fini apres plus que la position du texte a gerer
             //--> permettre a tout les textes de bouger en fonction de la taille de l'image
-            img.setInset(new SerializableBufferedImage2(pip)); //--> draw as a fraction of the original image in width and keep AR --> rather simple
+//            img.set(new SerializableBufferedImage2(pip)); //--> draw as a fraction of the original image in width and keep AR --> rather simple
             //aussi ajouter un rectangle derriere --> a faire
 //            img.setINSET_POSITION(img.TOP_, img._RIGHT_);
             img.setINSET_POSITION(Double.TOP_, Double._LEFT);
@@ -2718,12 +2742,11 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 
             //ca marche mais juste ajouter une border autour et aussi gerer la taille de cette image --> a gerer //--> peut etre demander le % de taille de l'image parente que doit faire le pip a la construction
             //--> pas trop dur je pense
-
             BufferedImage out = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2d = out.createGraphics();
             //ca a l'air de marcher mais gerer ca mieux si possible
 //            img.rotate(Math.toRadians(23)); //--> erreur de trans
-            img.setFirstCorner(new Point2D.Double(128, 64));
+//            img.setFidrawAndFillorner(new Point2D.Double(128, 64));
             img.draw(g2d);
             g2d.setColor(Color.YELLOW);
             img.drawSelection(g2d, new Rectangle(-100, -100, 2000, 2000));
@@ -2771,7 +2794,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 //            r.width -= r.x;
 //            r.height -= r.y;
 //            System.out.println(r);
-//            //use that to get the new bounding box and find a way to draw in it
+//      drawAndFill  //use that to get the new bounding box and find a way to draw in it
 //            g2d.dispose();
 //            SaverLight.popJ(out);
 //            try {
@@ -2786,7 +2809,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 
         long start_time = System.currentTimeMillis();
         MyImage2D.Double test = new MyImage2D.Double(reparse);
-        test.setScale_bar_size_in_px_of_the_real_image(120D);
+//     drawAndFillest.setScale_bar_size_in_px_of_the_real_image(120D);
         test.draw(g2d);
         System.out.println(test.produceMacroCode());
         g2d.dispose();
@@ -2799,5 +2822,3 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         System.exit(0);
     }
 }
-
-

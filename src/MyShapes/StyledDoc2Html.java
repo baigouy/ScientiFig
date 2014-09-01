@@ -437,7 +437,7 @@ public class StyledDoc2Html extends StyledDocTools {
             }
             if (tag.toLowerCase().startsWith("<txtfgcolor")) {//write it lower case to ensure compat
                 begin_FgColor = cur_string.length();
-                String color = CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(tag, "=\""), "\"").replace("#", "");
+                String color = CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(tag, "=\""), "\"").replace("#", "");
                 if (color.length() == 6) {
                     /*
                      * todo parse sting directly all at once 
@@ -452,8 +452,8 @@ public class StyledDoc2Html extends StyledDocTools {
             }
             if (tag.toLowerCase().startsWith("<font")) {
                 begin_font = cur_string.length();
-                String family = CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(tag, "ace=\""), "\"");
-                String size = CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(tag, "ize=\""), "\"");
+                String family = CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(tag, "ace=\""), "\"");
+                String size = CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(tag, "ize=\""), "\"");
                 int s = (Integer.parseInt(size));
                 ft = new Font(family, Font.PLAIN, s);
                 if (!ft.getFamily().equals(family)) {
@@ -938,10 +938,10 @@ public class StyledDoc2Html extends StyledDocTools {
         String family = "Arial";
         String size = "12";
         if (fontTag.toLowerCase().contains("face=")) {
-            family = CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(fontTag, "face="), "\"");
+            family = CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(fontTag, "face="), "\"");
         }
         if (fontTag.toLowerCase().contains("size=")) {
-            size = CommonClassesLight.strcutl_first(CommonClassesLight.strcutr_fisrt(fontTag, "size="), "\"");
+            size = CommonClassesLight.strCutLeftFirst(CommonClassesLight.strCutRightFisrt(fontTag, "size="), "\"");
         }
         return new Font(family, 0, Integer.parseInt(size));
     }

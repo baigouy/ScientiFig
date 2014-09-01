@@ -119,44 +119,6 @@ public interface PARoi extends Transformable, Drawable, Editable, Serializable, 
 
     /**
      *
-     * @return the color of the vectorial object
-     */
-    public int getColor();
-
-    /**
-     * Sets the color of the vectorial object
-     *
-     * @param color
-     */
-    public void setColor(int color);
-
-    /**
-     *
-     * @return the color inside the vectorial object
-     */
-    public int getColorIn();
-
-    /**
-     *
-     * @return the color outside the vectorial object
-     */
-    public int getColorOut();
-
-    /**
-     *
-     * @return the transparency of the vectorial object
-     */
-    public float getTransparency();
-
-    /**
-     * Sets the transparency of the vectorial object
-     *
-     * @param transparency
-     */
-    public void setTransparency(float transparency);
-
-    /**
-     *
      * @return the stroke size of the vectorial object
      */
     public float getStrokeSize();
@@ -167,12 +129,6 @@ public interface PARoi extends Transformable, Drawable, Editable, Serializable, 
      * @param strokeSize
      */
     public void setStrokeSize(float strokeSize);
-
-    /**
-     *
-     * @return true if the vectorial object is transparent
-     */
-    public boolean isTransparent();
 
     /**
      *
@@ -243,5 +199,3 @@ public interface PARoi extends Transformable, Drawable, Editable, Serializable, 
      */
     public Object clone();
 }
-
-

@@ -86,9 +86,9 @@ public class Figure extends MyRectangle2D implements Drawable, MagnificationChan
     public Figure(String macro) {
         ArrayList<String> rows_macros = new ArrayList<String>();
         while (macro.toLowerCase().contains("/row")) {
-            macro = CommonClassesLight.strcutr_fisrt(macro, "Row");
-            String current_montage = CommonClassesLight.strcutl_first(macro, "</Row");//tag de fin
-            macro = CommonClassesLight.strcutr_fisrt(macro, "</Row");
+            macro = CommonClassesLight.strCutRightFisrt(macro, "Row");
+            String current_montage = CommonClassesLight.strCutLeftFirst(macro, "</Row");//tag de fin
+            macro = CommonClassesLight.strCutRightFisrt(macro, "</Row");
             if (current_montage.contains("data-spaceBetweenMontages")) {
                 rows_macros.add(current_montage);
             }
@@ -202,9 +202,9 @@ public class Figure extends MyRectangle2D implements Drawable, MagnificationChan
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         for (Object object : rows) {
-            ((Row) object).draw(g2d);
+            ((Row) object).drawAndFill(g2d);
         }
     }
 
@@ -287,7 +287,7 @@ public class Figure extends MyRectangle2D implements Drawable, MagnificationChan
 
         BufferedImage tmp = new BufferedImage((int) (rec2d.getX() + rec2d.getWidth() + 1.), (int) (rec2d.getY() + rec2d.getHeight() + 1.), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = tmp.createGraphics();
-        rh.draw(g2d);
+        rh.drawAndFill(g2d);
         g2d.dispose();
 
         System.out.println(rh.produceMacroCode());

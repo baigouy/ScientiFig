@@ -623,31 +623,31 @@ public class JournalParameters implements Serializable {
                     setOneAndHalfColumn(CommonClassesLight.String2Double(p.getProperty("Journal 3/4 Page Width in cm")));
                 }
                 if (p.containsKey("Figure Letter Font")) {
-                    setLetterFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Letter Font"), "#"));
+                    setLetterFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Letter Font"), "#"));
                     setLetterFont(string2Font(p.getProperty("Figure Letter Font")));
                 }
                 if (p.containsKey("Figure Upper Left Text Font")) {
-                    setUpperLeftTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Upper Left Text Font"), "#"));
+                    setUpperLeftTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Upper Left Text Font"), "#"));
                     setUpperLeftTextFont(string2Font(p.getProperty("Figure Upper Left Text Font")));
                 }
                 if (p.containsKey("Figure Upper Right Text Font")) {
-                    setUpperRightTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Upper Right Text Font"), "#"));
+                    setUpperRightTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Upper Right Text Font"), "#"));
                     setUpperRightTextFont(string2Font(p.getProperty("Figure Upper Right Text Font")));
                 }
                 if (p.containsKey("Figure Lower Left Text Font")) {
-                    setLowerLeftTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Lower Left Text Font"), "#"));
+                    setLowerLeftTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Lower Left Text Font"), "#"));
                     setLowerLeftTextFont(string2Font(p.getProperty("Figure Lower Left Text Font")));
                 }
                 if (p.containsKey("Figure Lower Right Text Font")) {
-                    setLowerRightTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Lower Right Text Font"), "#"));
+                    setLowerRightTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Lower Right Text Font"), "#"));
                     setLowerRightTextFont(string2Font(p.getProperty("Figure Lower Right Text Font")));
                 }
                 if (p.containsKey("Figure Outter Text")) {
-                    setOutterTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure Outter Text"), "#"));
+                    setOutterTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure Outter Text"), "#"));
                     setOutterTextFont(string2Font(p.getProperty("Figure Outter Text")));
                 }
                 if (p.containsKey("Figure ScaleBar Font")) {
-                    setScaleBarTextFontName(CommonClassesLight.strcutl_first(p.getProperty("Figure ScaleBar Font"), "#"));
+                    setScaleBarTextFontName(CommonClassesLight.strCutLeftFirst(p.getProperty("Figure ScaleBar Font"), "#"));
                     setScaleBarTextFont(string2Font(p.getProperty("Figure ScaleBar Font")));
                 }
                 if (p.containsKey("ROI/objects Stroke Size")) {
@@ -664,31 +664,31 @@ public class JournalParameters implements Serializable {
                 }
                 GraphFont curGraphFt = new GraphFont();
                 if (p.containsKey("Graph Main Title")) {
-                    curGraphFt.setTitleSizeName(CommonClassesLight.strcutl_first(p.getProperty("Graph Main Title"), "#"));
+                    curGraphFt.setTitleSizeName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph Main Title"), "#"));
                     curGraphFt.setTitleSize(string2Font(p.getProperty("Graph Main Title")));
                 }
                 if (p.containsKey("Graph Legend Title")) {
-                    curGraphFt.setLegendTitleName(CommonClassesLight.strcutl_first(p.getProperty("Graph Legend Title"), "#"));
+                    curGraphFt.setLegendTitleName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph Legend Title"), "#"));
                     curGraphFt.setLegendTitle(string2Font(p.getProperty("Graph Legend Title")));
                 }
                 if (p.containsKey("Graph Legend Text")) {
-                    curGraphFt.setLegendTextName(CommonClassesLight.strcutl_first(p.getProperty("Graph Legend Text"), "#"));
+                    curGraphFt.setLegendTextName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph Legend Text"), "#"));
                     curGraphFt.setLegendText(string2Font(p.getProperty("Graph Legend Text")));
                 }
                 if (p.containsKey("Graph X axis title")) {
-                    curGraphFt.setTitleSizeName(CommonClassesLight.strcutl_first(p.getProperty("Graph X axis title"), "#"));
+                    curGraphFt.setTitleSizeName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph X axis title"), "#"));
                     curGraphFt.setXtitle(string2Font(p.getProperty("Graph X axis title")));
                 }
                 if (p.containsKey("Graph Y axis title")) {
-                    curGraphFt.setYtitleName(CommonClassesLight.strcutl_first(p.getProperty("Graph Y axis title"), "#"));
+                    curGraphFt.setYtitleName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph Y axis title"), "#"));
                     curGraphFt.setYtitle(string2Font(p.getProperty("Graph Y axis title")));
                 }
                 if (p.containsKey("Graph X axis text")) {
-                    curGraphFt.setXaxisName(CommonClassesLight.strcutl_first(p.getProperty("Graph X axis text"), "#"));
+                    curGraphFt.setXaxisName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph X axis text"), "#"));
                     curGraphFt.setXaxis(string2Font(p.getProperty("Graph X axis text")));
                 }
                 if (p.containsKey("Graph Y axis text")) {
-                    curGraphFt.setYaxisName(CommonClassesLight.strcutl_first(p.getProperty("Graph Y axis text"), "#"));
+                    curGraphFt.setYaxisName(CommonClassesLight.strCutLeftFirst(p.getProperty("Graph Y axis text"), "#"));
                     curGraphFt.setYaxis(string2Font(p.getProperty("Graph Y axis text")));
                 }
                 if (p.containsKey("Graph Default Line Width")) {

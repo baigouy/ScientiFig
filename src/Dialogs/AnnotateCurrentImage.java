@@ -43,9 +43,16 @@ import MyShapes.Transformable;
 import Commons.CommonClassesLight;
 import Commons.ImageTransformations;
 import Commons.Loader;
+import MyShapes.ComplexShapeLight;
+import MyShapes.Contourable;
+import MyShapes.Fillable;
+import MyShapes.MyEllipse2D;
+import MyShapes.MyPolygon2D;
 import MyShapes.SerializableBufferedImage2;
+import Tools.ROITools;
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -53,16 +60,19 @@ import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 
 /**
- * AnnotateCurrentImage is a tool to draw/handle and edit vectorial objects
+ * AnnotateCurrentImage is a tool to drawAndFill/handle and edit vectorial
+ * objects
  *
- * @since <B>FiguR 0.5</B>
  * @author Benoit Aigouy
  */
 public class AnnotateCurrentImage extends javax.swing.JPanel {
@@ -76,6 +86,8 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     int up_crop;
     double zoom = 1.;
     SerializableBufferedImage2 inset;
+    boolean loading = false;
+    DefaultListModel ROIListModel = new DefaultListModel();
 
     /**
      * Constructor
@@ -85,6 +97,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      */
     public AnnotateCurrentImage(MyImage2D bg_image, ArrayList<Object> copiedROIs) {
         initComponents();
+        jList1.setModel(ROIListModel);
         rOIpanelLight1.setROIPanelActive(true);
         rOIpanelLight1.addKeyLisetener(true);
         setImage(bg_image);
@@ -171,6 +184,16 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         this.img = bg;
     }
 
+    private void updateListContent() {
+        ArrayList<Object> obj = rOIpanelLight1.getROIS();
+        ROIListModel.clear();
+        if (obj != null) {
+            for (Object object : obj) {
+                ROIListModel.addElement(object);
+            }
+        }
+    }
+
     /**
      *
      * @return a list of vectorial objects associated to the image
@@ -185,82 +208,187 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         return extras;
     }
 
+    private void updateDrawColor(float opacity) {
+        CommonClassesLight.enableOrDisableAnyComponent(opacity > 0, jLabel2, contourColor);
+        contourColor.setActive(opacity > 0f);
+    }
+
+    private void updateFillColor(float opacity) {
+        CommonClassesLight.enableOrDisableAnyComponent(opacity > 0, jLabel12, fillColor);
+        fillColor.setActive(opacity > 0f);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
-        rOIpanelLight1 =         new ROIpanelLight() {
+        rOIpanelLight1 = new ROIpanelLight() {
+            @Override
+            public void ROIOrderChanged()
+            {
+                if (jTabbedPane1.getSelectedIndex()==1)
+                {
+                    updateListContent();
+                }
+            }
+
+            @Override
+            public void ROINumberChanged()
+            {
+                if (jTabbedPane1.getSelectedIndex()==1)
+                {
+                    updateListContent();
+                }
+            }
+
             @Override
             public void selectionChanged(Object selection) {
-                if (selection != null) {
-                    current_selection = selection;
-                    float stroke = ((PARoi) current_selection).getStrokeSize();
-                    jSpinner1.setValue(stroke);
-                    int color = ((PARoi) current_selection).getColor();
-                    paintedButton21.setColor(color);
-                    this.setROIColor(color);
-                    this.setStroke_size(stroke);
-                    if (selection instanceof MyLine2D) {
-                        jSpinner2.setValue(((MyLine2D) selection).getArrowHeadWidth());
-                        this.setArrowheadWidth(((MyLine2D) selection).getArrowHeadWidth());
-                        jSpinner8.setValue(((MyLine2D) selection).getArrowHeadHeight());
-                        this.setArrowheadHeight(((MyLine2D) selection).getArrowHeadHeight());
-                        jSpinner3.setValue(((MyLine2D) selection).getBracketLength());
-                        this.setBracketSize(((MyLine2D) selection).getBracketLength());
-                        jComboBox2.setSelectedIndex(((MyLine2D) selection).getARROW_HEAD_TYPE());
-                        this.setARROWHEAD_TYPE(((MyLine2D) selection).getARROW_HEAD_TYPE());
-                        jComboBox4.setSelectedIndex(((MyLine2D) selection).getFILLING());
-                        this.setFILLING(((MyLine2D) selection).getFILLING());
-                    }
-                    if (selection instanceof LineStrokable) {
-                        int dotSize = ((LineStrokable) selection).getDotSize();
-                        if (dotSize != 0) {
-                            jSpinner4.setValue(dotSize);
-                        } else {
-                            jSpinner4.setValue(1);
-                            ((LineStrokable) selection).setDotSize(1);
-                        }
-                        int dashSize = ((LineStrokable) selection).getDashSize();
-                        if (dashSize != 0) {
-                            jSpinner5.setValue(dashSize);
-                        } else {
-                            jSpinner5.setValue(3);
-                            ((LineStrokable) selection).setDashSize(3);
-                        }
-                        int skipSize = ((LineStrokable) selection).getSkipSize();
-                        if (skipSize != 0) {
-                            jSpinner6.setValue(skipSize);
-                        } else {
-                            jSpinner6.setValue(3);
-                            ((LineStrokable) selection).setSkipSize(3);
-                        }
-                        jComboBox1.setSelectedIndex(((LineStrokable) selection).getLineStrokeType());
-                    }
-                    if (selection instanceof Transformable)
-                    {
-                        if (((Transformable)selection).isRotable())
+                try {
+                    loading = true;
+                    if (selection != null) {
+                        current_selection = selection;
+                        if(!(selection instanceof ComplexShapeLight))
                         {
-                            jSpinner7.setModel(new SpinnerNumberModel(((Transformable)selection).getRotation(),0.,359.,1.));
+                            jList1.setSelectedValue(current_selection, true);
+                        }
+                        else
+                        {
+                            /**
+                            * get all the contained elements
+                            */
+                            HashSet<Object> objs = ((ComplexShapeLight) current_selection).getGroup();
+
+                            ArrayList<Integer> sel = new ArrayList<Integer>();
+                            for (Object object : objs) {
+                                sel.add(ROIListModel.indexOf(object));
+                            }
+                            int[] selec = new int[sel.size()];
+                            for (int i = 0; i < selec.length; i++) {
+                                selec[i] = sel.get(i);
+                            }
+                            jList1.setSelectedIndices(selec);
+                        }
+
+                        /**
+                        * enable or disable the bracket panel according to shape type
+                        */
+                        CommonClassesLight.enableOrDisablePanelComponents(jPanel5, ROITools.isBracket(current_selection));
+                        /**
+                        * enable or disable arrowhead oprions depending on shape type
+                        */
+                        CommonClassesLight.enableOrDisablePanelComponents(jPanel4, ROITools.isArrow(current_selection));
+
+                        float stroke = ((PARoi) current_selection).getStrokeSize();
+                        jSpinner1.setValue(stroke);
+                        if (selection instanceof Contourable)
+                        {
+                            drawOpacitySpinner.setValue(((Contourable)selection).getDrawOpacity());
+                        }
+                        boolean isDrawContour = !ROITools.isDrawTransparent(selection);
+                        if (isDrawContour)
+                        {
+                            if ((selection instanceof Contourable) && !((selection instanceof MyPoint2D) && ((MyPoint2D.Double)selection).isText()))
+                            {
+                                int color = ((Contourable) current_selection).getDrawColor();
+                                contourColor.setColor(color);
+                                updateDrawColor(((Contourable) current_selection).getDrawOpacity());
+                                this.setROIColor(color);
+                                CommonClassesLight.enableOrDisableAnyComponent(true, jLabel2, contourColor);
+                            }
+                            else
+                            isDrawContour = false;
+                        }
+                        if (!isDrawContour)
+                        {
+                            CommonClassesLight.enableOrDisableAnyComponent(false, jLabel2, contourColor);
+                            updateDrawColor(0);
+                        }
+                        if (selection instanceof Fillable)
+                        {
+                            fillOpacitySpinner.setValue(((Fillable)selection).getFillOpacity());
+                        }
+                        if ((selection instanceof Fillable) && !((selection instanceof MyPoint2D) && ((MyPoint2D.Double)selection).isText()))
+                        {
+                            int color = ((Fillable) current_selection).getFillColor();
+                            fillColor.setColor(color);
+                            updateFillColor(((Fillable) current_selection).getFillOpacity());
+                            this.setROIFillColor(color);
+                            CommonClassesLight.enableOrDisableAnyComponent(true, jLabel12);
                         }else
                         {
-                            jSpinner7.setModel(new SpinnerNumberModel(0.,0.,0.,0.));
+                            CommonClassesLight.enableOrDisableAnyComponent(false, jLabel12);
+                            updateFillColor(0);
                         }
+                        this.setStroke_size(stroke);
+                        if (selection instanceof MyLine2D) {
+                            jSpinner2.setValue(((MyLine2D) selection).getArrowHeadWidth());
+                            this.setArrowheadWidth(((MyLine2D) selection).getArrowHeadWidth());
+                            jSpinner8.setValue(((MyLine2D) selection).getArrowHeadHeight());
+                            this.setArrowheadHeight(((MyLine2D) selection).getArrowHeadHeight());
+                            jSpinner3.setValue(((MyLine2D) selection).getBracketLength());
+                            this.setBracketSize(((MyLine2D) selection).getBracketLength());
+                            jComboBox2.setSelectedIndex(((MyLine2D) selection).getARROW_HEAD_TYPE());
+                            this.setARROWHEAD_TYPE(((MyLine2D) selection).getARROW_HEAD_TYPE());
+                            jComboBox4.setSelectedIndex(((MyLine2D) selection).getFILLING());
+                            this.setFILLING(((MyLine2D) selection).getFILLING());
+                        }
+                        if (selection instanceof LineStrokable) {
+                            int dotSize = ((LineStrokable) selection).getDotSize();
+                            if (dotSize != 0) {
+                                jSpinner4.setValue(dotSize);
+                            } else {
+                                jSpinner4.setValue(1);
+                                ((LineStrokable) selection).setDotSize(1);
+                            }
+                            int dashSize = ((LineStrokable) selection).getDashSize();
+                            if (dashSize != 0) {
+                                jSpinner5.setValue(dashSize);
+                            } else {
+                                jSpinner5.setValue(3);
+                                ((LineStrokable) selection).setDashSize(3);
+                            }
+                            int skipSize = ((LineStrokable) selection).getSkipSize();
+                            if (skipSize != 0) {
+                                jSpinner6.setValue(skipSize);
+                            } else {
+                                jSpinner6.setValue(3);
+                                ((LineStrokable) selection).setSkipSize(3);
+                            }
+                            jComboBox1.setSelectedIndex(((LineStrokable) selection).getLineStrokeType());
+                        }
+                        if (selection instanceof Transformable)
+                        {
+                            if (((Transformable)selection).isRotable())
+                            {
+                                jSpinner7.setModel(new SpinnerNumberModel(((Transformable)selection).getRotation(),0.,359.,1.));
+                            }else
+                            {
+                                jSpinner7.setModel(new SpinnerNumberModel(0.,0.,0.,0.));
+                            }
+                        }
+
+                    }else
+                    {
+                        jList1.setSelectedIndex(-1);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally{
+                    loading = false;
                 }
             }
         };
-        jPanel1 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
-        jSpinner4 = new javax.swing.JSpinner();
-        jSpinner5 = new javax.swing.JSpinner();
-        jSpinner6 = new javax.swing.JSpinner();
-        jLabel1 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        zoomplus = new javax.swing.JButton();
+        zoomminus = new javax.swing.JButton();
+        one2one = new javax.swing.JButton();
+        auto = new javax.swing.JButton();
+        send2back = new javax.swing.JButton();
+        bring2front = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         rectangle = new javax.swing.JButton();
         circle = new javax.swing.JButton();
@@ -275,18 +403,30 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         polygon = new javax.swing.JButton();
         Edit = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        paintedButton21 = new Commons.PaintedButton();
+        contourColor = new Commons.PaintedButton();
         delete = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         jSpinner7 = new javax.swing.JSpinner();
         toImage = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        zoomplus = new javax.swing.JButton();
-        zoomminus = new javax.swing.JButton();
-        one2one = new javax.swing.JButton();
-        auto = new javax.swing.JButton();
-        send2back = new javax.swing.JButton();
-        bring2front = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        fillColor = new Commons.PaintedButton();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        drawOpacitySpinner = new javax.swing.JSpinner();
+        fillOpacitySpinner = new javax.swing.JSpinner();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox();
+        jSpinner4 = new javax.swing.JSpinner();
+        jSpinner5 = new javax.swing.JSpinner();
+        jSpinner6 = new javax.swing.JSpinner();
+        jLabel1 = new javax.swing.JLabel();
+        jSpinner1 = new javax.swing.JSpinner();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jSpinner2 = new javax.swing.JSpinner();
@@ -299,6 +439,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jSpinner3 = new javax.swing.JSpinner();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        erode = new javax.swing.JButton();
+        dilate = new javax.swing.JButton();
+        reCenter = new javax.swing.JButton();
+        delete2 = new javax.swing.JButton();
 
         javax.swing.GroupLayout rOIpanelLight1Layout = new javax.swing.GroupLayout(rOIpanelLight1);
         rOIpanelLight1.setLayout(rOIpanelLight1Layout);
@@ -313,103 +460,110 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jScrollPane1.setViewportView(rOIpanelLight1);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Line stroke parameters"));
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tabChanged(evt);
+            }
+        });
 
-        jLabel5.setText("Line stroke:");
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("ROI panel tools"));
 
-        jLabel6.setText("Dash size (px):");
-
-        jLabel7.setText("Gap size (px):");
-
-        jLabel8.setText("Dot size (px):");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Plain", "Dashed", "Dotted", "DashDot" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        zoomplus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/zoom in.png"))); // NOI18N
+        zoomplus.setToolTipText("Zoom +");
+        zoomplus.setMaximumSize(new java.awt.Dimension(48, 36));
+        zoomplus.setMinimumSize(new java.awt.Dimension(48, 36));
+        zoomplus.setPreferredSize(new java.awt.Dimension(48, 36));
+        zoomplus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LineStrokeChanged(evt);
+                rectanglerunAll(evt);
             }
         });
 
-        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
-        jSpinner4.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                dotSizeChanged(evt);
+        zoomminus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/zoom out.png"))); // NOI18N
+        zoomminus.setToolTipText("Zoom -");
+        zoomminus.setMaximumSize(new java.awt.Dimension(48, 36));
+        zoomminus.setMinimumSize(new java.awt.Dimension(48, 36));
+        zoomminus.setPreferredSize(new java.awt.Dimension(48, 36));
+        zoomminus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
             }
         });
 
-        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
-        jSpinner5.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                dashSizeChanged(evt);
+        one2one.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/1in1.png"))); // NOI18N
+        one2one.setToolTipText("1:1");
+        one2one.setMaximumSize(new java.awt.Dimension(48, 36));
+        one2one.setMinimumSize(new java.awt.Dimension(48, 36));
+        one2one.setPreferredSize(new java.awt.Dimension(48, 36));
+        one2one.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
             }
         });
 
-        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
-        jSpinner6.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                skipSizeChanged(evt);
+        auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/fit_2_screen.gif"))); // NOI18N
+        auto.setToolTipText("Fit To Screen");
+        auto.setMaximumSize(new java.awt.Dimension(48, 36));
+        auto.setMinimumSize(new java.awt.Dimension(48, 36));
+        auto.setPreferredSize(new java.awt.Dimension(48, 36));
+        auto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
             }
         });
 
-        jLabel1.setText("Stroke Size:");
-
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.65f), Float.valueOf(0.01f), null, Float.valueOf(0.25f)));
-        jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSpinner1strokeChanged(evt);
+        send2back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/send_to_back.png"))); // NOI18N
+        send2back.setToolTipText("send to back");
+        send2back.setMaximumSize(new java.awt.Dimension(48, 36));
+        send2back.setMinimumSize(new java.awt.Dimension(48, 36));
+        send2back.setPreferredSize(new java.awt.Dimension(48, 36));
+        send2back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        bring2front.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/bring_to_front.png"))); // NOI18N
+        bring2front.setToolTipText("Bring to front");
+        bring2front.setMaximumSize(new java.awt.Dimension(48, 36));
+        bring2front.setMinimumSize(new java.awt.Dimension(48, 36));
+        bring2front.setPreferredSize(new java.awt.Dimension(48, 36));
+        bring2front.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinner6)
-                            .addComponent(jSpinner5)
-                            .addComponent(jSpinner4)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinner1)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap())
+                .addComponent(zoomplus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(zoomminus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(one2one, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(auto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(send2back, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bring2front, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(bring2front, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zoomplus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zoomminus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(one2one, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(auto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(send2back, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Shapes"));
@@ -542,12 +696,12 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
-        jLabel2.setText("Color:");
+        jLabel2.setText("Contour:");
 
-        paintedButton21.setBackground(new java.awt.Color(255, 255, 0));
-        paintedButton21.setForeground(new java.awt.Color(0, 0, 255));
-        paintedButton21.setText("ROI color");
-        paintedButton21.addActionListener(new java.awt.event.ActionListener() {
+        contourColor.setBackground(new java.awt.Color(255, 255, 0));
+        contourColor.setForeground(new java.awt.Color(0, 0, 255));
+        contourColor.setText(" ");
+        contourColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rectanglerunAll(evt);
             }
@@ -581,15 +735,48 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
+        jLabel12.setText("Fill:");
+
+        fillColor.setBackground(new java.awt.Color(255, 255, 0));
+        fillColor.setForeground(new java.awt.Color(0, 0, 255));
+        fillColor.setText(" ");
+        fillColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        jLabel14.setText("color");
+
+        jLabel15.setText("Contour:");
+
+        jLabel16.setText("Fill:");
+
+        jLabel17.setText("Opacity");
+
+        drawOpacitySpinner.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.05f)));
+        drawOpacitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                drawOpacitySpinnerStateChanged(evt);
+            }
+        });
+
+        fillOpacitySpinner.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(1.0f), Float.valueOf(0.05f)));
+        fillOpacitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                drawOpacitySpinnerStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(toImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(toImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -597,7 +784,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(paintedButton21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(contourColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel12)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(fillColor, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel14))
                         .addComponent(Edit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -626,7 +819,17 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(Ellipse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(drawOpacitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fillOpacitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel17)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -648,12 +851,24 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     .addComponent(polygon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(polyline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(Edit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(paintedButton21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(Edit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel12)
+                        .addComponent(fillColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel14))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(contourColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(drawOpacitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel16)
+                    .addComponent(jLabel17)
+                    .addComponent(fillOpacitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -664,104 +879,99 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {Edit, Ellipse, accolade, arrow, circle, delete, freehand, line, polygon, polyline, rectangle, square, text});
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("ROI panel tools"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Line stroke parameters"));
 
-        zoomplus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/zoom in.png"))); // NOI18N
-        zoomplus.setToolTipText("Zoom +");
-        zoomplus.setMaximumSize(new java.awt.Dimension(48, 36));
-        zoomplus.setMinimumSize(new java.awt.Dimension(48, 36));
-        zoomplus.setPreferredSize(new java.awt.Dimension(48, 36));
-        zoomplus.addActionListener(new java.awt.event.ActionListener() {
+        jLabel5.setText("Type:");
+
+        jLabel6.setText("Dash:");
+
+        jLabel7.setText("Gap:");
+
+        jLabel8.setText("Dot:");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Plain", "Dashed", "Dotted", "DashDot" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
+                LineStrokeChanged(evt);
             }
         });
 
-        zoomminus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/zoom out.png"))); // NOI18N
-        zoomminus.setToolTipText("Zoom -");
-        zoomminus.setMaximumSize(new java.awt.Dimension(48, 36));
-        zoomminus.setMinimumSize(new java.awt.Dimension(48, 36));
-        zoomminus.setPreferredSize(new java.awt.Dimension(48, 36));
-        zoomminus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner4.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                dotSizeChanged(evt);
             }
         });
 
-        one2one.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/1in1.png"))); // NOI18N
-        one2one.setToolTipText("1:1");
-        one2one.setMaximumSize(new java.awt.Dimension(48, 36));
-        one2one.setMinimumSize(new java.awt.Dimension(48, 36));
-        one2one.setPreferredSize(new java.awt.Dimension(48, 36));
-        one2one.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner5.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                dashSizeChanged(evt);
             }
         });
 
-        auto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/fit_2_screen.gif"))); // NOI18N
-        auto.setToolTipText("Fit To Screen");
-        auto.setMaximumSize(new java.awt.Dimension(48, 36));
-        auto.setMinimumSize(new java.awt.Dimension(48, 36));
-        auto.setPreferredSize(new java.awt.Dimension(48, 36));
-        auto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner6.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                skipSizeChanged(evt);
             }
         });
 
-        send2back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/send_to_back.png"))); // NOI18N
-        send2back.setToolTipText("send to back");
-        send2back.setMaximumSize(new java.awt.Dimension(48, 36));
-        send2back.setMinimumSize(new java.awt.Dimension(48, 36));
-        send2back.setPreferredSize(new java.awt.Dimension(48, 36));
-        send2back.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
+        jLabel1.setText("Size:");
+
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.65f), Float.valueOf(0.01f), null, Float.valueOf(0.25f)));
+        jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSpinner1strokeChanged(evt);
             }
         });
 
-        bring2front.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/bring_to_front.png"))); // NOI18N
-        bring2front.setToolTipText("Bring to front");
-        bring2front.setMaximumSize(new java.awt.Dimension(48, 36));
-        bring2front.setMinimumSize(new java.awt.Dimension(48, 36));
-        bring2front.setPreferredSize(new java.awt.Dimension(48, 36));
-        bring2front.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rectanglerunAll(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(zoomplus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(zoomminus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(one2one, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(auto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(send2back, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bring2front, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(bring2front, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(zoomplus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(zoomminus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(one2one, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(auto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(send2back, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(1, 1, 1)
+                        .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(15, 15, 15)
+                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel5)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Arrow head parameters"));
@@ -875,33 +1085,112 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane1.addTab("ROI Tools", jPanel6);
+
+        jList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                ROISelChanged(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jList1);
+
+        erode.setText("erode");
+        erode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        dilate.setText("dilate");
+        dilate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        reCenter.setText("Center sel on bg image");
+        reCenter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        delete2.setText("del");
+        delete2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(erode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dilate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(reCenter)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(delete2)
+                .addGap(0, 19, Short.MAX_VALUE))
+            .addComponent(jScrollPane2)
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(erode)
+                    .addComponent(dilate)
+                    .addComponent(reCenter)
+                    .addComponent(delete2)))
+        );
+
+        jTabbedPane1.addTab("Advanced Options", jPanel7);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -909,6 +1198,20 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         Object src = null;
         if (evt != null) {
             src = evt.getSource();
+        }
+        if (src == erode) {
+            rOIpanelLight1.erode(1);
+        }
+        if (src == dilate) {
+            rOIpanelLight1.dilate(1);
+        }
+        if (src == reCenter) {
+            try {
+                if (img != null) {
+                    rOIpanelLight1.recenter((img.getWidth() - left_crop - img.getRight_crop()) / 2., (img.getHeight() - up_crop - img.getDown_crop()) / 2.);
+                }
+            } catch (Exception e) {
+            }
         }
         if (src == toImage) {
             Object raw = rOIpanelLight1.getSelectedShape();
@@ -936,19 +1239,18 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
             MyRectangle2D.Double rect = new MyRectangle2D.Double(r);
             rect.setCenter(new Point2D.Double(shiftedBack3.getBounds2D().getCenterX(), shiftedBack3.getBounds2D().getCenterY()));
-            rect.setColor(0x0000FF);
+            rect.setDrawColor(0x0000FF);
 
             rect.rotate(-(img.getTheta() - ((PARoi) rOIpanelLight1.getSelectedShape()).getRotation()));
             BufferedImage crop = new BufferedImage((int) r.getWidth(), (int) r.getHeight(), BufferedImage.TYPE_INT_RGB);
 
             AffineTransform at5 = new AffineTransform();
-
             at5.rotate(Math.toRadians(fullRotation), orig.getWidth() / 2, orig.getHeight() / 2);
             Shape finalShape = at5.createTransformedShape(shiftedBack3);
             rect.rotate(0);
 
             rect.setCenter(new Point2D.Double(finalShape.getBounds2D().getCenterX() + trans.x, finalShape.getBounds2D().getCenterY() + trans.y));
-            rect.setColor(0xFF00FF);
+            rect.setDrawColor(0xFF00FF);
 
             int width = crop.getWidth();
             int height = crop.getHeight();
@@ -967,7 +1269,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             inset = new SerializableBufferedImage2(crop);
             CommonClassesLight.showMessage(this, "Congratulations an inset corresponding to the selected ROI has been succesfully added to the picture.");
         }
-        if (src == delete) {
+        if (src == delete || src == delete2) {
             rOIpanelLight1.deleteSelectedShape();
         }
         if (src == rectangle) {
@@ -1006,7 +1308,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                          * the shape is a text we allow the text to be edited
                          */
                         ColoredTextPane iopane = new ColoredTextPane(((MyPoint2D.Double) rOIpanelLight1.getSelectedShape()).getText());
-                        int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Please enter your text here", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                        int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Please enter your text here", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
                         if (result == JOptionPane.OK_OPTION) {
                             ((MyPoint2D.Double) rOIpanelLight1.getSelectedShape()).setText(iopane.ctps);
                             rOIpanelLight1.repaint();
@@ -1027,6 +1329,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     System.err.println(stacktrace);
                 }
             }
+
             if (rOIpanelLight1.isEditMode()) {
                 /*
                  * we disable buttons
@@ -1059,14 +1362,47 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         if (src == accolade) {
             rOIpanelLight1.setDrawingPrimitive(ROIpanelLight.BRACKET);
         }
-        if (src == paintedButton21) {
-            Color color = JColorChooser.showDialog(this, "Pick a Color", paintedButton21.getBackground());
+        if (src == drawOpacitySpinner) {
+            try {
+                drawOpacitySpinner.commitEdit();
+                float opacity = (Float) drawOpacitySpinner.getValue();
+                if (rOIpanelLight1.changeSelDrawOpacity(opacity)) {
+                    updateDrawColor(opacity);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (src == fillOpacitySpinner) {
+            try {
+                fillOpacitySpinner.commitEdit();
+                float opacity = (Float) fillOpacitySpinner.getValue();
+                if (rOIpanelLight1.changeSelFillOpacity(opacity)) {
+                    updateFillColor(opacity);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (src == contourColor) {
+            Color color = JColorChooser.showDialog(this, "Pick an outline color", contourColor.getBackground());
             if (color != null) {
-                paintedButton21.setColor(color);
+                contourColor.setColor(color);
                 if (rOIpanelLight1.getSelectedShape() != null) {
-                    int col = paintedButton21.getColor();
+                    int col = contourColor.getColor();
                     rOIpanelLight1.recolorSel(col);
                     rOIpanelLight1.setROIColor(col);
+                }
+            }
+        }
+        if (src == fillColor) {
+            Color color = JColorChooser.showDialog(this, "Pick a filling color", fillColor.getBackground());
+            if (color != null) {
+                fillColor.setColor(color);
+                if (rOIpanelLight1.getSelectedShape() != null) {
+                    int col = fillColor.getColor();
+                    rOIpanelLight1.recolorFillSel(col);
+                    rOIpanelLight1.setROIFillColor(col);
                 }
             }
         }
@@ -1110,108 +1446,161 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     }//GEN-LAST:event_rectanglerunAll
 
     private void jSpinner1strokeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1strokeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null) {
-            float strokeSize = ((Float) jSpinner1.getValue());
-            ((PARoi) sel).setStrokeSize(strokeSize);
-            rOIpanelLight1.setStroke_size(strokeSize);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null) {
+                float strokeSize = ((Float) jSpinner1.getValue());
+                ((PARoi) sel).setStrokeSize(strokeSize);
+                rOIpanelLight1.setStroke_size(strokeSize);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_jSpinner1strokeChanged
 
     private void jSpinner3arrowheadSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner3arrowheadSizeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof MyLine2D) {
-            double size = ((Double) jSpinner3.getValue());
-            ((MyLine2D) sel).setBraketSize(size);
-            rOIpanelLight1.setBracketSize(size);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof MyLine2D) {
+                double size = ((Double) jSpinner3.getValue());
+                ((MyLine2D) sel).setBraketSize(size);
+                rOIpanelLight1.setBracketSize(size);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_jSpinner3arrowheadSizeChanged
 
     private void dotSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dotSizeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof LineStrokable) {
-            ((LineStrokable) sel).setDotSize(((Integer) jSpinner4.getValue()).intValue());
-            rOIpanelLight1.setDotSize(((Integer) jSpinner4.getValue()).intValue());
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof LineStrokable) {
+                ((LineStrokable) sel).setDotSize(((Integer) jSpinner4.getValue()));
+                rOIpanelLight1.setDotSize(((Integer) jSpinner4.getValue()));
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_dotSizeChanged
 
     private void dashSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dashSizeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof LineStrokable) {
-            ((LineStrokable) sel).setDashSize(((Integer) jSpinner5.getValue()).intValue());
-            rOIpanelLight1.setDashSize(((Integer) jSpinner5.getValue()).intValue());
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof LineStrokable) {
+                ((LineStrokable) sel).setDashSize(((Integer) jSpinner5.getValue()));
+                rOIpanelLight1.setDashSize(((Integer) jSpinner5.getValue()));
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_dashSizeChanged
 
     private void skipSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_skipSizeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof LineStrokable) {
-            ((LineStrokable) sel).setSkipSize(((Integer) jSpinner6.getValue()).intValue());
-            rOIpanelLight1.setSkipSize(((Integer) jSpinner6.getValue()).intValue());
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof LineStrokable) {
+                ((LineStrokable) sel).setSkipSize(((Integer) jSpinner6.getValue()));
+                rOIpanelLight1.setSkipSize(((Integer) jSpinner6.getValue()));
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_skipSizeChanged
 
     private void LineStrokeChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LineStrokeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof LineStrokable) {
-            ((LineStrokable) sel).setLineStrokeType(jComboBox1.getSelectedIndex());
-            rOIpanelLight1.setLineStroke(jComboBox1.getSelectedIndex());
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof LineStrokable) {
+                ((LineStrokable) sel).setLineStrokeType(jComboBox1.getSelectedIndex());
+                rOIpanelLight1.setLineStroke(jComboBox1.getSelectedIndex());
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_LineStrokeChanged
 
     private void rotationChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rotationChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof Transformable) {
-            ((Transformable) sel).rotate(((Double) jSpinner7.getValue()).doubleValue());
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof Transformable) {
+                ((Transformable) sel).rotate(((Double) jSpinner7.getValue()));
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_rotationChanged
 
     private void arrowHeadWidthChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_arrowHeadWidthChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof MyLine2D) {
-            double width = ((Double) jSpinner2.getValue());
-            ((MyLine2D) sel).setArrowHeadWidth(width);
-            rOIpanelLight1.setArrowheadWidth(width);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof MyLine2D) {
+                double width = ((Double) jSpinner2.getValue());
+                ((MyLine2D) sel).setArrowHeadWidth(width);
+                rOIpanelLight1.setArrowheadWidth(width);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_arrowHeadWidthChanged
 
     private void arrowHeadHeightOrLengthChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_arrowHeadHeightOrLengthChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof MyLine2D) {
-            double height = ((Double) jSpinner8.getValue());
-            ((MyLine2D) sel).setArrowHeadHeight(height);
-            rOIpanelLight1.setArrowheadHeight(height);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof MyLine2D) {
+                double height = ((Double) jSpinner8.getValue());
+                ((MyLine2D) sel).setArrowHeadHeight(height);
+                rOIpanelLight1.setArrowheadHeight(height);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_arrowHeadHeightOrLengthChanged
 
     private void arrowHeadFillingChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arrowHeadFillingChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof MyLine2D) {
-            int filling = jComboBox4.getSelectedIndex();
-            ((MyLine2D) sel).setFILLING(filling);
-            rOIpanelLight1.setFILLING(filling);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof MyLine2D) {
+                int filling = jComboBox4.getSelectedIndex();
+                ((MyLine2D) sel).setFILLING(filling);
+                rOIpanelLight1.setFILLING(filling);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_arrowHeadFillingChanged
 
     private void arrowHeadTypeChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arrowHeadTypeChanged
-        Object sel = rOIpanelLight1.getSelectedShape();
-        if (sel != null && sel instanceof MyLine2D) {
-            int type = jComboBox2.getSelectedIndex();
-            ((MyLine2D) sel).setARROW_HEAD_TYPE(type);
-            rOIpanelLight1.setARROWHEAD_TYPE(type);
-            rOIpanelLight1.repaint();
+        if (!loading) {
+            Object sel = rOIpanelLight1.getSelectedShape();
+            if (sel != null && sel instanceof MyLine2D) {
+                int type = jComboBox2.getSelectedIndex();
+                ((MyLine2D) sel).setARROW_HEAD_TYPE(type);
+                rOIpanelLight1.setARROWHEAD_TYPE(type);
+                rOIpanelLight1.repaint();
+            }
         }
     }//GEN-LAST:event_arrowHeadTypeChanged
+
+    private void drawOpacitySpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_drawOpacitySpinnerStateChanged
+        if (!loading) {
+            rectanglerunAll(new ActionEvent(evt.getSource(), 0, ""));
+        }
+    }//GEN-LAST:event_drawOpacitySpinnerStateChanged
+
+    private void tabChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabChanged
+        if (jTabbedPane1.getSelectedIndex() == 1) {
+            updateListContent();
+        }
+    }//GEN-LAST:event_tabChanged
+
+    private void ROISelChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_ROISelChanged
+        if (evt != null && !evt.getValueIsAdjusting()) {
+            try {
+                List<Object> sel = jList1.getSelectedValuesList();
+                if (sel != null && !sel.isEmpty()) {
+                    if (sel.size() > 1) {
+                        ComplexShapeLight csl = new ComplexShapeLight(sel);
+                        rOIpanelLight1.setSelectedShape(csl);
+                    } else {
+                        rOIpanelLight1.setSelectedShape(sel.get(0));
+                    }
+                    rOIpanelLight1.repaint();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_ROISelChanged
 
     public boolean hasInset() {
         return inset != null;
@@ -1233,12 +1622,31 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         tmp.rotate(45);
         System.out.println("image rotation " + tmp.getTheta()); //--> recup l'angle de l'image
         //tmp.rotate(45);
-        tmp.addAssociatedObject(new MyRectangle2D.Double(128, 128, 256, 128));
+
+        MyRectangle2D r2d = new MyRectangle2D.Double(128, 128, 256, 128);
+        r2d.setDrawColor(0xFF0000);
+        r2d.setFillColor(0x00FF00);
+        r2d.setFillOpacity(0.3f);
+        r2d.setDrawOpacity(0.6f);
+        tmp.addAssociatedObject(r2d);
         //--> get a ROI of the image ??? or make a crop of it with a rotation ??? --> TODO
         //--> a tester
         //--> si ROI --> recup image
 
-        tmp.addAssociatedObject(new MyLine2D.Double(0, 0, 256, 128));
+        MyEllipse2D.Double el2d = new MyEllipse2D.Double(128, 256, 128, 256);
+        el2d.setDrawColor(0xFF00FF);
+        el2d.setFillColor(0x0FF0F0);
+        tmp.addAssociatedObject(el2d);
+
+        MyPolygon2D.Double p2d = new MyPolygon2D.Double(10, 10, 100, 100, 10, 100, 100, 9);
+        p2d.translate(128, 128);
+        p2d.setDrawColor(0x00FFFF);
+        p2d.setFillColor(0xFF0FF0);
+        tmp.addAssociatedObject(p2d);
+
+        MyLine2D.Double l2d = new MyLine2D.Double(0, 0, 256, 128);
+        l2d.setDrawColor(0x0000FF);
+        tmp.addAssociatedObject(l2d);
         AnnotateCurrentImage fp = new AnnotateCurrentImage(tmp, null);
         int result = JOptionPane.showOptionDialog(null, new Object[]{fp}, "Add Extra Objects To The Image", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
@@ -1253,8 +1661,16 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JButton arrow;
     private javax.swing.JButton auto;
     private javax.swing.JButton bring2front;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton circle;
+    private Commons.PaintedButton contourColor;
     private javax.swing.JButton delete;
+    private javax.swing.JButton delete2;
+    private javax.swing.JButton dilate;
+    private javax.swing.JSpinner drawOpacitySpinner;
+    private javax.swing.JButton erode;
+    private Commons.PaintedButton fillColor;
+    private javax.swing.JSpinner fillOpacitySpinner;
     private javax.swing.JButton freehand;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
@@ -1262,7 +1678,12 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1271,12 +1692,16 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
@@ -1285,12 +1710,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JSpinner jSpinner6;
     private javax.swing.JSpinner jSpinner7;
     private javax.swing.JSpinner jSpinner8;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton line;
     private javax.swing.JButton one2one;
-    private Commons.PaintedButton paintedButton21;
     private javax.swing.JButton polygon;
     private javax.swing.JButton polyline;
     private Dialogs.ROIpanelLight rOIpanelLight1;
+    private javax.swing.JButton reCenter;
     private javax.swing.JButton rectangle;
     private javax.swing.JButton send2back;
     private javax.swing.JButton square;

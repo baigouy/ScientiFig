@@ -248,11 +248,11 @@ public class TopBar extends MyRectangle2D implements PARoi, Transformable, Drawa
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         if (current == null) {
             return;
         }
-        current.draw(g2d);
+        current.drawAndFill(g2d);
     }
 
     @Override

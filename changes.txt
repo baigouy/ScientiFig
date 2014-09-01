@@ -1,3 +1,11 @@
+01/09/14
+-fixed repaint error in send to back and send to front
+-added a list to browse ROIs associated to an image
+-better handling of options specific of particular shapes (irrelevant options are inactivated when the wrong ROI type is selected)
+
+28/08/14
+-updated ROIs (vectorial objects, squares, circles, ...) the objects can now be filled and set to transparent, the new shapes should remain compatible with old ones
+
 21/08/14
 -fixed a minor row selection error
 -fixed text misalignment in left/right text bars when they contain line breaks

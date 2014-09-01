@@ -330,7 +330,7 @@ public class MultiThreadExecuter extends GenericFunctionTools {
         BufferedImage tmp = new BufferedImage((int) m.getWidth(), (int) m.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = tmp.createGraphics();
 
-        m.draw(g2d);
+        m.drawAndFill(g2d);
 
         g2d.dispose();
         SaverLight.popJ(tmp);

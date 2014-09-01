@@ -41,7 +41,7 @@ import java.util.ArrayList;
 
 /**
  * GlassPane is a glasspane for ScientiFig. I use it to display hints and to
- * blink components to draw user's attention.
+ blink components to drdrawAndFillser's attention.
  *
  * @author Benoit Aigouy
  */
@@ -61,7 +61,7 @@ public class GlassPane extends javax.swing.JPanel {
     }
 
     /**
-     * add drawable objects to draw to the glasspane
+     * add drawable objectdrawAndFill draw to the glasspane
      *
      * @param o
      */
@@ -70,8 +70,8 @@ public class GlassPane extends javax.swing.JPanel {
     }
 
     /**
-     * Sets the blink object (usually a timer from another class will call this
-     * in order to draw or not something)
+     * Sets the blink object (usually a timer from another class wil this
+     * in orddrawAndFillo draw or not something)
      *
      * @param pos
      */
@@ -106,23 +106,23 @@ public class GlassPane extends javax.swing.JPanel {
     public void paint(Graphics g) {
         if (objects_to_draw_in_glasspane == null || objects_to_draw_in_glasspane.isEmpty() && blink == null) {
             /*
-             * nothing to draw
+             drawAndFillthing to draw
              */
             return;
         }
         Graphics2D g2d = (Graphics2D) g;
         for (Object object : objects_to_draw_in_glasspane) {
             if (object instanceof MyPoint2D) {
-                ((Drawable) object).draw(g2d);
+                ((MyPoint2D) object).drawAndFill(g2d);
                 continue;
             }
             if (object instanceof Drawable) {
-                ((Drawable) object).draw(g2d);
-                ((Drawable) object).fillTransparent(g2d);
+            ((Drawable) object).drawAndFill(g2d);
             }
         }
-        if (blink instanceof Drawable) {
-            ((Drawable) blink).fillTransparent(g2d);
+        if (blink instanceof Drawable)
+        {
+            ((Drawable) blink).drawAndFill(g2d);
         }
     }
 
@@ -144,5 +144,3 @@ public class GlassPane extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
-
-

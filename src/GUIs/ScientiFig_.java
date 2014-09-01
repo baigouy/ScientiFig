@@ -1,7 +1,7 @@
 //TODO add full support for 32 bits images
-//TODO implement clean split of IJ images by channel rather than by color
+//TODO implement clean split of IJ images by channel rather than by color in case users gave weird colors to their channels
 /*
- * obfuscateSFnZIP --> compile then obfuscate n compress
+ * obfuscateSFnZIP --> compile then obfuscate and compress
  */
 package GUIs;
 
@@ -142,22 +142,29 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private static final LinkedHashMap<String, String> shortcuts = new LinkedHashMap<String, String>();
 
     static {
-        shortcuts.put("Ctrl & N", "New File");
-        shortcuts.put("Ctrl & O", "Open Files");
-        shortcuts.put("Ctrl & I", "Import Files");
-        shortcuts.put("Ctrl & S", "Save");
-        shortcuts.put("Ctrl & Shift & S", "Save");
-        shortcuts.put("Ctrl & Q", "Quit");
-        shortcuts.put("Ctrl & +", "Zoom +");
-        shortcuts.put("Ctrl & -", "Zoom -");
-        shortcuts.put("Ctrl & Z", "Undo (undo/redo needs to be active)");
-        shortcuts.put("Ctrl & Y", "Redo (undo/redo needs to be active)");
+        /**
+         * Update list of shortcuts for mac users
+         */
+        String CtrlButtonName = "Ctrl";
+        if (CommonClassesLight.isMac()) {
+            CtrlButtonName = "Cmd";
+        }
+        shortcuts.put(CtrlButtonName + " & N", "New File");
+        shortcuts.put(CtrlButtonName + " & O", "Open Files");
+        shortcuts.put(CtrlButtonName + " & I", "Import Files");
+        shortcuts.put(CtrlButtonName + " & S", "Save");
+        shortcuts.put(CtrlButtonName + " & Shift & S", "Save");
+        shortcuts.put(CtrlButtonName + " & Q", "Quit");
+        shortcuts.put(CtrlButtonName + " & +", "Zoom +");
+        shortcuts.put(CtrlButtonName + " & -", "Zoom -");
+        shortcuts.put(CtrlButtonName + " & Z", "Undo (undo/redo needs to be active)");
+        shortcuts.put(CtrlButtonName + " & Y", "Redo (undo/redo needs to be active)");
         shortcuts.put("L", "Rotate image left");
         shortcuts.put("R", "Rotate image right");
-        shortcuts.put("Ctrl & J", "Create a new journal style");
-        shortcuts.put("Ctrl & E", "Edit selected journal style");
-        shortcuts.put("Ctrl & Left arrow", "Move selection left");
-        shortcuts.put("Ctrl & Right arrow", "Move selection right");
+        shortcuts.put(CtrlButtonName + " & J", "Create a new journal style");
+        shortcuts.put(CtrlButtonName + " & E", "Edit selected journal style");
+        shortcuts.put(CtrlButtonName + " & Left arrow", "Move selection left");
+        shortcuts.put(CtrlButtonName + " & Right arrow", "Move selection right");
         shortcuts.put("- / Del", "Delete selection");
         shortcuts.put("+", "Add images to the selected panel");
         shortcuts.put("F1", "Help");
@@ -197,7 +204,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.94";
+    public static final String version = "2.96";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -233,7 +240,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private static String ScientiFigMacroName = null;
     public static boolean useNativeDialog = false;
     public static boolean showHelpInfoWindow = true;
-//    public static boolean logErrors = false;
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
     int memoryRefreshSpeed = 2000;
     private static final ArrayList<String> exts = new ArrayList<String>();
@@ -261,7 +267,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         public void selectionChanged(Object selection) {
             current_selected_shapeRow = this.getSelectedShape();
             selectionUpdateRow();
-
             /*
              * we set options according to the type of sdelection
              */
@@ -369,9 +374,16 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 
         speedUpScrollbars();
         pack();
+
         WindowManager.addWindow(this);
         CommonClassesLight.GUI = this;
+        doubleLayerPane1.ROIS.setDraggable(false);
+        doubleLayerPane2.ROIS.setDraggable(false);
+        doubleLayerPane3.ROIS.setDraggable(false);
         doubleLayerPane3.setSelectable(false);
+        doubleLayerPane1.ROIS.setROIPanelActive(true);
+        doubleLayerPane2.ROIS.setROIPanelActive(true);
+        doubleLayerPane3.ROIS.setROIPanelActive(true);
         if (CommonClassesLight.ij == null) {
             jMenu6.setVisible(false);
         }
@@ -559,7 +571,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 runAllnow(moveRight);
             }
         });
-
     }
 
     /**
@@ -608,12 +619,12 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     }
 
     /**
-     * We use this glasspane to draw indications/guidelines for the software on
-     * the screen.
+     * We use this glasspane to drawAndFill indications/guidelines for the
+     * software on the screen.
      */
     private void updateGlassPane() {
         /*
-         * We draw some hints/guidelines in the glasspane but only if lists are empty and if the user wants it.
+         * We drawAndFill some hints/guidelines in the glasspane but only if lists are empty and if the user wants it.
          */
         if (!isThereAnythingInTheLists() && showHints) {
             ArrayList<Object> annotations = new ArrayList<Object>();
@@ -622,8 +633,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              */
             Rectangle2D pos_of_list = ComponentBlinker.getComponentPosition(myList1);
             MyRectangle2D pos = new MyRectangle2D.Double(pos_of_list);
-            pos.setColor(0xFF0000);
-            pos.setTransparency(0.3f);
+            pos.setFillColor(0xFF0000);
+            pos.setDrawColor(0xFF0000);
+            pos.setFillOpacity(0.3f);
             annotations.add(pos);
 
             /*
@@ -631,8 +643,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              */
             Rectangle2D pos_of_help = ComponentBlinker.getComponentPosition(buttonHelp);
             MyRectangle2D pos5 = new MyRectangle2D.Double(pos_of_help);
-            pos5.setColor(0xFF0000);
-            pos5.setTransparency(0.3f);
+            pos5.setFillColor(0xFF0000);
+            pos5.setDrawColor(0xFF0000);
+            pos5.setFillOpacity(0.3f);
             annotations.add(pos5);
             MyPoint2D.Double DND_text5 = new MyPoint2D.Double(pos_of_help.getCenterX(), pos_of_help.getCenterY());
             DND_text5.setText(new ColoredTextPaneSerializable("<-- press here to view a video demo of buttons/spinners/combos functionalities", Color.RED, new Font("Monospaced", Font.PLAIN, 12)));
@@ -698,8 +711,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              */
             Rectangle2D pos_of_Auto = ComponentBlinker.getComponentPosition(createPanelAutomatically);
             MyRectangle2D pos2 = new MyRectangle2D.Double(pos_of_Auto);
-            pos2.setColor(0xFF0000);
-            pos2.setTransparency(0.3f);
+            pos2.setFillColor(0xFF0000);
+            pos2.setDrawColor(0xFF0000);
+            pos2.setFillOpacity(0.3f);
             annotations.add(pos2);
             MyPoint2D.Double DND_text2 = new MyPoint2D.Double(pos_of_Auto.getCenterX(), pos_of_Auto.getCenterY());
             DND_text2.setText(new ColoredTextPaneSerializable("<-- 2/ press here to create panels automatically", Color.BLACK, new Font("Monospaced", Font.PLAIN, 12)));
@@ -710,16 +724,18 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              */
             Rectangle2D pos_of_add_row = ComponentBlinker.getComponentPosition(addSelectedPanelToNewRow);
             MyRectangle2D pos3 = new MyRectangle2D.Double(pos_of_add_row);
-            pos3.setColor(0xFF0000);
-            pos3.setTransparency(0.3f);
+            pos3.setFillColor(0xFF0000);
+            pos3.setDrawColor(0xFF0000);
+            pos3.setFillOpacity(0.3f);
             annotations.add(pos3);
             /*
              * annotate add col to row
              */
             Rectangle2D pos_of_add_col = ComponentBlinker.getComponentPosition(addSelectedPanelToSelectedRow);
             MyRectangle2D pos4 = new MyRectangle2D.Double(pos_of_add_col);
-            pos4.setColor(0xFF0000);
-            pos4.setTransparency(0.3f);
+            pos4.setFillColor(0xFF0000);
+            pos4.setDrawColor(0xFF0000);
+            pos4.setFillOpacity(0.3f);
             annotations.add(pos4);
             MyPoint2D.Double DND_text4 = new MyPoint2D.Double(pos_of_add_col.getCenterX(), pos_of_add_col.getCenterY());
             DND_text4.setText(new ColoredTextPaneSerializable("<-- 4/ press here to add a column to an existing row", Color.BLACK, new Font("Monospaced", Font.PLAIN, 12)));
@@ -742,7 +758,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             glasspane.repaint();
         } else {
             /*
-             * nothing to draw in the glasspane
+             * nothing to drawAndFill in the glasspane
              */
             glasspane.clearPane();
             glasspane.repaint();
@@ -1322,7 +1338,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static void updateFigure(Object shapeToDraw) {
         if (shapeToDraw != null && shapeToDraw instanceof PARoi) {
             doubleLayerPane2.setAllowRefresh(false);
-            ((PARoi) shapeToDraw).draw(doubleLayerPane2.ROIS.getG2D());
+            ((PARoi) shapeToDraw).drawAndFill(doubleLayerPane2.ROIS.getG2D());
             doubleLayerPane2.setAllowRefresh(true);
         }
     }
@@ -1364,7 +1380,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static void updateTable(Object shapeToDraw) {
         if (shapeToDraw != null && shapeToDraw instanceof PARoi) {
             doubleLayerPane1.setAllowRefresh(false);
-            ((PARoi) shapeToDraw).draw(doubleLayerPane1.ROIS.getG2D());
+            ((PARoi) shapeToDraw).drawAndFill(doubleLayerPane1.ROIS.getG2D());
             doubleLayerPane1.setAllowRefresh(true);
         }
     }
@@ -3826,7 +3842,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                                 }
                             }
                             MyGraphics2D g2d = new MyGraphics2D(MyGraphics2D.SVG_ONLY);
-                            drawable.draw(g2d);
+                            drawable.drawAndFill(g2d);
                             saveAsSVG(g2d.getGraphics2DSVG(), name, iopane.getDpi());
                             g2d.dispose();
                             if (iopane.getDpi() > 76) {
@@ -3880,7 +3896,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                             Graphics2D g2d = tmp.createGraphics();
                             CommonClassesLight.setHighQualityAndLowSpeedGraphics(g2d);
                             setATforDPI(g2d, iopane.getDPI());
-                            drawable.draw(g2d);
+                            drawable.drawAndFill(g2d);
                             logMagnificationChanges(iopane.logMagnificationChanges(), iopane.getDPI(), name, drawable);
                             g2d.dispose();
                             if (iopane.isForceGray()) {
@@ -3917,7 +3933,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                             CommonClassesLight.setHighQualityAndLowSpeedGraphics(g2d);
                             //en fait il me suffit d'appliquer un zoom ici aussi pour avoir le dessin fait correctement je pense mais a tester
                             setATforDPI(g2d, iopane.getDPI());
-                            drawable.draw(g2d);
+                            drawable.drawAndFill(g2d);
                             logMagnificationChanges(iopane.logMagnificationChanges(), iopane.getDPI(), name, drawable);
                             g2d.dispose();
                             if (iopane.isForceGray()) {
@@ -3948,7 +3964,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                             Graphics2D g2d = tmp.createGraphics();
                             CommonClassesLight.setHighQualityAndLowSpeedGraphics(g2d);
                             setATforDPI(g2d, iopane.getDPI());
-                            drawable.draw(g2d);
+                            drawable.drawAndFill(g2d);
                             logMagnificationChanges(iopane.logMagnificationChanges(), iopane.getDPI(), null, drawable);
                             g2d.dispose();
                             if (iopane.isForceGray()) {
@@ -3984,7 +4000,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                             Graphics2D g2d = tmp.createGraphics();
                             CommonClassesLight.setHighQualityAndLowSpeedGraphics(g2d);
                             setATforDPI(g2d, iopane.getDPI());
-                            drawable.draw(g2d);
+                            drawable.drawAndFill(g2d);
                             logMagnificationChanges(iopane.logMagnificationChanges(), iopane.getDPI(), name, drawable);
                             g2d.dispose();
                             if (iopane.isForceGray()) {
@@ -4511,7 +4527,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private int getRealPos(int pos) {
         String value = tableListModel.elementAt(pos).toString();
         if (value.contains(">")) {
-            value = CommonClassesLight.strcutr_last(value, ">");
+            value = CommonClassesLight.strCutRightLast(value, ">");
         }
         int real_pos = CommonClassesLight.String2Int(value);
         return real_pos;

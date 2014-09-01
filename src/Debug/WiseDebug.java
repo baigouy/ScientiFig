@@ -566,7 +566,7 @@ public class WiseDebug {
          * rect
          */
         MyRectangle2D.Double rect = new MyRectangle2D.Double(120, 120, 256, 200);
-        rect.setColor(0xFF0000);
+        rect.setDrawColor(0xFF0000);
         rect.rotate(30);
         rect.setStrokeSize(3);
         rect.setLineStrokeType(LineStrokable.DASH_DOT);
@@ -575,7 +575,7 @@ public class WiseDebug {
          * ellipse
          */
         MyEllipse2D.Double elli = new MyEllipse2D.Double(200, 250, 256, 180);
-        elli.setColor(0xFFFFFF);
+        elli.setDrawColor(0xFFFFFF);
         elli.rotate(90);
         elli.setLineStrokeType(LineStrokable.DASHED);
         Rois.add(elli);

@@ -14,6 +14,7 @@ import java.io.*;
 import java.net.URI;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -223,8 +224,6 @@ public class CommonClassesLight {
     public static ImageJ ij;
     public static MyRsessionLogger r;
     public static LogFrame logger;
-    public static boolean ErrorLoggerActivated = false;
-    public static boolean LogLoggerActivated = false;
     /*
      * we set up a psuedo random
      */
@@ -454,6 +453,19 @@ public class CommonClassesLight {
     }
 
     /**
+     * Rounds a number n digits after the coma
+     *
+     * @param nb
+     * @param nb_of_digits_after_the_coma
+     * @return a string representation of a double with the correct nb of digits
+     */
+    public static String roundNbAfterComma(double nb, int nb_of_digits_after_the_coma) {
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(nb_of_digits_after_the_coma);
+        return nf.format(nb);
+    }
+
+    /**
      * Small code to rotate a point around another one
      *
      * @param point
@@ -497,40 +509,6 @@ public class CommonClassesLight {
     }
 
     /**
-     *
-     * @return true if errors are being logged
-     */
-    public static boolean isErrorLoggerActivated() {
-        return ErrorLoggerActivated;
-    }
-
-    /**
-     * Defines whether errors should be logged or not
-     *
-     * @param ErrorLoggerActivated
-     */
-    public static void setErrorLoggerActivated(boolean ErrorLoggerActivated) {
-        CommonClassesLight.ErrorLoggerActivated = ErrorLoggerActivated;
-    }
-
-    /**
-     *
-     * @return true if the System.out is being logged
-     */
-    public static boolean isLogLoggerActivated() {
-        return LogLoggerActivated;
-    }
-
-    /**
-     * Defines whether System.out should be logged
-     *
-     * @param LogLoggerActivated
-     */
-    public static void setLogLoggerActivated(boolean LogLoggerActivated) {
-        CommonClassesLight.LogLoggerActivated = LogLoggerActivated;
-    }
-
-    /**
      * This function can disable all the components contained in a jpanel
      *
      * @param jp the panel
@@ -541,6 +519,14 @@ public class CommonClassesLight {
         Component[] comps = jp.getComponents();
         for (Component component : comps) {
             component.setEnabled(show);
+        }
+    }
+
+    public static void enableOrDisableAnyComponent(boolean show, Object... components) {
+        for (Object object : components) {
+            if (object instanceof Component) {
+                ((Component) object).setEnabled(show);
+            }
         }
     }
 
@@ -570,10 +556,7 @@ public class CommonClassesLight {
         if (r == null) {
             return false;
         }
-        if (r.isRserverRunning()) {
-            return true;
-        }
-        return false;
+        return r.isRserverRunning();
     }
 
     /**
@@ -586,10 +569,7 @@ public class CommonClassesLight {
             return false;
         }
         String name = filename.toLowerCase();
-        if (name.endsWith(".xls") || name.endsWith(".txt") || name.endsWith(".csv") || name.endsWith(".xlsx")) {
-            return true;
-        }
-        return false;
+        return name.endsWith(".xls") || name.endsWith(".txt") || name.endsWith(".csv") || name.endsWith(".xlsx");
     }
 
     public static void getDependencies() {
@@ -647,7 +627,6 @@ public class CommonClassesLight {
         boolean takeAllFiles = false;
         if (extensionPatterns != null && extensionPatterns.length > 0) {
             int i = 0;
-            loop0:
             for (String string : extensionPatterns) {
                 if (string == null) {
                     i++;
@@ -659,7 +638,7 @@ public class CommonClassesLight {
                 string = string.trim().toLowerCase();
                 if (string.equals("*.*")) {
                     takeAllFiles = true;
-                    break loop0;
+                    break;
                 } else {
                     if (string.startsWith("*")) {
                         string = string.substring(1);
@@ -676,23 +655,22 @@ public class CommonClassesLight {
         }
         File[] list_of_files = new File(change_path_separators_to_system_ones(parentFolder)).listFiles();
         if (list_of_files != null) {
-            for (int i = 0; i < list_of_files.length; i++) {
+            for (File list_of_file : list_of_files) {
                 if (takeAllFiles) {
-                    list_folder.add(CommonClassesLight.change_path_separators_to_system_ones(list_of_files[i].toString()));
+                    list_folder.add(CommonClassesLight.change_path_separators_to_system_ones(list_of_file.toString()));
                 } else {
-                    loop1:
                     for (String string : extensionPatterns) {
                         if (string == null) {
                             continue;
                         }
-                        if (takeAllFiles || list_of_files[i].toString().toLowerCase().endsWith(string.toLowerCase().trim())) {
-                            list_folder.add(CommonClassesLight.change_path_separators_to_system_ones(list_of_files[i].toString()));
-                            break loop1;
+                        if (takeAllFiles || list_of_file.toString().toLowerCase().endsWith(string.toLowerCase().trim())) {
+                            list_folder.add(CommonClassesLight.change_path_separators_to_system_ones(list_of_file.toString()));
+                            break;
                         }
                     }
                 }
-                if (recurse && list_of_files[i].isDirectory()) {
-                    list_folder.addAll(list_whatever_full_path(list_of_files[i].toString(), recurse, extensionPatterns));
+                if (recurse && list_of_file.isDirectory()) {
+                    list_folder.addAll(list_whatever_full_path(list_of_file.toString(), recurse, extensionPatterns));
                 }
             }
         }
@@ -852,7 +830,7 @@ public class CommonClassesLight {
      * @since <B>Packing Analyzer 3.0</B>
      */
     public static boolean isMultiThreadable() {
-        return getNbOfCPUs() > 1 ? true : false;
+        return getNbOfCPUs() > 1;
     }
 
     /**
@@ -937,7 +915,7 @@ public class CommonClassesLight {
                 if (f != null) {
                     String fichier = f.toString().toLowerCase();
                     if (ext instanceof String) {
-                        return f.isDirectory() || fichier.endsWith("." + ext) ? true : false;
+                        return f.isDirectory() || fichier.endsWith("." + ext);
                     } else if (ext instanceof ArrayList) {
                         if (f.isDirectory()) {
                             return true;
@@ -1009,7 +987,7 @@ public class CommonClassesLight {
                 try {
                     if (f != null) {
                         String fichier = f.toString().toLowerCase();
-                        return f.isDirectory() || fichier.endsWith("." + ext) ? true : false;
+                        return f.isDirectory() || fichier.endsWith("." + ext);
                     } else {
                         return false;
                     }
@@ -1250,7 +1228,7 @@ public class CommonClassesLight {
             public boolean accept(File dir, String name) {
                 String fichier = name.toLowerCase();
                 if (ext instanceof String) {
-                    return name.endsWith((String) ext) ? true : false;
+                    return name.endsWith((String) ext);
                 } else {
                     ArrayList<String> txt = (ArrayList<String>) ext;
                     for (String string : txt) {
@@ -1368,7 +1346,7 @@ public class CommonClassesLight {
                 try {
                     if (f != null) {
                         String fichier = f.toString().toLowerCase();
-                        return f.isDirectory() || fichier.endsWith("." + ext) ? true : false;
+                        return f.isDirectory() || fichier.endsWith("." + ext);
                     } else {
                         return false;
                     }
@@ -1418,7 +1396,7 @@ public class CommonClassesLight {
                 try {
                     if (f != null) {
                         String fichier = f.toString().toLowerCase();
-                        return f.isDirectory() || fichier.endsWith("." + ext) ? true : false;
+                        return f.isDirectory() || fichier.endsWith("." + ext);
                     } else {
                         return false;
                     }
@@ -1436,9 +1414,9 @@ public class CommonClassesLight {
         jfc.setMultiSelectionEnabled(false);
         int retour;
         if (parent == null) {
-            retour = jfc.showSaveDialog(CommonClassesLight.getGUIComponent());//sel.showOpenDialog(CommonClasses.getGUIComponent()
+            retour = jfc.showSaveDialog(CommonClassesLight.getGUIComponent());
         } else {
-            retour = jfc.showSaveDialog(parent);//sel.showOpenDialog(CommonClasses.getGUIComponent()
+            retour = jfc.showSaveDialog(parent);
         }
         if (retour == JFileChooser.APPROVE_OPTION) {
             File nom = jfc.getSelectedFile();
@@ -2351,7 +2329,7 @@ public class CommonClassesLight {
             return null;
         }
         if (in.contains(".")) {
-            return strcutl_last(in, ".");
+            return strCutLeftLast(in, ".");
         } else {
             return in;
         }
@@ -2364,7 +2342,7 @@ public class CommonClassesLight {
      * @param pattern cut left of this pattern
      * @since <B>Packing Analyzer 1.0</B>
      */
-    public static String strcutl_first(String in, String pattern) {
+    public static String strCutLeftFirst(String in, String pattern) {
         int idx = in.indexOf(pattern);
         if (idx == -1) {
             /**
@@ -2382,7 +2360,7 @@ public class CommonClassesLight {
      * @param pattern cut left of this pattern
      * @since <B>Packing Analyzer 1.0</B>
      */
-    public static String strcutl_last(String in, String pattern) {
+    public static String strCutLeftLast(String in, String pattern) {
         int idx = in.lastIndexOf(pattern);
         if (idx == -1) {
             /**
@@ -2400,7 +2378,7 @@ public class CommonClassesLight {
      * @param pattern cut right of this pattern
      * @since <B>Packing Analyzer 1.0</B>
      */
-    public static String strcutr_fisrt(String in, String pattern) {
+    public static String strCutRightFisrt(String in, String pattern) {
         int idx = in.indexOf(pattern);
         if (idx == -1) {
             /**
@@ -2418,7 +2396,7 @@ public class CommonClassesLight {
      * @param pattern cut right of this pattern
      * @since <B>Packing Analyzer 1.0</B>
      */
-    public static String strcutr_last(String in, String pattern) {
+    public static String strCutRightLast(String in, String pattern) {
         int idx = in.lastIndexOf(pattern);
         if (idx == -1) {
             /**
@@ -2578,18 +2556,6 @@ public class CommonClassesLight {
     }
 
     /**
-     * Returns true if the computer is a Mac
-     *
-     * @since <B>Packing Analyzer 1.0</B>
-     */
-    public static boolean isMac() {
-        if (getOS().contains("ac")) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      *
      * @return the java version running the executable
      * @since TA 1.0 beta 18
@@ -2620,15 +2586,21 @@ public class CommonClassesLight {
     }
 
     /**
+     * Returns true if the computer is a Mac
+     *
+     * @since <B>Packing Analyzer 1.0</B>
+     */
+    public static boolean isMac() {
+        return getOS().contains("ac");
+    }
+
+    /**
      * Returns true if the computer runs a Windows OS
      *
      * @since <B>Packing Analyzer 1.0</B>
      */
     public static boolean isWindows() {
-        if (getOS().contains("indo")) {
-            return true;
-        }
-        return false;
+        return getOS().contains("indo");
     }
 
     public static String image2HtmlToolTip(String tooltip_text, String... image_names) {
@@ -2638,8 +2610,7 @@ public class CommonClassesLight {
         tooltip_text = tooltip_text.replace("\n", "<BR>");
         String out = "<html>" + tooltip_text;
         if (image_names != null) {
-            for (int i = 0; i < image_names.length; i++) {
-                String string = image_names[i];
+            for (String string : image_names) {
                 out += "<BR><img src=\"file:" + change_path_separators_to_system_ones(string) + "\">";
             }
         }

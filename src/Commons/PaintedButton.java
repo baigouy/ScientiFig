@@ -57,6 +57,7 @@ public class PaintedButton extends JButton {
      */
     static final long serialVersionUID = 2162480067214638293L;
     Color color = Color.BLACK;
+    String textWhenActive;
     String position;
 
     /**
@@ -76,6 +77,7 @@ public class PaintedButton extends JButton {
      */
     public PaintedButton(String text, int color_me) {
         super(text);
+        textWhenActive = text;
         color = new Color(color_me);
         this.setBackground(color);
         setColor(color);
@@ -94,6 +96,25 @@ public class PaintedButton extends JButton {
         this.setBackground(color);
         setColor(color);
         setUI();
+    }
+
+    @Override
+    public void setText(String text) {
+        textWhenActive = text;
+        super.setText(text);
+    }
+
+    public void setActive(boolean active) {
+        if (!active) {
+            super.setBackground(Color.BLACK);
+            super.setForeground(new Color(0xFFFFFFFF));
+            super.setText("N.A.");
+            //super.setEnabled(false);
+        } else {
+            setColor(color);
+            super.setText(textWhenActive);
+            //super.setEnabled(true);
+        }
     }
 
     /**
@@ -126,7 +147,11 @@ public class PaintedButton extends JButton {
         /*
          * to avoid pbs on Macs and when people change PA look & feel
          */
-        super.setUI(new MetalButtonUI());
+        if (ui == null) {
+            super.setUI(new MetalButtonUI());
+        } else {
+            super.setUI(ui);
+        }
     }
 
     /**
@@ -190,5 +215,3 @@ public class PaintedButton extends JButton {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
-
-

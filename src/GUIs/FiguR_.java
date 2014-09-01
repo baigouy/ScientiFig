@@ -1308,7 +1308,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 plot.getTextreadyForSerialization();
                 plot.doc2String(true);
                 plot.setFullName(last_folder);
-                plot.setShortName(CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_last(CommonClassesLight.change_path_separators_to_system_ones(last_folder), "/"), "."));
+                plot.setShortName(CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightLast(CommonClassesLight.change_path_separators_to_system_ones(last_folder), "/"), "."));
                 SaverLight.saveObjectRaw(plot, last_folder);
             } else {
                 source = saveAs;
@@ -1336,7 +1336,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 plot.getTextreadyForSerialization();
                 plot.doc2String(true);
                 plot.setFullName(name);
-                plot.setShortName(CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_last(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), "."));
+                plot.setShortName(CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightLast(CommonClassesLight.change_path_separators_to_system_ones(name), "/"), "."));
                 SaverLight.saveObjectRaw(plot, name);
                 last_folder = name;
             }
@@ -2068,7 +2068,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             String aesFill = gp.getAesFill();
             if (aesFill != null) {
                 if (aesFill.startsWith("as.factor(")) {
-                    aesFill = CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_fisrt(aesFill, "("), ")");
+                    aesFill = CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightFisrt(aesFill, "("), ")");
                 }
             }
             if (column_names.contains(aesFill)) {
@@ -2102,7 +2102,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             String aesColor = gp.getAesColor();
             if (aesColor != null) {
                 if (aesColor.startsWith("as.factor(")) {
-                    aesColor = CommonClassesLight.strcutl_last(CommonClassesLight.strcutr_fisrt(aesColor, "("), ")");
+                    aesColor = CommonClassesLight.strCutLeftLast(CommonClassesLight.strCutRightFisrt(aesColor, "("), ")");
                 }
             }
             if (column_names.contains(aesColor)) {

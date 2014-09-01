@@ -40,6 +40,7 @@ import Commons.SaverLight;
 import ij.gui.Roi;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -55,7 +56,7 @@ import java.util.ArrayList;
 /*
  * nb: keep it like this (without extends Rectangle2D) for now otherwise it creates a packing bug --> try to understand why in the future and fix it
  */
-public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, LineStrokable, Serializable, Morphable {
+public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Contourable, Fillable, LineStrokable, Serializable, Morphable {
 
     /**
      * Variables
@@ -63,9 +64,10 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
     public static final long serialVersionUID = -4016519115188053806L;
     public Rectangle2D.Double rec2d;
     public int color = 0xFFFF00;
-    public float transparency = 1.f;
+    public int fillColor = 0xFFFF00;
+    public float opacity = 1.f;
+    float fillOpacity = 0.f;
     public float strokeSize = 0.65f;
-    public boolean isTransparent = false;
     public int ZstackPos = 0;
     /*
      * line stroke variables
@@ -110,10 +112,10 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         /**
          * Constructor
          *
-         * @param l2d
+         * @param r2d
          */
-        public Double(Rectangle2D.Double l2d) {
-            this.rec2d = l2d;
+        public Double(Rectangle2D.Double r2d) {
+            this.rec2d = new Rectangle2D.Double(r2d.getX(), r2d.getY(), r2d.getWidth(), r2d.getHeight());
         }
 
         /**
@@ -124,9 +126,10 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         public Double(MyRectangle2D.Double myel) {
             this.rec2d = (Rectangle2D.Double) myel.rec2d.clone();
             this.color = myel.color;
+            this.fillColor = myel.fillColor;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
+            this.fillOpacity = myel.fillOpacity;
             this.LINESTROKE = myel.LINESTROKE;
             this.dashSize = myel.dashSize;
             this.dotSize = myel.dotSize;
@@ -280,20 +283,26 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         return LINESTROKE == TYPE;
     }
 
+    /**
+     * constructor and clone are duplicated --> clean this TODO
+     *
+     * @return
+     */
     @Override
     public Object clone() {
         MyRectangle2D.Double r2d = new MyRectangle2D.Double(rec2d);
         r2d.color = color;
-        r2d.transparency = transparency;
+        r2d.fillColor = fillColor;
+        r2d.opacity = opacity;
+        r2d.fillOpacity = fillOpacity;
         r2d.ZstackPos = ZstackPos;
         r2d.strokeSize = strokeSize;
-        r2d.isTransparent = isTransparent;
         r2d.LINESTROKE = LINESTROKE;
         r2d.dashSize = dashSize;
         r2d.dotSize = dotSize;
         r2d.skipSize = skipSize;
         r2d.angle = angle;
-        return (MyRectangle2D.Double) r2d;
+        return r2d;
     }
 
     @Override
@@ -377,39 +386,61 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         return rec2d.createUnion(r);
     }
 
+//    @Override
+//    public int getColor() {
+//        return color & 0x00FFFFFF;
+//    }
+//    @Override
+//    public int getColorIn() {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//
+//    @Override
+//    public int getColorOut() {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//    @Override
+//    public void setColor(int color) {
+//        this.color = color & 0x00FFFFFF;
+//    }
     @Override
-    public int getColor() {
+    public int getDrawColor() {
         return color & 0x00FFFFFF;
     }
 
     @Override
-    public int getColorIn() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int getColorOut() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setColor(int color) {
+    public void setDrawColor(int color) {
         this.color = color & 0x00FFFFFF;
     }
 
     @Override
-    public float getTransparency() {
-        return transparency;
+    public int getFillColor() {
+        return fillColor & 0x00FFFFFF;
     }
 
     @Override
-    public void setTransparency(float transparency) {
-        this.transparency = transparency;
-        if (transparency != 1.f) {
-            isTransparent = true;
-        } else {
-            isTransparent = false;
-        }
+    public void setFillColor(int color) {
+        this.fillColor = color & 0x00FFFFFF;
+    }
+
+    @Override
+    public void setFillOpacity(float opacity) {
+        this.fillOpacity = opacity <= 0f ? 0f : opacity > 1f ? 1f : opacity;
+    }
+
+    @Override
+    public float getFillOpacity() {
+        return fillOpacity;
+    }
+
+    @Override
+    public float getDrawOpacity() {
+        return opacity;
+    }
+
+    @Override
+    public void setDrawOpacity(float opacity) {
+        this.opacity = opacity <= 0f ? 0f : opacity > 1f ? 1f : opacity;
     }
 
     @Override
@@ -420,11 +451,6 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
     @Override
     public void setStrokeSize(float strokeSize) {
         this.strokeSize = strokeSize;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return isTransparent;
     }
 
     @Override
@@ -446,151 +472,185 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
 
     }
 
-    @Override
-    public void draw(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.draw(rec2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void fill(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.fill(rec2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color, float transparency, float strokeSize) {
-        draw(g2d, color, transparency, strokeSize);
-        fill(g2d, color, transparency, strokeSize);
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d, float transparency) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.draw(rec2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d, float transparency) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-        g2d.fill(rec2d);
-        g2dparams.restore(g2d);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d, float transparency) {
-        drawTransparent(g2d, transparency);
-        fillTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawTransparent(Graphics2D g2d) {
-        drawTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void fillTransparent(Graphics2D g2d) {
-        fillTransparent(g2d, transparency);
-    }
-
-    @Override
-    public void drawAndFillTransparent(Graphics2D g2d) {
-        drawTransparent(g2d);
-        fillTransparent(g2d);
-    }
-
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color, float opacity, float strokeSize) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+//     drawAndFill2d.draw(rec2d);
+//        g2dparams.restore(g2d);
+//    }
+//    @Override
+//    public void fill(Graphics2D g2d, int color, float opacity, float strokeSize) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+//        g2d.fill(rec2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color, float opacity, float strokeSizedrawAndFill//        draw(g2d, color, opacity, strokeSize);
+//        fill(g2d, color, opacity, strokeSize);
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d, float opacity) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparedrawAndFill);
+//        g2d.draw(rec2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d, float opacity) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+//        g2d.fill(rec2d);
+//        g2dparams.restore(g2d);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d, float opacity) {
+//        drawTransparent(g2d, opacity);
+//        fillTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawTransparent(Graphics2D g2d) {
+//        drawTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void fillTransparent(Graphics2D g2d) {
+//        fillTransparent(g2d, opacity);
+//    }
+//
+//    @Override
+//    public void drawAndFillTransparent(Graphics2D g2d) {
+//        drawTransparent(g2d);
+//        fillTransparent(g2d);
+//    }
     @Override
     public void draw(Graphics2D g2d) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(getLineStroke());
-        /*
-         * small addition to handle rotation
-         */
-        if (angle != 0) {
-            Shape rotated_shp = getRotatedShape();
-            g2d.draw(rotated_shp);
-        } else {
-            g2d.draw(rec2d);
-        }
-        g2dparams.restore(g2d);
-    }
-
-    /*
-     * TODO implementer ca pour tous ca permet de dessiner la forme a un angle par rapport a un autre object sans reelement modifier l'object en fait en faire une version avec la scale --> encore plus imple a gerer
-     * TODO faire aussi tourner tout les objects
-     */
-    public void drawAtAngle(Graphics2D g2d, double theta, Rectangle2D bounding_rect) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        if (theta != 0) {
-            AffineTransform at = new AffineTransform();
-            at.rotate(Math.toRadians(theta), bounding_rect.getX() + bounding_rect.getWidth() / 2., bounding_rect.getY() + bounding_rect.getHeight() / 2.);
-            g2d.setTransform(at);
-        }
-        g2d.draw(rec2d);
-        g2dparams.restore(g2d);
+        drawAndFill(g2d, opacity > 0f, false, true);
     }
 
     @Override
     public void fill(Graphics2D g2d) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.fill(rec2d);
-        g2dparams.restore(g2d);
+        drawAndFill(g2d, false, fillOpacity > 0f, true);
     }
 
     @Override
     public void drawAndFill(Graphics2D g2d) {
-        G2dParameters g2dparams = new G2dParameters(g2d);
-        g2d.setColor(new Color(color));
-        g2d.setStroke(new BasicStroke(strokeSize));
-        g2d.fill(rec2d);
-        g2d.draw(rec2d);
-        g2dparams.restore(g2d);
+        drawAndFill(g2d, opacity > 0f, fillOpacity > 0f, true);
     }
 
-    @Override
-    public void draw(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        draw(g2d);
-        this.color = bckup;
+    private void drawAndFill(Graphics2D g2d, boolean drawContour, boolean fillShape, boolean forceShowShape) {
+        if (drawContour || fillShape) {
+            forceShowShape = false;
+            G2dParameters g2dparams = new G2dParameters(g2d);
+            Shape rotated_shp = null;
+            if (angle != 0) {
+                rotated_shp = getRotatedShape();
+            }
+            if (fillShape) {
+                g2d.setColor(new Color(fillColor));
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fillOpacity));
+                /*
+                 * small addition to handle rotation
+                 */
+                if (rotated_shp != null) {
+                    g2d.fill(rotated_shp);
+                } else {
+                    g2d.fill(rec2d);
+                }
+            }
+            if (drawContour) {
+                g2d.setColor(new Color(color));
+                g2d.setStroke(getLineStroke());
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+                /*
+                 * small addition to handle rotation
+                 */
+                if (rotated_shp != null) {
+                    g2d.draw(rotated_shp);
+                } else {
+                    g2d.draw(rec2d);
+                }
+            }
+            g2dparams.restore(g2d);
+        }
+        if (forceShowShape) {
+            /**
+             * if both are transparent we just draw the skeletton or maybe not
+             * maybe draw bounding box with a cross
+             */
+            G2dParameters g2dparams = new G2dParameters(g2d);
+            g2d.setColor(new Color(0xFFFF00));
+            g2d.setStroke(new BasicStroke(1));
+            Rectangle2D r2d = getBounds2D();
+            g2d.draw(r2d);
+            g2d.draw(new Line2D.Double(r2d.getX(), r2d.getY(), r2d.getX() + r2d.getWidth(), r2d.getY() + r2d.getHeight()));
+            g2dparams.restore(g2d);
+        }
     }
 
-    @Override
-    public void fill(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        fill(g2d);
-        this.color = bckup;
-    }
-
-    @Override
-    public void drawAndFill(Graphics2D g2d, int color) {
-        int bckup = this.color;
-        this.color = color;
-        drawAndFill(g2d);
-        this.color = bckup;
-    }
-
+//    /*
+//     * TODO implementer ca pour tous ca permet de dessiner la forme a un angle par rapport a un autre object sans reelement modifier l'object en fait en faire une version avec la scale --> encore plus imple a gerer
+//     * TODO faire aussi tourner tout les objects
+//     */
+//    public void drawAtAngle(Graphics2D g2d, double theta, Rectangle2D bounding_rect) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//        if (theta != 0) {
+//            AffineTransform at = new AffineTransform();
+//            at.rotate(Math.toRadians(theta), bounding_rect.getX() + bounding_rect.getWidth() / 2., bounding_rect.getY() + bounding_rect.getHeight() / 2.);
+//            g2d.setTransform(at);
+//        }
+//        g2d.draw(rec2d);
+//        g2dparams.restore(g2d);
+//    }
+//    @Override
+//    public void drawAndFill(Graphics2D g2d) {
+//        G2dParameters g2dparams = new G2dParameters(g2d);
+//        g2d.setColor(new Color(color));
+//        g2d.setStroke(new BasicStroke(strokeSize));
+//    drawAndFillg2d.fill(rec2d);
+//        g2d.draw(rec2d);
+//        g2dparams.restore(g2d);
+// drawAndFill
+//
+//    @Override
+//    public void draw(Graphics2D g2d, int color) {
+//        int bckup = thidrawAndFilllor;
+//        this.color = color;
+//        draw(g2d);
+//        this.color = bckup;
+//    }
+//
+//    @Override
+//    public void fill(Graphics2D g2d, int color) {
+//        int bckup = this.color;
+//        this.color = color;
+//        fill(g2d);
+//        this.color = bckup;
+//    }
+//
+//    @Override
+//    public void drawAndFill(Graphics2D g2d, int color) {
+//        int bckup = this.color;
+//        this.color = color;
+//        drawAndFill(g2d);
+//        this.color = bckup;
+//    }
     @Override
     public void drawIfVisibleWhenDragged(Graphics2D g2d, Rectangle visibleRect) {
         drawIfVisible(g2d, visibleRect);
@@ -599,7 +659,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
     @Override
     public void drawIfVisible(Graphics2D g2d, Rectangle visibleRect) {
         if (visibleRect.intersects(rec2d.getBounds2D())) {
-            draw(g2d);
+            drawAndFill(g2d);
         }
     }
 
@@ -1041,6 +1101,11 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "<html><center>"+  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+" "+ getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color)+ ">contour</font>" + ((this instanceof Fillable) ? " <font color="+CommonClassesLight.toHtmlColor(fillColor)+ ">fill</font>" : "") +"</html>";
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -1087,7 +1152,6 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
 //            System.out.println(test.print() +" "+test3.print());
             System.out.println(test.clone() + " " + test3.clone());
 
-
             test.drawShapeInfo(g2d, Drawable.LEFT);
 
             System.out.println(test instanceof Editable);
@@ -1098,13 +1162,8 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Li
         SaverLight.popJLong(5000, test2);
 //        Saver2.poplong(test2);
 
-
-
-
 //      test.apply(list); 
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
         System.exit(0);
     }
 }
-
-

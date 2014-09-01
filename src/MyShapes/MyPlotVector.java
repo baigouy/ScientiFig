@@ -214,8 +214,7 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
             this.rec2d = myel.rec2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.bimg = myel.bimg;
             this.letter = myel.letter;
             this.scale_bar_size_in_px_of_the_real_image = myel.scale_bar_size_in_px_of_the_real_image;
@@ -251,8 +250,7 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
             this.rec2d = myel.rec2d;
             this.color = myel.color;
             this.strokeSize = myel.strokeSize;
-            this.isTransparent = myel.isTransparent;
-            this.transparency = myel.transparency;
+            this.opacity = myel.opacity;
             this.bimg = myel.bimg;
             this.letter = myel.letter;
             this.scale_bar_size_in_px_of_the_real_image = myel.scale_bar_size_in_px_of_the_real_image;
@@ -346,7 +344,7 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
 
     @Override
     public void extractImage(String name) {
-        String ext = CommonClassesLight.strcutr_last(source_file_path, ".");
+        String ext = CommonClassesLight.strCutRightLast(source_file_path, ".");
         String name_no_ext = name + "/" + getShortName();
         if (!ext.startsWith(".")) {
             ext = "." + ext;
@@ -725,7 +723,7 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
         }
         String tmp = CommonClassesLight.getTempDirectory();
         try {
-            tmp_file = java.io.File.createTempFile("tmp_", "." + CommonClassesLight.strcutr_last(source_file_path, "."), new File(tmp));
+            tmp_file = java.io.File.createTempFile("tmp_", "." + CommonClassesLight.strCutRightLast(source_file_path, "."), new File(tmp));
             FileOutputStream fos = new FileOutputStream(tmp_file);
             fos.write(source_file);
             fos.flush();
@@ -1134,11 +1132,11 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
         Graphics2D g2d = tmp.createGraphics();
 //        test.setFirstCorner(new Point2D.Double(256, 256));
         test.setToWidth(128);
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         //test.setFirstCorner(new Point2D.Double(0, 0));
 //        test.setToWidth(256);
         test.setToWidth(128);
-        test.draw(g2d);
+        test.drawAndFill(g2d);
         g2d.dispose();
         SaverLight.popJ(tmp);
         try {

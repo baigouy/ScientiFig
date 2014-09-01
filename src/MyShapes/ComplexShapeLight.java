@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * ComplexShape is a vectorial object that regroups other vectorial objects of
@@ -101,8 +102,7 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
         this.rec2d = myel.rec2d;
         this.color = myel.color;
         this.strokeSize = myel.strokeSize;
-        this.isTransparent = myel.isTransparent;
-        this.transparency = myel.transparency;
+        this.opacity = myel.opacity;//transparencyve opacity from shapes that don't need it
     }
 
     /**
@@ -115,6 +115,15 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
         pos_n_shapes = new LinkedHashSet<Object>();
         if (shape != null) {
             addShape(shape);
+        }
+    }
+
+    public ComplexShapeLight(List<Object> shape) {
+        pos_n_shapes = new LinkedHashSet<Object>();
+        if (shape != null) {
+            for (Object object : shape) {
+                addShape(object);
+            }
         }
     }
 
@@ -429,11 +438,11 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
             for (Object object : pos_n_shapes) {
                 if (object instanceof PARoi) {
                     if (!draw_shape_only_when_in_visible_area) {
-                        ((PARoi) object).draw(g2d);
+                        ((PARoi) object).drawAndFill(g2d);
                         continue;
                     }
                     if (((PARoi) object).intersects(visible_rect)) {
-                        ((PARoi) object).draw(g2d);
+                        ((PARoi) object).drawAndFill(g2d);
                     }
                 }
             }
@@ -445,10 +454,10 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
      * @param g2d
      */
     @Override
-    public void draw(Graphics2D g2d) {
+    public void drawAndFill(Graphics2D g2d) {
         for (Object object : pos_n_shapes) {
             if (object instanceof PARoi) {
-                ((PARoi) object).draw(g2d);
+                ((PARoi) object).drawAndFill(g2d);
             }
         }
     }
@@ -838,9 +847,13 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
     }
 
     @Override
-    public void setColor(int color) {
+    public String toString() {
+        return "Group";
     }
 
+//    @Override
+//    public void setColor(int color) {
+//    }
     @Override
     public void flipHorizontally() {
         for (Object object : pos_n_shapes) {
@@ -931,7 +944,7 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
 //        BufferedImage test2 = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 //        Graphics2D g2d = test2.createGraphics();
 //        ComplexShapeLight test = new ComplexShapeLight(shapes);
-//        test.draw(g2d);
+//        test.drawAndFill(g2d);
 //        g2d.dispose();
 //        Saver2.poplong(test2);
 ////s           test.apply(list); 
@@ -939,5 +952,3 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
 //        System.exit(0);
     }
 }
-
-
