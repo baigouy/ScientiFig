@@ -1291,6 +1291,10 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
 
     @Override
     public String getShapeName() {
+        if (isArrow)
+            return "Arrow";
+        if (isAccolade)
+            return "Bracket";
         return "Line";
     }
 

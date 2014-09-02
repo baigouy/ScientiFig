@@ -508,7 +508,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
     @Override
     public String toString() {
         String txt = "<font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
-        if (txt != null) {
+        if (text != null) {
             txt = text.getText();
             int size = txt.length();
             txt = txt.substring(0, 10 >= size ? size : 10);

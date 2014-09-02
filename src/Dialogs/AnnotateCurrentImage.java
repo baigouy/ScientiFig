@@ -61,7 +61,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -184,13 +183,26 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         this.img = bg;
     }
 
+    boolean preventROIselChanged = false;
+
     private void updateListContent() {
-        ArrayList<Object> obj = rOIpanelLight1.getROIS();
-        ROIListModel.clear();
-        if (obj != null) {
-            for (Object object : obj) {
-                ROIListModel.addElement(object);
+        preventROIselChanged = true;
+        try {
+            int[] selected_indices = jList1.getSelectedIndices();
+            jList1.setModel(new DefaultListModel());
+            ArrayList<Object> obj = rOIpanelLight1.getROIS();
+            ROIListModel.clear();
+            if (obj != null) {
+                for (Object object : obj) {
+                    ROIListModel.addElement(object);
+                }
             }
+            jList1.setModel(ROIListModel);
+            jList1.setSelectedIndices(selected_indices);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            preventROIselChanged = false;
         }
     }
 
@@ -225,6 +237,15 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         rOIpanelLight1 = new ROIpanelLight() {
+
+            public void ROIPositionChanged()
+            {
+                if (jTabbedPane1.getSelectedIndex()==1)
+                {
+                    updateListContent();
+                }
+            }
+
             @Override
             public void ROIOrderChanged()
             {
@@ -249,7 +270,8 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     loading = true;
                     if (selection != null) {
                         current_selection = selection;
-                        if(!(selection instanceof ComplexShapeLight))
+                        preventROIselChanged = true;
+                        if(!(current_selection instanceof ComplexShapeLight))
                         {
                             jList1.setSelectedValue(current_selection, true);
                         }
@@ -270,7 +292,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                             }
                             jList1.setSelectedIndices(selec);
                         }
-
+                        preventROIselChanged = false;
                         /**
                         * enable or disable the bracket panel according to shape type
                         */
@@ -1135,7 +1157,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
-        reCenter.setText("Center sel on bg image");
+        reCenter.setText("Move sel to upper left corner");
         reCenter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rectanglerunAll(evt);
@@ -1161,7 +1183,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                 .addComponent(reCenter)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(delete2)
-                .addGap(0, 19, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jScrollPane2)
         );
         jPanel7Layout.setVerticalGroup(
@@ -1208,7 +1230,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         if (src == reCenter) {
             try {
                 if (img != null) {
-                    rOIpanelLight1.recenter((img.getWidth() - left_crop - img.getRight_crop()) / 2., (img.getHeight() - up_crop - img.getDown_crop()) / 2.);
+                    rOIpanelLight1.setFirstCorner(0, 0);
                 }
             } catch (Exception e) {
             }
@@ -1265,12 +1287,14 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     }
                 }
             }
-
             inset = new SerializableBufferedImage2(crop);
             CommonClassesLight.showMessage(this, "Congratulations an inset corresponding to the selected ROI has been succesfully added to the picture.");
         }
         if (src == delete || src == delete2) {
+            preventROIselChanged = true;
+            jList1.clearSelection();
             rOIpanelLight1.deleteSelectedShape();
+            preventROIselChanged = false;
         }
         if (src == rectangle) {
             rOIpanelLight1.setDrawingPrimitive(ROIpanelLight.RECTANGLE);
@@ -1584,10 +1608,14 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     }//GEN-LAST:event_tabChanged
 
     private void ROISelChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_ROISelChanged
-        if (evt != null && !evt.getValueIsAdjusting()) {
+        if (!preventROIselChanged && evt != null && !evt.getValueIsAdjusting()) {
             try {
-                List<Object> sel = jList1.getSelectedValuesList();
-                if (sel != null && !sel.isEmpty()) {
+                int[] idx = jList1.getSelectedIndices();
+                ArrayList<Object> sel = new ArrayList<Object>();
+                for (int i : idx) {
+                    sel.add(ROIListModel.elementAt(i));
+                }
+                if (!sel.isEmpty()) {
                     if (sel.size() > 1) {
                         ComplexShapeLight csl = new ComplexShapeLight(sel);
                         rOIpanelLight1.setSelectedShape(csl);

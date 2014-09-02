@@ -55,6 +55,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.util.List;
 
+//TODO clean this at some point and ensure I don't have unecessary calls make sure to call all the modifiers also
 /**
  * ROIpanelLight is the scientiFig vectorial panel (can be used to drawAndFill,
  * ve, edit, ... vectorial objects)
@@ -362,13 +363,6 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     }
 
     /**
-     * override this to handle ROI order change
-     */
-    public void ROIOrderChanged() {
-
-    }
-
-    /**
      * Send selected shape(s) to the back
      */
     public void sendToBack() {
@@ -658,9 +652,10 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         }
     }
 
-    public void recenter(double centerX, double centerY) {
+    public void setFirstCorner(double centerX, double centerY) {
         if (selected_shape_or_group != null && (selected_shape_or_group instanceof Transformable)) {
-            ((Transformable) selected_shape_or_group).setCenter(new Point2D.Double(centerX, centerY));
+            ((Transformable) selected_shape_or_group).setFirstCorner(new Point2D.Double(centerX, centerY));
+            ROIPositionChanged();
             repaint();
         } else {
             CommonClassesLight.Warning(this, "please select a shape or a group first");
@@ -859,13 +854,6 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
          */
         ROINumberChanged();
         repaint();
-    }
-
-    /**
-     * override this to detect when list have changed
-     */
-    public void ROINumberChanged() {
-
     }
 
     /**
@@ -1605,6 +1593,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                 mouseReleasedNormalMode();
             }
         }
+        ROIPositionChanged();
         repaint();
     }
 
@@ -1613,14 +1602,15 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void mouseReleasedNormalMode() {
         if (cur_shape != null) {
-            if (cur_shape != null && cur_shape instanceof PARoi) {
+            if (cur_shape instanceof PARoi) {
                 ((PARoi) cur_shape).setStrokeSize(stroke_size);
                 /*
                  * bug fix for selection not updating
                  */
-                selectionChanged(cur_shape);
+//                selectionChanged(cur_shape);
             }
             addROI(cur_shape);
+            selectionChanged(cur_shape);
             selected_shape_or_group = cur_shape;
             if (!isDrawingPolyLine) {
                 cur_shape = null;
@@ -2175,7 +2165,28 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
     }
 
     /**
-     * just put it so that people can override it and have a selection changed
+     * override this to handle ROI order change
+     */
+    public void ROIOrderChanged() {
+        //System.out.println("ROI order changed");
+    }
+
+    /**
+     * override this to detect when list have changed
+     */
+    public void ROINumberChanged() {
+        //System.out.println("ROI nb changed");
+    }
+
+    /**
+     * override this when the position of ROIs changed
+     */
+    public void ROIPositionChanged() {
+        //System.out.println("ROI pos changed");
+    }
+
+    /**
+     * I just put it so that people can override it and have a selection changed
      * listener in their code
      *
      * @param selection
