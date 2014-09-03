@@ -163,7 +163,7 @@ public class PaintedButton extends JButton {
      */
     public final void setColor(Color tmp) {
         if (tmp != null) {
-            this.setBackground(new Color( tmp.getRed(), tmp.getGreen(), tmp.getBlue()));
+            this.setBackground(new Color(tmp.getRed(), tmp.getGreen(), tmp.getBlue()));
             this.setForeground(new Color(255 - tmp.getRed(), 255 - tmp.getGreen(), 255 - tmp.getBlue()));
             color = tmp;
             repaint();
