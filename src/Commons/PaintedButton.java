@@ -66,7 +66,7 @@ public class PaintedButton extends JButton {
     public PaintedButton() {
         this.setBackground(Color.BLACK);
         setColor(Color.BLACK);
-        setUI();
+        setUI(null);
     }
 
     /**
@@ -81,7 +81,7 @@ public class PaintedButton extends JButton {
         color = new Color(color_me);
         this.setBackground(color);
         setColor(color);
-        setUI();
+        setUI(null);
     }
 
     /**
@@ -95,7 +95,7 @@ public class PaintedButton extends JButton {
         color = new Color(color_me);
         this.setBackground(color);
         setColor(color);
-        setUI();
+        setUI(null);
     }
 
     @Override
@@ -134,24 +134,12 @@ public class PaintedButton extends JButton {
      * we force the UI to be metal to avoid color pbs especially on Macs or when
      * using the Nimbus L&F
      */
-    public final void setUI() {
-        setUI(null);
-    }
-
-    /**
-     * we force the UI to be metal to avoid color pbs especially on Macs or when
-     * using the Nimbus L&F
-     */
     @Override
     public void setUI(ButtonUI ui) {
         /*
-         * to avoid pbs on Macs and when people change PA look & feel
+         * to avoid pbs on Macs and under linux when people change PA look & feel
          */
-        if (ui == null) {
-            super.setUI(new MetalButtonUI());
-        } else {
-            super.setUI(ui);
-        }
+        super.setUI(new MetalButtonUI());
     }
 
     /**
@@ -175,7 +163,7 @@ public class PaintedButton extends JButton {
      */
     public final void setColor(Color tmp) {
         if (tmp != null) {
-            this.setBackground(new Color(tmp.getRed(), tmp.getGreen(), tmp.getBlue()));
+            this.setBackground(new Color( tmp.getRed(), tmp.getGreen(), tmp.getBlue()));
             this.setForeground(new Color(255 - tmp.getRed(), 255 - tmp.getGreen(), 255 - tmp.getBlue()));
             color = tmp;
             repaint();
@@ -189,23 +177,6 @@ public class PaintedButton extends JButton {
      */
     public int getColor() {
         return (this.getBackground().getRed() << 16) + (this.getBackground().getGreen() << 8) + this.getBackground().getBlue();
-    }
-
-    /**
-     *
-     * @return the position in the ramp/palette
-     */
-    public String getPosition() {
-        return position;
-    }
-
-    /**
-     * Sets the position in the ramp/palette
-     *
-     * @param position
-     */
-    public void setPosition(String position) {
-        this.position = position;
     }
 
     @SuppressWarnings("unchecked")

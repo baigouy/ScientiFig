@@ -479,7 +479,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
             repaint();
             return true;
         } else {
-            CommonClassesLight.Warning(this, "please select a shape fillable shape first");
+            CommonClassesLight.Warning(this, "please select a fillable shape first");
         }
         return false;
     }

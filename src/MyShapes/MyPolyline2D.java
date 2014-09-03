@@ -636,15 +636,13 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
         if (drawContour) {
             forceShowShape = false;
             G2dParameters g2dparams = new G2dParameters(g2d);
-            if (drawContour) {
-                g2d.setColor(new Color(color));
-                g2d.setStroke(getLineStroke());
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-                /*
-                 * small addition to handle rotation
-                 */
-                g2d.draw(getPath());
-            }
+            g2d.setColor(new Color(color));
+            g2d.setStroke(getLineStroke());
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+            /*
+             * small addition to handle rotation
+             */
+            g2d.draw(getPath());
             g2dparams.restore(g2d);
         }
         if (forceShowShape) {
@@ -806,11 +804,7 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
     @Override
     public void drawSelection(Graphics2D g2d, Rectangle visRect) {
         if (rec2d.intersects(visRect)) {
-            G2dParameters g2dParams = new G2dParameters(g2d);
-            g2d.setColor(Color.red);
-            g2d.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1f, dottedSelection, 0f));
-            g2d.draw(rec2d);
-            g2dParams.restore(g2d);
+            drawAndFill(g2d);
         }
     }
 
@@ -1140,7 +1134,7 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
 
     @Override
     public String toString() {
-        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + "</html>";
+        return "<html><center>" + CommonClassesLight.roundNbAfterComma(getCenter().x, 1) + " " + CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + "</html>";
     }
 
     @Override

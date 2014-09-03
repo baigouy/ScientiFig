@@ -556,7 +556,8 @@ public class MyBufferedImage extends BufferedImage {
              * corresponding to the channel and then I just recover the pixels
              * from this array
              */
-            if (chs == null || chs[c - 1] == null) {
+            
+            if (chs == null || (c-1<chs.length && chs[c - 1] == null)) {
                 ip.setC(c);
                 chs[c - 1] = (short[]) ip.getProcessor().getPixels();
             }
@@ -570,8 +571,8 @@ public class MyBufferedImage extends BufferedImage {
 //            if (pxs != null) {
 //                return pxs[0];
 //            }
-            if (chs[c - 1] == null) {
-                return -1;
+            if (chs == null || c-1>=chs.length || chs[c - 1] == null) {
+                return 0;
             }
 
             short val = chs[c - 1][j * ip.getWidth() + i];
@@ -579,7 +580,7 @@ public class MyBufferedImage extends BufferedImage {
 
             //return -1;
         } else {
-            return -1;
+            return 0;
         }
     }
 

@@ -5491,7 +5491,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
             ignoreWarnForSave = true;
         }
-
         if (source == showShortcuts) {
             ListOfShortcuts spane = new ListOfShortcuts(shortcuts);
             JOptionPane.showMessageDialog(this, spane, "List of shortcuts", JOptionPane.PLAIN_MESSAGE);

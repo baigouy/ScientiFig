@@ -49,9 +49,11 @@ import javax.swing.JLabel;
 public class ListOfShortcuts extends javax.swing.JPanel {
 
     public static final long serialVersionUID = 2718089373730568781L;
-   
+
     /**
      * Creates new form ListOfShortcuts
+     *
+     * @param shortcuts list of shortcuts and their associated functions
      */
     public ListOfShortcuts(LinkedHashMap<String, String> shortcuts) {
         initComponents();
@@ -108,4 +110,3 @@ public class ListOfShortcuts extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
-
