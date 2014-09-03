@@ -804,7 +804,11 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
     @Override
     public void drawSelection(Graphics2D g2d, Rectangle visRect) {
         if (rec2d.intersects(visRect)) {
-            drawAndFill(g2d);
+           G2dParameters g2dParams = new G2dParameters(g2d);
+            g2d.setColor(Color.red);
+            g2d.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1f, dottedSelection, 0f));
+            g2d.draw(rec2d);
+            g2dParams.restore(g2d);
         }
     }
 
