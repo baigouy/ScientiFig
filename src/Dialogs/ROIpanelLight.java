@@ -1327,7 +1327,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
                         }
                     }
                 } else {
-                    if (finger.contains(((MyPoint2D.Double) shp).getPoint())) {
+                    if (finger.contains(((MyEllipse2D.Double) shp).getPoint())) {
                         clicked_on_a_shape = true;
                         points_below.add(shp);
                     }
