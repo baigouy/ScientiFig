@@ -1,3 +1,6 @@
+01/10/14
+-improved support of one liners (panels that have just one column or one row), it allows to have assymetries in x or y, this strongly increases the ease of use of ScientiFig
+
 01/09/14
 -fixed repaint error in send to back and send to front
 -added a list to browse ROIs associated to an image

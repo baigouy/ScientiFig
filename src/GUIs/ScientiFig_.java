@@ -204,7 +204,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.96";
+    public static final String version = "2.97";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -4700,13 +4700,13 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @param images
      * @return Converts selected images to vectorial objects
      */
-    public ArrayList<Object> getShapes(ArrayList<String> images) {
+    public ArrayList<Object> getShapes(ArrayList<String> images, boolean ignore_size_errors) {
         ArrayList<Object> shapes = new ArrayList<Object>();
         try {
             int size_x = -1;
             int size_y = -1;
             double AspectRatio = -1;
-            boolean ignore_size_errors = false;
+//            boolean ignore_size_errors = false;
             for (String string : images) {
                 MyImage2D tmp;
                 if (!string.contains("importJ:")) {
@@ -6627,7 +6627,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Create a Panel", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 if (result == JOptionPane.OK_OPTION) {
                     ArrayList<String> images = myList1.getSelection();
-                    ArrayList<Object> shapes = getShapes(images);
+                    ArrayList<Object> shapes = getShapes(images, iopane.getNbCols() == 1 || iopane.getNbRows() == 1);
                     if (shapes == null || shapes.isEmpty()) {
                         return;
                     }

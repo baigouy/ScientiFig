@@ -48,7 +48,7 @@ import javax.swing.ProgressMonitor;
 /**
  * Exportable is a serializable object that contains everything needed to
  * recreate a figure or a montage, this object is typically saved with the
- * extension .figur
+ * extension .yf5m
  *
  * @since <B>FiguR 0.5</B>
  * @author Benoit Aigouy
@@ -59,7 +59,10 @@ public class Exportable implements Serializable {
      * Variables
      */
     public static final long serialVersionUID = 5209962906960838061L;
-    int version = 1;//allows for support of retrocompatibility
+    /**
+     * version can be used to handle retrocompatibility
+     */
+    int version = 1;
     HashMap<Integer, Montage> tables = new HashMap<Integer, Montage>();
     ArrayList<Object> rows = new ArrayList<Object>();
     ArrayList<String> list_of_files = new ArrayList<String>();

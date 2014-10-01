@@ -31,7 +31,8 @@
  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
-//TODO finish code annotation
+//TODO if montage contains only one col make a simple packing where the rules are a little bit changed --> allows more flexibility in the software
+//--> test extensively before applying
 package MyShapes;
 
 import Checks.CheckGraphs;
@@ -43,6 +44,7 @@ import Tools.MultiThreadExecuter;
 import Commons.CommonClassesLight;
 import Commons.G2dParameters;
 import Commons.ImageColors;
+import Commons.Loader;
 import Commons.MyBufferedImage;
 import Commons.SaverLight;
 import java.awt.BasicStroke;
@@ -118,8 +120,13 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
     public static final int SMALLER_WIDTH_N_HEIGHT = 1;
     public static final int USER_DEFINED_BOX_WIDTH_N_HEIGHT = 2;
     public static final int SET_TO_BIGGER_WIDTH = 0;
-    public static final int SET_TO_BIGGER_HEIGHT = 1;
-    public static int CURRENT_ALIGNMENT = SET_TO_BIGGER_HEIGHT;
+    public static final int SET_TO_BIGGER_HEIGHT = 2;
+    /**
+     * allows for a better layout support of one liners (tables consisting of
+     * only one row or col)
+     */
+    public static final int WISE_SIZE_AND_ALIGNMENT = 1;
+    public static int CURRENT_ALIGNMENT = WISE_SIZE_AND_ALIGNMENT;
     public LinkedHashSet< Object> pos_n_shapes;
 
     static {
@@ -156,16 +163,14 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
      * @param nbRows number of rows in the montage
      * @param nbCols number of columns in the montage
      * @param meander if true the montage will be created in meander mode
-     * @param setHeightToMaxHeight if true resize all vectorial objects so that
-     * they have the same height: the height of the biggest object
      * @param space_between_images space between images of the montage
      */
-    public Montage(ArrayList<Object> shapes, int nbRows, int nbCols, boolean meander, boolean setHeightToMaxHeight, int space_between_images) {
+    public Montage(ArrayList<Object> shapes, int nbRows, int nbCols, boolean meander, int space_between_images) {
         this.nb_rows = nbRows;
         this.nb_cols = nbCols;
         this.space_between_images = space_between_images;
         pos_n_shapes = new LinkedHashSet<Object>();
-        CURRENT_ALIGNMENT = setHeightToMaxHeight ? SET_TO_BIGGER_HEIGHT : SET_TO_BIGGER_WIDTH;
+        CURRENT_ALIGNMENT = WISE_SIZE_AND_ALIGNMENT;//setHeightToMaxHeight ? SET_TO_BIGGER_HEIGHT : SET_TO_BIGGER_WIDTH;
         for (Object object : shapes) {
             pos_n_shapes.add(object);
         }
@@ -177,19 +182,6 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
             createTable(nb_cols, nb_rows, space_between_images, COLUMNS_FIRST_THEN_ROWS, CURRENT_ALIGNMENT);
         }
         updateMasterRect();
-    }
-
-    /**
-     * Constructs a Montage out of a series of vectorial objects
-     *
-     * @param shapes vectorial objects belonging to the same montage
-     * @param nbRows number of rows in the montage
-     * @param nbCols number of columns in the montage
-     * @param meander if true the montage will be created in meander mode
-     * @param space_between_images space between images of the montage
-     */
-    public Montage(ArrayList<Object> shapes, int nbRows, int nbCols, boolean meander, int space_between_images) {
-        this(shapes, nbRows, nbCols, meander, true, space_between_images);
     }
 
     /**
@@ -637,7 +629,7 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
      * @param TABLE_ORDER omb or meander (order of the images in the montage)
      */
     private void createTable(int nb_cols, int nb_lines, double space, int TABLE_ORDER) {
-        createTable(nb_cols, nb_lines, space, TABLE_ORDER, SET_TO_BIGGER_HEIGHT);
+        createTable(nb_cols, nb_lines, space, TABLE_ORDER, WISE_SIZE_AND_ALIGNMENT);
     }
 
     /**
@@ -653,7 +645,6 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
     public final void createTable(int nb_cols, int nb_lines, double space, int TABLE_ORDER, int ADJUSTEMENT_MODE) {
         int size = nb_cols * nb_lines;
         Point2D.Double min_pos = getMinPos(size);
-
         double width;
         double height;
         boolean unique = pos_n_shapes.size() == 1;
@@ -665,7 +656,19 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
                 break;
             }
         }
-        switch (ADJUSTEMENT_MODE) {
+        int OPTIMIZED_ADJUSTMENT;
+        if (ADJUSTEMENT_MODE == WISE_SIZE_AND_ALIGNMENT) {
+            if (nb_lines == 1) {
+                OPTIMIZED_ADJUSTMENT = SET_TO_BIGGER_HEIGHT;
+            } else if (nb_cols == 1) {
+                OPTIMIZED_ADJUSTMENT = SET_TO_BIGGER_WIDTH;
+            } else {
+                OPTIMIZED_ADJUSTMENT = SET_TO_BIGGER_HEIGHT;
+            }
+        } else {
+            OPTIMIZED_ADJUSTMENT = SET_TO_BIGGER_HEIGHT;
+        }
+        switch (OPTIMIZED_ADJUSTMENT) {
             case SET_TO_BIGGER_HEIGHT:
                 if (true) {
                     double max_height = Integer.MIN_VALUE;
@@ -726,47 +729,59 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
                     }
                 }
                 break;
-        }
 
+        }
         int cur_rows = 0;
         int cur_cols = 0;
-        ArrayList<Object> positions = new ArrayList<Object>(pos_n_shapes);
-        switch (TABLE_ORDER) {
-            case ROWS_FIRST_THEN_COLUMNS:
-                for (int i = 0; i < nb_cols; i++) {
-                    cur_cols = Math.max(i, cur_cols);
-                    for (int j = 0; j < nb_lines; j++) {
-
-                        if (i * nb_lines + j < positions.size()) {
-                            Object cur = positions.get(i * nb_lines + j);
-                            if (cur instanceof Transformable) {
-                                ((Transformable) cur).setCenter(new Point2D.Double(min_pos.x + i * (width + space) + width / 2., min_pos.y + j * (height + space) + height / 2.));
-                                positions.set(i * nb_lines + j, cur);
-                            }
-                        } else {
-                            break;
-                        }
-                        cur_rows = Math.max(j, cur_rows);
-                    }
-                }
-                break;
-            case COLUMNS_FIRST_THEN_ROWS:
-                for (int j = 0; j < nb_lines; j++) {
-                    cur_rows = Math.max(j, cur_rows);
+        /**
+         * added support for one liners (improves the layout of one liners)
+         */
+        if (ADJUSTEMENT_MODE == WISE_SIZE_AND_ALIGNMENT && (nb_cols == 1 || nb_lines == 1)) {
+            if (nb_cols == 1) {
+                packY(space);
+                cur_rows = pos_n_shapes.size() - 1;
+            } else {
+                packX(space);
+                cur_cols = pos_n_shapes.size() - 1;
+            }
+        } else {
+            ArrayList<Object> positions = new ArrayList<Object>(pos_n_shapes);
+            switch (TABLE_ORDER) {
+                case ROWS_FIRST_THEN_COLUMNS:
                     for (int i = 0; i < nb_cols; i++) {
-                        if (j * nb_cols + i < positions.size()) {
-                            Object cur = positions.get(j * nb_cols + i);
-                            if (cur instanceof Transformable) {
-                                ((Transformable) cur).setCenter(new Point2D.Double(min_pos.x + i * (width + space) + width / 2., min_pos.y + j * (height + space) + height / 2.));
-                                positions.set((j * nb_cols + i), cur);
-                            }
-                        } else {
-                            break;
-                        }
                         cur_cols = Math.max(i, cur_cols);
+                        for (int j = 0; j < nb_lines; j++) {
+                            if (i * nb_lines + j < positions.size()) {
+                                Object cur = positions.get(i * nb_lines + j);
+                                if (cur instanceof Transformable) {
+                                    ((Transformable) cur).setCenter(new Point2D.Double(min_pos.x + i * (width + space) + width / 2., min_pos.y + j * (height + space) + height / 2.));
+                                    positions.set(i * nb_lines + j, cur);
+                                }
+                            } else {
+                                break;
+                            }
+                            cur_rows = Math.max(j, cur_rows);
+                        }
                     }
-                }
-                break;
+                    break;
+                case COLUMNS_FIRST_THEN_ROWS:
+                    for (int j = 0; j < nb_lines; j++) {
+                        cur_rows = Math.max(j, cur_rows);
+                        for (int i = 0; i < nb_cols; i++) {
+                            if (j * nb_cols + i < positions.size()) {
+                                Object cur = positions.get(j * nb_cols + i);
+                                if (cur instanceof Transformable) {
+                                    ((Transformable) cur).setCenter(new Point2D.Double(min_pos.x + i * (width + space) + width / 2., min_pos.y + j * (height + space) + height / 2.));
+                                    positions.set((j * nb_cols + i), cur);
+                                }
+                            } else {
+                                break;
+                            }
+                            cur_cols = Math.max(i, cur_cols);
+                        }
+                    }
+                    break;
+            }
         }
         /*
          * we set the optimal nb of rows and cols
@@ -2395,45 +2410,52 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
     public static void main(String args[]) {
         //voila un montage en macro --> lui faire reparser ca pr recreer le montage
         //--> d'abord lui faire recreer les images puis 
-        String macro_montage = "<Montage data-nbCols=\"2\" data-nbRows=\"2\" data-order=\"meander\" data-spaceBetweenImages=\"3\" data-widthInPx=\"512.0\" >\n"
-                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series010.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">A</txtFgcolor></font></font>\" />\n"
-                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series014.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">B</txtFgcolor></font></font>\" />\n"
-                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series015.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">C</txtFgcolor></font></font>\" />\n"
-                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series016.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">D</txtFgcolor></font></font>\" />\n"
-                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/toto.svg\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">D</txtFgcolor></font></font>\" />\n"
-                + "         </Montage>";
+//        String macro_montage = "<Montage data-nbCols=\"2\" data-nbRows=\"2\" data-order=\"meander\" data-spaceBetweenImages=\"3\" data-widthInPx=\"512.0\" >\n"
+//                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series010.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">A</txtFgcolor></font></font>\" />\n"
+//                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series014.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">B</txtFgcolor></font></font>\" />\n"
+//                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series015.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">C</txtFgcolor></font></font>\" />\n"
+//                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/focused_Series016.png\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">D</txtFgcolor></font></font>\" />\n"
+//                + "         	<img data-src=\"D:/sample_images_PA/trash_test_mem/mini/toto.svg\" data-LFormattedText=\"<font face=\"Arial\" size=\"12\"><txtFgcolor color=\"#ffffff\">D</txtFgcolor></font></font>\" />\n"
+//                + "         </Montage>";
 
         long start_time = System.currentTimeMillis();
-//        ArrayList<Object> shapes = new ArrayList<Object>();
+        ArrayList<Object> shapes = new ArrayList<Object>();
         //D:\sample_images_PA\trash_test_mem\mini
-//        MyImage2D.Double i2d1 = new MyImage2D.Double(0, 0, new Loader2().load("D:/sample_images_PA/trash_test_mem/mini/focused_Series010.png"));
+        MyImage2D.Double i2d1 = new MyImage2D.Double(0, 0, new Loader().load("/E/sample_images_SF/images_de_test_fromIJ/AuPbSn40.png"));
 //        i2d1.setLetter("A");
-//        MyImage2D.Double i2d2 = new MyImage2D.Double(0, 0, new Loader2().load("D:/sample_images_PA/trash_test_mem/mini/focused_Series014.png"));
+        MyImage2D.Double i2d2 = new MyImage2D.Double(0, 0, new Loader().load("/E/sample_images_SF/images_de_test_fromIJ/flybrain.png"));
 //        i2d2.setLetter("B");
-//        MyImage2D.Double i2d3 = new MyImage2D.Double(0, 0, new Loader2().load("D:/sample_images_PA/trash_test_mem/mini/focused_Series015.png"));
+        MyImage2D.Double i2d3 = new MyImage2D.Double(0, 0, new Loader().load("/E/sample_images_SF/images_de_test_fromIJ/blobs_long.png"));
 //        i2d3.setLetter("C");
 //        MyImage2D.Double i2d4 = new MyImage2D.Double(0, 0, new Loader2().load("D:/sample_images_PA/trash_test_mem/mini/focused_Series016.png"));
 //        i2d4.setLetter("D");
-//        shapes.add(i2d1);
-//        shapes.add(i2d2);
-//        shapes.add(i2d3);
+        shapes.add(i2d1);
+        shapes.add(i2d2);
+        shapes.add(i2d3);
 //        shapes.add(i2d4);
         BufferedImage test2 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_RGB);
+        int width = test2.getWidth();
+        int height = test2.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                test2.setRGB(i, j, 0xFFFFFF);
+            }
+        }
         Graphics2D g2d = test2.createGraphics();
-//        Montage test = new Montage(shapes, 2, 2, false, true, 3);
-//        Montage test = new Montage(null);
-//        test.setToWidth(512);
-//        test.draw(g2d);
+        Montage test = new Montage(shapes, 2,1, false, 3);
+        //Montage test = new Montage(null);
+        test.setToWidth(128);
+        test.drawAndFill(g2d);
 //
 //        System.out.println(test.produceMacroCode(1));
 //
-//        g2d.dispose();
+        g2d.dispose();
 //
-//        SaverLight.popJ(test2);
-//        try {
-//            Thread.sleep(3000);
-//        } catch (Exception e) {
-//        }
+        SaverLight.popJ(test2);
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+        }
 
         System.out.println("ellapsed time --> " + (System.currentTimeMillis() - start_time) / 1000.0 + "s");
         System.exit(0);
