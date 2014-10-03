@@ -140,7 +140,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * list of shortcuts
      */
     private static final LinkedHashMap<String, String> shortcuts = new LinkedHashMap<String, String>();
-
+    
     static {
         /**
          * Update list of shortcuts for mac users
@@ -243,7 +243,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
     int memoryRefreshSpeed = 2000;
     private static final ArrayList<String> exts = new ArrayList<String>();
-
+    
     static {
         exts.add(".figur");
         exts.add(".jpg");
@@ -306,7 +306,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * A log window for java errors
      */
     LogFrame logger;
-
+    
     public static PopulateJournalStyles styles = getStyles();
     ROIpanelLight r1 = new ROIpanelLight() {
         @Override
@@ -318,7 +318,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             inactivateListUpdate = false;
         }
     };
-
+   
     /**
      * Creates new form Figure_Assistants
      */
@@ -355,7 +355,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         styles.reloadStyles(journalCombo);
         ief.setLocationRelativeTo(this);
         journalColumnsCombo.setSelectedIndex(-1);
-
+        
         if (CommonClassesLight.ij == null) {
             CommonClassesLight.ij = ij.IJ.getInstance();
             if (CommonClassesLight.ij != null) {
@@ -371,10 +371,10 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         if (logger != null) {
             logger.addLocker(lockerID);
         }
-
+        
         speedUpScrollbars();
         pack();
-
+        
         WindowManager.addWindow(this);
         CommonClassesLight.GUI = this;
         doubleLayerPane1.ROIS.setDraggable(false);
@@ -395,7 +395,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             public void doSomethingWithTheFile(String data) {
                 myList1.acceptdata(data);
             }
-
+            
             @Override
             public void drop(DropTargetDropEvent dtde) {
                 if (loading) {
@@ -449,7 +449,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         r2.setMultiClickAllowsForDeeperSelectionOfElements(true);
         addAccelerators();
     }
-
+    
     private void addAccelerators() {
         /*
          * first we add shortcuts to existing buttons
@@ -673,32 +673,32 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             DND_text8bis.setText(new ColoredTextPaneSerializable("List 1", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             DND_text8bis.translate(0, 20);
             annotations.add(DND_text8bis);
-
+            
             Rectangle2D pos_of_tableList = ComponentBlinker.getComponentPosition(tableList.getParent());
             MyPoint2D.Double DND_text8 = new MyPoint2D.Double(pos_of_tableList.getCenterX(), pos_of_tableList.getCenterY());
             DND_text8.setText(new ColoredTextPaneSerializable("List 2", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             annotations.add(DND_text8);
-
+            
             Rectangle2D pos_of_tableContentList = ComponentBlinker.getComponentPosition(tableContentList.getParent());
             MyPoint2D.Double DND_text9 = new MyPoint2D.Double(pos_of_tableContentList.getCenterX(), pos_of_tableContentList.getCenterY());
             DND_text9.setText(new ColoredTextPaneSerializable("List 3", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             annotations.add(DND_text9);
-
+            
             Rectangle2D pos_of_figureList = ComponentBlinker.getComponentPosition(figureList.getParent());
             MyPoint2D.Double DND_text10 = new MyPoint2D.Double(pos_of_figureList.getCenterX(), pos_of_figureList.getCenterY());
             DND_text10.setText(new ColoredTextPaneSerializable("List 4", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             annotations.add(DND_text10);
-
+            
             Rectangle2D pos_of_RowContentList = ComponentBlinker.getComponentPosition(RowContentList.getParent());
             MyPoint2D.Double DND_text11 = new MyPoint2D.Double(pos_of_RowContentList.getCenterX(), pos_of_RowContentList.getCenterY());
             DND_text11.setText(new ColoredTextPaneSerializable("List 5", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             annotations.add(DND_text11);
-
+            
             Rectangle2D pos_of_imagesInFigureList = ComponentBlinker.getComponentPosition(imagesInFigureList.getParent());
             MyPoint2D.Double DND_text12 = new MyPoint2D.Double(pos_of_imagesInFigureList.getCenterX(), pos_of_imagesInFigureList.getCenterY());
             DND_text12.setText(new ColoredTextPaneSerializable("List 6", Color.BLUE, new Font("Monospaced", Font.PLAIN, 12)));
             annotations.add(DND_text12);
-
+            
             MyPoint2D.Double DND_text = new MyPoint2D.Double(pos_of_list.getCenterX(), pos_of_list.getCenterY());
             /*
              * I now use the monospaced font because this ugly font is present and behaves the same on all systems
@@ -872,14 +872,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         sizeInPxsizeChanged(new ChangeEvent(sizeInPx));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -893,14 +893,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         cmSizeChanged(new ChangeEvent(sizeInCM));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -914,14 +914,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         changeSpaceBetweenImageInPanelspaceBetweenImagesChanged(new ChangeEvent(changeSpaceBetweenImageInPanel));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -935,14 +935,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         changeSpaceBetweenRowsspaceBetweenImagesChanged(new ChangeEvent(changeSpaceBetweenRows));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -956,14 +956,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         cropChanged(new ChangeEvent(cropLeftSpinner));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -977,14 +977,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         cropChanged(new ChangeEvent(cropRightSpinner));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -998,14 +998,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         cropChanged(new ChangeEvent(cropUpSpinner));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -1019,14 +1019,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         cropChanged(new ChangeEvent(cropDownSpinner));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -1040,14 +1040,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 @Override
                 public void keyPressed(KeyEvent e) {
                 }
-
+                
                 @Override
                 public void keyReleased(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         angleChanged(new ChangeEvent(rotateSpinner));
                     }
                 }
-
+                
                 @Override
                 public void keyTyped(KeyEvent e) {
                 }
@@ -1399,7 +1399,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         doubleLayerPane1.setAllowRefresh(true);
         doubleLayerPane1.repaint();
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -3189,7 +3189,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             setTitle(software_name + " v" + version);
         }
     }
-
+    
     private void updateChecksStatus(Object in) {
         /**
          * TODO faire une interface pr les checks
@@ -3374,7 +3374,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+    
     public void checkStatus() {
         if (Rstatus != null && CommonClassesLight.r != null && CommonClassesLight.r.isRserverRunning()) {
             Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
@@ -3607,7 +3607,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         ComplexShapeLight cs = new ComplexShapeLight(shapes);
         Rectangle2D r2d = cs.getBounds2D();
         doubleLayerPane1.resizePanel((int) (r2d.getX() + r2d.getWidth() + 1.), (int) (r2d.getY() + r2d.getHeight() + 1.));
-
+        
     }
 
     /**
@@ -3718,7 +3718,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             g2d.setTransform(trans);
         }
     }
-
+    
     private double getMagnificationForDesiredResolution(double desired_resolution) {
         double zoom = desired_resolution / resolution;
         return zoom;
@@ -4026,7 +4026,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+    
     private void logMagnificationChanges(boolean logMagnificationChanges, int exportDPI, String name, Object image) {
         //modification for review
         if (logMagnificationChanges) {
@@ -4079,7 +4079,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         return in;
     }
-
+    
     public boolean warnIfChecksNotPerformed(Object in) {
         boolean mustWarn = false;
         boolean isFig = false;
@@ -4361,7 +4361,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              * we check if we need to have a rsession active or not (i.e. we check whether the file contains R graphs or not)
              */
             boolean requireRsession = false;
-
+            
             if (panels != null && !panels.isEmpty()) {
                 loopR:
                 for (Map.Entry<Integer, Montage> entry : panels.entrySet()) {
@@ -4374,7 +4374,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     }
                 }
             }
-
+            
             if (rows != null && !rows.isEmpty()) {
                 for (Object row : rows) {
                     /*
@@ -4421,7 +4421,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 lastSaveName = null;
             }
             updateTitle(lastSaveName);
-
+            
             name_to_load = null;
             if (add_backup) {
                 createBackup();
@@ -4519,11 +4519,11 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         updateGlassPane();
     }
-
+    
     private int getRealPos() {
         return getRealPos(tableList.getSelectedIndex());
     }
-
+    
     private int getRealPos(int pos) {
         String value = tableListModel.elementAt(pos).toString();
         if (value.contains(">")) {
@@ -4765,13 +4765,13 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         return shapes;
     }
-
+    
     private void stopMemoryThread() {
         try {
             refreshMemory.shutdownNow();
         } catch (Exception e) {
         }
-
+        
     }
 
     /**
@@ -4805,7 +4805,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             System.gc();
         } catch (Exception e) {
         }
-
+        
         if (logger != null) {
             logger.removeLocker(lockerID);
             if (!logger.isLocked()) {
@@ -4814,7 +4814,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.logger = null;
             }
         }
-
+        
         if (CommonClassesLight.isImageJEmbedded && !FiguR_.isInstanceAlreadyExisting()) {
             System.exit(0);
         }
@@ -5028,7 +5028,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         if (evt != null) {
             runAllnow(evt.getSource());
         }
-
+        
         if (loading) {
             return;
         }
@@ -5094,7 +5094,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         return tmp;
     }
-
+    
     public void runAllnow(Object source) {
         /*
          * quickly checks connection to R
@@ -5117,7 +5117,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     CommonClassesLight.browse("http://youtu.be/gvsqkl_oxK4");//updated
                     success = true;
                 }
-
+                
                 if (source == moveColLeft || source == moveColRight) {
                     CommonClassesLight.browse("http://youtu.be/dbvTZHULTys");//updated
                     success = true;
@@ -5130,27 +5130,27 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     CommonClassesLight.browse("http://youtu.be/ra8_BwLhtT8");//updated
                     success = true;
                 }
-
+                
                 if (source == zoomPlus) {
                     CommonClassesLight.browse("http://youtu.be/Q0yZRvQK3b8");//updated
                     success = true;
                 }
-
+                
                 if (source == zoomMinus) {
                     CommonClassesLight.browse("http://youtu.be/d3Yeek-oSys");//updated
                     success = true;
                 }
-
+                
                 if (source == bestFitZoom) {
                     CommonClassesLight.browse("http://youtu.be/_51H265QLwA");//updated
                     success = true;
                 }
-
+                
                 if (source == realSizeZoom) {
                     CommonClassesLight.browse("http://youtu.be/V4DHpo2f9zQ");//updated
                     success = true;
                 }
-
+                
                 if (source == addEmptyImageToCurrentBlock) {
                     CommonClassesLight.browse("http://youtu.be/Lg_aDI2QwoY");//updated
                     success = true;
@@ -5184,7 +5184,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");//updated
                     success = true;
                 }
-
+                
                 if (source == reformatTable /*&& jTabbedPane1.getSelectedIndex() == 1*/) {
                     /*
                      * demo panel format button
@@ -5446,7 +5446,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
          * allows to skip asking for save when the image is not changed
          */
         boolean ignoreWarnForSave = false;
-
+        
         if (source == New) {
             /**
              * New is going to erase everything so we warn the user if he hasn't
@@ -5588,13 +5588,13 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         }
                         progressMonitor.setProgress(100);
                         progressMonitor.close();
-
+                        
                     }
                 }).start();
             }
             return;
         }
-
+        
         if (source == OpenYF5M || source == jButton11 || (source instanceof String && source.toString().toLowerCase().contains("import"))) {
             /*
              * load a .yf5m file
@@ -5622,12 +5622,12 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         if (!ignoreWarnForSave && !((source instanceof JComboBox) && loading)) {
             warnForSave = true;
         }
-
+        
         if (source == Rstatus) {
             warned_once = false;
             checkRstatus();
         }
-
+        
         if (source == addEmptyImageToCurrentBlock) {
             /*
              * here we add an empty image that can be replaced by a real image later on
@@ -5974,7 +5974,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     if (result == JOptionPane.OK_OPTION) {
                         ((Montage) curPanel).createColorBlindFriendlyImages(iopane.isRed(), iopane.isGreen(), iopane.isBlue(), iopane.isRedGreen(), iopane.isGreenBLue(), iopane.isRedBlue(), pos);
                         curPanel.updateTable();
-
+                        
                         curPanel.setToWidth(getSizeInPx());
                         curPanel.setWidth_in_px(getSizeInPx());
                         curPanel.setWidth_in_cm(getSizeInCm());
@@ -6572,7 +6572,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         CommonClassesLight.Warning(this, "Please add images to your 'image list' first");
                         return;
                     }
-
+                    
                     if (!image_names.isEmpty()) {
                         Montage b = curPanel;
                         for (String string : image_names) {
@@ -7077,7 +7077,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         updateFigure();
                         doubleLayerPane2.ROIS.setSelectedShape(cur_sel);
                     }
-
+                    
                 }
                 /**
                  * we keep the copied ROIs so that we can paste them on another
@@ -7097,7 +7097,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
         }
-
+        
         if (source == AnnotateImageText) {
             /*
              * force the imageEditor frame to show if not showing. Can be useful if the user manually closed it.
@@ -7286,7 +7286,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }
         }
-
+        
         if (source == checkGraph) {
             /*
              * Capitalizes or sets to lower case the first letter of a caption
@@ -7300,7 +7300,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7406,7 +7406,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }).start();
         }
-
+        
         if (source == checkText) {
             /*
              * Capitalizes or sets to lower case the first letter of a caption
@@ -7420,7 +7420,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7476,7 +7476,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }).start();
         }
-
+        
         if (source == checkStyle) {
             /*
              * Capitalizes or sets to lower case the first letter of a caption
@@ -7490,7 +7490,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7503,7 +7503,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         jd.pack();
                         jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
                         jd.setVisible(true);
-
+                        
                         JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
                         if (jTabbedPane1.getSelectedIndex() == 2) {
                             for (Object row : rows) {
@@ -7560,7 +7560,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7573,7 +7573,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         jd.pack();
                         jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
                         jd.setVisible(true);
-
+                        
                         JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
                         if (jTabbedPane1.getSelectedIndex() == 2) {
                             for (Object row : rows) {
@@ -7620,7 +7620,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }).start();
         }
-
+        
         if (source == checkLineArts) {
             /*
              * Checks the line/point width of line arts
@@ -7634,7 +7634,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7647,7 +7647,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         jd.pack();
                         jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
                         jd.setVisible(true);
-
+                        
                         JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
                         if (jTabbedPane1.getSelectedIndex() == 2) {
                             boolean containsImportedVectorGraphics = false;
@@ -7730,7 +7730,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
             }).start();
         }
-
+        
         if (source == checkFont) {
             /*
              * Checks text font settingss
@@ -7744,7 +7744,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please select a journal style first");
                 return;
             }
-
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -7760,7 +7760,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         jd.pack();
                         jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
                         jd.setVisible(true);
-
+                        
                         JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
                         if (jTabbedPane1.getSelectedIndex() == 2) {
                             for (Object row : rows) {
@@ -7882,7 +7882,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             pane[0] = apane;
             JOptionPane.showMessageDialog(this, pane, "About " + software_name + " ...", JOptionPane.PLAIN_MESSAGE);
         }
-
+        
         if (source == jMenuItem19) {
             /*
              * import images to the 'image list' for heroic people who don't want to use DND
@@ -8021,7 +8021,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 }
                 final String style = selectedStyle;
                 final String saveName = name;
-
+                
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -8088,7 +8088,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 loadFile(last_file, false, true);
             }
         }
-
+        
         if (source == AddTextLeftOfRow || source == AddTextRightOfRow) {
             /*
              * add text boxes on the left or on the right of the selected row
@@ -8257,7 +8257,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
         redo.doClick();
     }//GEN-LAST:event_jMenuItem21ActionPerformed
-
+    
     private void updatePositionInPanel(Object object) {
         if (object == null) {
             return;
@@ -8287,7 +8287,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+    
     public void updatePositionFigure(Object objectOfInterest) {
         if (objectOfInterest == null) {
             return;
@@ -8320,7 +8320,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+    
     private int getRotation() {
         return (((Integer) rotateSpinner.getValue()));
     }
@@ -8446,7 +8446,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         ief.updateImageSize();
     }//GEN-LAST:event_cropChanged
-
+    
     public void blinkAnything(Component component) {
         if (blinker != null) {
             blinker.blinkAnything(component);
@@ -8580,7 +8580,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }//GEN-LAST:event_angleChanged
-
+    
     public void updateBlockSize() {
         if (curPanel != null) {
             /*
@@ -8864,7 +8864,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      */
     @Override
     public void run(String arg) {
-
+        
         final String args = arg;
 
         /*
@@ -8947,7 +8947,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     fa.setVisible(true);
                     Dimension screen = getScreenSize();
                     Dimension size = fa.getSize();
-
+                    
                     if (!alreadyExists) {
                         fa.setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);
                     }
@@ -9047,7 +9047,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             });
         }
     }
-
+    
     private void parseIJCommands(ScientiFig_ fa, String args) {
         /*
          * here we interprete IJ/FIJI command line args
@@ -9163,7 +9163,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         ScientiFig_ ls = isInstanceAlreadyExisting() ? getPreviousInstance() : new ScientiFig_();
         return ls;
     }
-
+    
     private void recordSave(String name) {
         if (Recorder.record) {
             String pal = "save=[";
@@ -9173,7 +9173,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             Recorder.recordString("run(\"" + ScientiFigMacroName + "\", \"" + pal + "\");");
         }
     }
-
+    
     private void initScientifigMacroName() {
         if (ScientiFigMacroName == null) {
             try {
@@ -9184,7 +9184,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+    
     private void loadCurSelParameters(Object cur_sel) {
         if (cur_sel != null) {
             if (cur_sel instanceof MyImage2D) {
