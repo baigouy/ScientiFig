@@ -73,7 +73,7 @@ public class CheckFont extends javax.swing.JPanel {
             fontUnavailable = true;
         }
         jEditorPane1.setContentType("text/html");
-        ColoredTextPane orig = new ColoredTextPane(new ColoredTextPaneSerializable(StyledDocTools.cloneDoc(original.getDoc()), ""));
+        ColoredTextPane orig = new ColoredTextPane(/*new ColoredTextPaneSerializable(StyledDocTools.cloneDoc(original.getDoc()), "")*/ original);
         orig.setTitle("Here is the text with the wrong font");
         jPanel4.add(orig);
         ColoredTextPane copy = new ColoredTextPane(new ColoredTextPaneSerializable(StyledDocTools.cloneDoc(original.getDoc()), ""));

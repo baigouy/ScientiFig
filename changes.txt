@@ -1,3 +1,8 @@
+09/10/14
+-fixed bug related to addition of images to a panel
+-fixed deletion of figures (cannot be retroactive unfortunately) that would lose the figur file even if it still exists
+-fixed bug in check fonts (font was not loaded properly)
+
 01/10/14
 -improved support of one liners (panels that have just one column or one row), it allows to have assymetries in x or y, this strongly increases the ease of use of ScientiFig
 
