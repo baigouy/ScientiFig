@@ -46,7 +46,7 @@ import javax.swing.JPanel;
  * @author Benoit Aigouy
  */
 public class ImagePaneLight extends JPanel {
-    
+
     static final long serialVersionUID = 6524888059107252808L;
     private BufferedImage buf_img;
     private boolean isEnabled = true;
@@ -68,7 +68,7 @@ public class ImagePaneLight extends JPanel {
         super(true);
         setImage(image);
     }
-    
+
     @Override
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
@@ -80,16 +80,20 @@ public class ImagePaneLight extends JPanel {
      * @param image a bufferedImeage
      */
     public void setImage(BufferedImage image) {
+        buf_img = image;
         if (image != null) {
             /*
              * TODO do i really need to copy it ???
              */
-            buf_img = image;
             this.setSize(image.getWidth(null), image.getHeight(null));
             this.setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
             this.setMinimumSize(new Dimension(image.getWidth(null), image.getHeight(null)));
             this.setMaximumSize(new Dimension(image.getWidth(null), image.getHeight(null)));
             repaint();
+        } else {
+            this.setSize(1, 1);
+            this.setPreferredSize(new Dimension(1, 1));
+            super.repaint();
         }
     }
 
@@ -99,7 +103,7 @@ public class ImagePaneLight extends JPanel {
      */
     public BufferedImage getBufferedImage() {
         return buf_img;
-        
+
     }
 
     /**
@@ -115,5 +119,3 @@ public class ImagePaneLight extends JPanel {
         }
     }
 }
-
-

@@ -38,6 +38,8 @@ import Commons.DropTargetHandler;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * JtextFieldDND is just a textField that supports DND
@@ -47,6 +49,23 @@ import javax.swing.JOptionPane;
 public class JtextFieldDND extends javax.swing.JPanel {
 
     public static final long serialVersionUID = 5447412807391271349L;
+    private boolean monitorChanges = false;
+    private final DocumentListener listener = new DocumentListener() {
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            textChanged();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            textRemoved();
+        }
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            textInserted();
+        }
+    };
 
     /**
      * Creates new form JtextFieldDND (a jtextfield that supports DND)
@@ -61,6 +80,42 @@ public class JtextFieldDND extends javax.swing.JPanel {
         });
         jLabel1.setVisible(false);
         jButton1.setVisible(false);
+    }
+
+    public boolean isMonitorChanges() {
+        return monitorChanges;
+    }
+
+    /**
+     * allows changes to be monitored
+     *
+     * @param monitorChanges
+     */
+    public void setMonitorChanges(boolean monitorChanges) {
+        this.monitorChanges = monitorChanges;
+        jTextField1.getDocument().removeDocumentListener(listener);
+        if (monitorChanges) {
+            jTextField1.getDocument().addDocumentListener(listener);
+        }
+    }
+
+    /**
+     * override this to handle changes (please setmonitorChanges to true)
+     */
+    public void textChanged() {
+    }
+
+    /**
+     * override this to handle text removal (please setmonitorChanges to true)
+     */
+    public void textRemoved() {
+    }
+
+    /**
+     * override this to handle text insertions (please setmonitorChanges to
+     * true)
+     */
+    public void textInserted() {
     }
 
     /**
@@ -194,5 +249,3 @@ public class JtextFieldDND extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
-
-

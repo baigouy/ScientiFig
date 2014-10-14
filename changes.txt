@@ -1,3 +1,6 @@
+14/10/14
+-Minor changes and bug fixes in FiguR
+
 09/10/14
 -fixed bug related to addition of images to a panel
 -fixed deletion of figures (cannot be retroactive unfortunately) that would lose the figur file even if it still exists

@@ -100,7 +100,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     ThemeGraph theme;
     LinkedHashMap<String, String> tags_and_commands = new LinkedHashMap<String, String>();
     String software_name = "FiguR";
-    String version = "1.0 beta";
+    String version = "1.1 beta";
     RLabel titleLabel = new RLabel();
     RLabel xaxisLabel = new RLabel();
     RLabel yaxisLabel = new RLabel();
@@ -366,8 +366,11 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jLabel2.setText("Legend Title:");
 
         xlsxFile.setEditable(false);
+        xlsxFile.setEnabled(false);
+        xlsxFile.setFocusable(false);
 
         legendTitle.setEditable(false);
+        legendTitle.setFocusable(false);
         legendTitle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
@@ -377,6 +380,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jLabel19.setText("x Axis Title:");
 
         xAxisTitle.setEditable(false);
+        xAxisTitle.setFocusable(false);
         xAxisTitle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
@@ -386,6 +390,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jLabel20.setText("y Axis Title:");
 
         yAxisTitle.setEditable(false);
+        yAxisTitle.setFocusable(false);
         yAxisTitle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
@@ -425,6 +430,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         });
 
         title.setEditable(false);
+        title.setFocusable(false);
         title.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
@@ -1827,6 +1833,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 loadData(name, iopane.getSheetNumber(), iopane.getFieldSeparator(), iopane.getTextSeparator(), iopane.getDecimal());
                 this.filename = name;
                 this.lastPath = new File(name).getParent();
+                enableOrDisableTextField();
             }
         }
     }//GEN-LAST:event_openFile
@@ -1890,7 +1897,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         }
     }
 
-    /*
+    /**
      * The user quits the soft --> we do a bit of cleaning
      */
     private void onQuit(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onQuit
@@ -1945,17 +1952,17 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                     + "\n+facet_grid(Species~.);"
                     + "\n\nPS: please don't put commentaries (line starting with a '#') in your code"
                     + "\n\n-8/Another valid example (that you can try to execute):"
-                    + "\n\ncolanmes(iris);"
-                    + "\nggplot (iris, aes (x = Sepal.Length, y = Sepal.Width, colour = Species))+geom_line();"//faire un truc assez sympa avec des donnees random par exemple ou bien plutot utilise les donnees de curDataFigR
+                    + "\n\ncolnames(iris);"
+                    + "\nggplot (iris, aes (x = Sepal.Length, y = Sepal.Width, colour = Species))+geom_line();"
                     + "\n\n-9/An invalid example (it is invalid because the last command is not a plot command)"
                     + "\n\nggplot (iris, aes (x = Sepal.Length, y = Sepal.Width, colour = Species))+geom_line();"
-                    + "\ncolanmes(iris);"
+                    + "\ncolnames(iris);"
                     + "\n\n-10/An invalid example (it is invalid because commands are not separated with a semicolon)"
-                    + "\n\ncolanmes(iris)"
+                    + "\n\ncolnames(iris)"
                     + "\nggplot (iris, aes (x = Sepal.Length, y = Sepal.Width, colour = Species))+geom_line()"
                     + "\n\n-11/An invalid example (it is invalid because even if the last command"
                     + "\nis a plot command it is not a ggplot2 command):"
-                    + "\n\ncolanmes(iris);"
+                    + "\n\ncolnames(iris);"
                     + "\nplot(iris$Petal.Length, iris$Sepal.Length);");
         }
     }//GEN-LAST:event_customCodeOrSoftCode
@@ -2051,7 +2058,12 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             return;
         }
         R_code = "";
-        R_code = getFormattedGraph();
+        if (!plots.isEmpty()) {
+            R_code = getFormattedGraph();
+        }
+        if (isCustomCode()) {
+            R_code = jTextArea3.getText();
+        }
         jTextArea2.setText(R_code);
         updatePreview(R_code);
     }
@@ -2418,7 +2430,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         if (name == null || !(name.toLowerCase().endsWith(".txt") || name.toLowerCase().endsWith(".csv") || name.toLowerCase().endsWith(".xls") || name.toLowerCase().endsWith(".xlsx"))) {
             return;
         }
-        DataOpener iopane = new DataOpener(false);
+        DataOpener iopane = new DataOpener(false, name.toLowerCase().endsWith(".xls") || name.toLowerCase().endsWith(".xlsx"));
         int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Data source parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
             checkRstatus();
@@ -2435,6 +2447,15 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             loadData(name, iopane.getSheetNumber(), iopane.getFieldSeparator(), iopane.getTextSeparator(), iopane.getDecimal());
             this.filename = name;
             this.lastPath = new File(name).getParent();
+            enableOrDisableTextField();
+        }
+    }
+
+    public void enableOrDisableTextField() {
+        if (!xlsxFile.getText().trim().equals("")) {
+            xlsxFile.setEnabled(true);
+        } else {
+            xlsxFile.setEnabled(false);
         }
     }
 

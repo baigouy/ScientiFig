@@ -139,6 +139,9 @@
       </Layout>
       <SubComponents>
         <Component class="Dialogs.JtextFieldDND" name="jtextFieldDND1">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JtextFieldDND(){&#xa;&#xa;            @Override&#xa;        public void textChanged() {&#xa;                updateFileTypeAndOptions(getText());&#xa;            }&#xa;&#xa;            @Override&#xa;        public void textInserted() {&#xa;                updateFileTypeAndOptions(getText());&#xa;            }&#xa;&#xa;            @Override&#xa;        public void textRemoved() {&#xa;                updateFileTypeAndOptions(getText());&#xa;            }&#xa;          &#xa;            &#xa;&#xa;&#xa;};&#xa;"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButton1">
           <Properties>

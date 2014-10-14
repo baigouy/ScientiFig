@@ -55,22 +55,25 @@ public class DataOpener extends javax.swing.JPanel {
      */
     public DataOpener() {
         initComponents();
+        jtextFieldDND1.setMonitorChanges(true);
     }
 
     /**
      * Constructor that starts browsing from the last opened path
      */
     public DataOpener(String last_path) {
-        initComponents();
+        this();
         this.last_path = last_path;
     }
 
     /*
      * Constructor
      */
-    public DataOpener(boolean hide_file_sel) {
-        initComponents();
+    public DataOpener(boolean hide_file_sel, boolean isExcel) {
+        this();
         jPanel1.setVisible(false);
+        jPanel2.setVisible( !isExcel);
+        jPanel3.setVisible( isExcel);
     }
 
     /**
@@ -166,7 +169,25 @@ public class DataOpener extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jtextFieldDND1 = new Dialogs.JtextFieldDND();
+        jtextFieldDND1 = new JtextFieldDND(){
+
+            @Override
+            public void textChanged() {
+                updateFileTypeAndOptions(getText());
+            }
+
+            @Override
+            public void textInserted() {
+                updateFileTypeAndOptions(getText());
+            }
+
+            @Override
+            public void textRemoved() {
+                updateFileTypeAndOptions(getText());
+            }
+
+        };
+        ;
         jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox();
@@ -441,19 +462,25 @@ public class DataOpener extends javax.swing.JPanel {
             CommonClassesLight.enableOrDisablePanelComponents(jPanel2, false);
             CommonClassesLight.enableOrDisablePanelComponents(jPanel3, false);
             jtextFieldDND1.setText(name);
-            if (name.toLowerCase().endsWith(".txt") || name.toLowerCase().endsWith(".csv")) {
-                CommonClassesLight.enableOrDisablePanelComponents(jPanel2, true);
-                if (name.toLowerCase().endsWith(".txt")) {
-                    jComboBox1.setSelectedIndex(0);
-                } else {
-                    jComboBox1.setSelectedIndex(2);
-                }
-            } else {
-                CommonClassesLight.enableOrDisablePanelComponents(jPanel3, true);
-            }
+            updateFileTypeAndOptions(name);
             last_path = new File(name).getParent();
         }
     }//GEN-LAST:event_openFile
+
+    private void updateFileTypeAndOptions(String name) {
+        if (name != null && (name.toLowerCase().endsWith(".txt") || name.toLowerCase().endsWith(".csv"))) {
+            CommonClassesLight.enableOrDisablePanelComponents(jPanel3, false);
+            CommonClassesLight.enableOrDisablePanelComponents(jPanel2, true);
+            if (name.toLowerCase().endsWith(".txt")) {
+                jComboBox1.setSelectedIndex(0);
+            } else {
+                jComboBox1.setSelectedIndex(2);
+            }
+        } else {
+            CommonClassesLight.enableOrDisablePanelComponents(jPanel3, true);
+            CommonClassesLight.enableOrDisablePanelComponents(jPanel2, false);
+        }
+    }
 
     /**
      * The main function is used to test the class and its methods
@@ -499,5 +526,3 @@ public class DataOpener extends javax.swing.JPanel {
     private Dialogs.JtextFieldDND jtextFieldDND1;
     // End of variables declaration//GEN-END:variables
 }
-
-

@@ -575,11 +575,14 @@
         <Component class="javax.swing.JTextField" name="xlsxFile">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="legendTitle">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runAll"/>
@@ -593,6 +596,7 @@
         <Component class="javax.swing.JTextField" name="xAxisTitle">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runAll"/>
@@ -606,6 +610,7 @@
         <Component class="javax.swing.JTextField" name="yAxisTitle">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runAll"/>
@@ -696,6 +701,7 @@
         <Component class="javax.swing.JTextField" name="title">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runAll"/>
