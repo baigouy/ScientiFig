@@ -679,7 +679,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
                 imagePaneLight1.setImage(r.getPreview(simplePlot, imagePaneLight1.getSize().width, imagePaneLight1.getSize().height));
             } else {
                 RFormula concatenatedFormula = concatenateFormula();
-                if (!concatenatedFormula.isEmpty()) {
+                if (concatenatedFormula!=null && !concatenatedFormula.isEmpty()) {
                     simplePlot += "\n+ ggtitle(" + concatenatedFormula.toRExpression() + ")";
                 }
                 imagePaneLight2.setImage(r.getPreview(simplePlot, imagePaneLight2.getSize().width, imagePaneLight2.getSize().height));

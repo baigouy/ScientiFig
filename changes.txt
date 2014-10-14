@@ -1,5 +1,6 @@
 14/10/14
 -Minor changes and bug fixes in FiguR
+-Fixed a minor bug in the R math editor
 
 09/10/14
 -fixed bug related to addition of images to a panel
