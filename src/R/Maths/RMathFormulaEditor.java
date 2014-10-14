@@ -577,7 +577,8 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
                 || selection.equals("in") || selection.contains("product of")
                 || selection.contains("subset") || selection.contains("superset")
                 || selection.contains("proportional") || selection.contains("subscript")
-                || selection.contains("superscript") || selection.equals("concatenate")) {
+                || selection.contains("superscript") || selection.equals("concatenate")
+                || selection.equals("+/-")) {
             CommonClassesLight.enableOrDisablePanelComponents(jPanel5, true);
             jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Left term"));
             CommonClassesLight.enableOrDisablePanelComponents(jPanel2, true);
