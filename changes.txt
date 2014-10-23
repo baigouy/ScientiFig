@@ -1,3 +1,6 @@
+23/10/14
+-fixed a bug that (rarely) prevented images from being deleted
+
 14/10/14
 -Minor changes and bug fixes in FiguR
 -Fixed a minor bug in the R math editor

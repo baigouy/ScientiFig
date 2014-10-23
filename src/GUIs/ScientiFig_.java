@@ -6236,7 +6236,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                                         }
                                         myList1.addDirectlyToList(name, sb.getBufferedImage());
                                     } else {
-                                        if (new File(name).exists()) {
+                                        if (name != null && new File(name).exists()) {
                                             files_to_add.add(name);
                                         }
                                     }
