@@ -203,7 +203,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.97";
+    public static final String version = "2.98";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
