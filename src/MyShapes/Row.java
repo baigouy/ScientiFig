@@ -919,7 +919,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
     /**
      * Aligns objects within the row
      */
-    public void arrangeRows() {
+    public void arrangeRow() {
         /*
          * let's align the objects contained in the row
          */
@@ -955,7 +955,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         }
         ComplexShapeLight cs = new ComplexShapeLight(blocks);
         cs.packX(spaceX);
-        arrangeRows();
+        arrangeRow();
         updateMasterRect();
     }
 
@@ -980,7 +980,7 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
         }
         ComplexShapeLight cs = new ComplexShapeLight(blocks);
         cs.packX(spaceX);
-        arrangeRows();
+        arrangeRow();
         updateMasterRect();
     }
 

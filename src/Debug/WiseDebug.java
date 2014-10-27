@@ -633,7 +633,7 @@ public class WiseDebug {
                 posNText.put(new Point3D.Integer(2, 4,0), ctps2);
                 row.setRightTextBar(new TopBar(row, posNText, TopBar.RIGHT));
             }
-            row.arrangeRows();
+            row.arrangeRow();
             SF.reforceSameHeight(row);
             ScientiFig_.updateFigure();
             pause(2500);
