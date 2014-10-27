@@ -6149,7 +6149,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                      * necessary
                      */
                     showAppropriateOptions(imagesInFigureList);
-
                 }
                 /*
                  * bug fix if images are not of the same size
