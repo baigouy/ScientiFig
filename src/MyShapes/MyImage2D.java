@@ -156,6 +156,10 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
     int internal_space = 3;
     int insetBorderColor = 0xFFFFFF;
     /**
+     * we set the default inset position to top right
+     */
+    int INSET_POSITION = TOP_ | _RIGHT_;
+    /**
      * Contains asterisks, squares or various ROIs
      */
     public ArrayList<Object> associatedObjects = new ArrayList<Object>();
@@ -1488,65 +1492,6 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         g2d.draw(l2d);
         g2dparams.restore(g2d);
     }
-
-//    @Override
-//    public void drawTransparent(Graphics2D g2d, float opacity) {
-//        G2dParameters g2dparams = new G2dParameters(g2d);
-//        g2d.setColor(Color.WHITE);
-//        g2d.setStroke(new BasicStroke(1));
-//        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-//        if (bimg != null) {
-//            if (!(g2d instanceof MyGraphics2D)) {
-//                g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
-//                high_pres = false;
-//            } else {
-//                MyGraphics2D tmp = ((MyGraphics2D) g2d);
-//                if (tmp.isSVGPrecision()) {
-//                    tmp.drawImage(bimg.getBufferedImage(), rec2d.x, rec2d.y, rec2d.width, rec2d.height);
-//                    high_pres = true;
-//                } else {
-//                    g2d.drawImage(bimg.getBufferedImage(), (int) rec2d.x, (int) rec2d.y, (int) Math.round(rec2d.width), (int) Math.round(rec2d.height), null);
-//                    high_pres = false;
-//                }
-//            }
-//        }
-//        addLetter(g2d);
-//        addScalebar(g2d);
-//        addTextLowerLeftCorner(g2d);
-//        addTextUpperRightCorner(g2d);
-//        addTextLowerRightCorner(g2d);
-//        addTextUpperLeftCorner(g2d);
-//        g2dparams.restore(g2d);
-//        high_pres = false;
-//    }
-//
-//    @Override
-//    public void fillTransparent(Graphics2D g2d, float opacity) {
-//        drawTransparent(g2d, opacity);
-//    }
-//
-//    @Override
-//    public void drawAndFillTransparent(Graphics2D g2d, float opacity) {
-//        drawTransparent(g2d, opacity);
-//        fillTransparent(g2d, opacity);
-//    }
-//
-//    @Override
-//    public void drawTransparent(Graphics2D g2d) {
-//        drawTranspatransparencyd, opacity);
-//    }
-//
-//    @Override
-//    public void fillTransparent(Graphics2D g2d) {
-//        fillTrtransparencynt(g2d, opacity);
-//    }
-//
-//    @Override
-//    public void drawAndFillTransparent(Graphics2D g2d) {
-//        drawTransparent(g2d);
-//        fillTransparent(g2d);
-//    }
-    int INSET_POSITION = 0;
 
     public int getINSET_POSITION() {
         return INSET_POSITION;

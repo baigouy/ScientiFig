@@ -98,7 +98,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     String lockerID = "FR";//short for FiguR
     boolean loading = false;
     ThemeGraph theme;
-    LinkedHashMap<String, String> tags_and_commands = new LinkedHashMap<String, String>();
     String software_name = "FiguR";
     String version = "1.1 beta";
     RLabel titleLabel = new RLabel();
@@ -114,7 +113,6 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     ArrayList<String> column_names = new ArrayList<String>();
     ArrayList<String> alreadyFactorizableColumns = new ArrayList<String>();
     ArrayList<Integer> nb_of_factors = new ArrayList<Integer>();
-    int counter = 0;
     MyRsessionLogger rsession;
     String R_code = "";
     String last_folder = null;

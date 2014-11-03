@@ -1,3 +1,7 @@
+3/11/14
+-fixed minor bugs (e.g. erroneous positioning of the insets when using the "ROI --> inset" function)
+-removed unnecessary variables in the main SF class
+
 27/10/14
 -quick & dirty fix for a layout bug that occured when images were swapped in a panel within a row (columns were sometimes moving)
 

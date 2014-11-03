@@ -1,3 +1,4 @@
+//TODO allow spacing to be changed once panel is in a row --> need to check the type of object selected
 //TODO implement clean split of IJ images by channel rather than by color in case users gave weird colors to their channels
 /*
  * obfuscateSFnZIP --> compile then obfuscate and compress
@@ -197,9 +198,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private static int import_J = 0;
     public static boolean rowAutoSameHeight = true;
     String letter = "A";
-    public static boolean isTutorialMode = false;
-    public static String defaultTutoOutputFolder = null;
-    public static int tutorialCounter = 0;
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
@@ -216,22 +214,17 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     private static String lastSaveName;
     private static String lastOpenName;
     JournalParameters defaultStyle;
-    public static final int MAX_TRY = 10;
     HashMap<Integer, Montage> panels = new HashMap<Integer, Montage>();
-    ArrayList<Integer> connexions = new ArrayList<Integer>();
     double resolution = 72;
     public static HashMap<String, SerializableBufferedImage2> imported_from_J = new HashMap<String, SerializableBufferedImage2>();
     HashMap<String, Double> imported_from_pixel_size = new HashMap<String, Double>();
     public static boolean isUndoRedoAllowed = false;
     public static int MAX_UNDOS = 10;
-    ArrayDeque<String> undos_and_redos = new ArrayDeque<String>(10);
+    ArrayDeque<String> undos_and_redos = new ArrayDeque<String>(MAX_UNDOS);
     public static int cur_pos = -1;
     public static boolean remove_when_added = true;
-    int title_bar_size = 0;
     boolean dontChangeCropSize = false;
     boolean dontChangeAngle = false;
-    static int counter1 = 0;
-    public static boolean fullScreenMode = false;
     boolean warned_once = false;
     private static String macro = null;
     private static String save = null;
@@ -240,7 +233,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static boolean useNativeDialog = false;
     public static boolean showHelpInfoWindow = true;
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
-    int memoryRefreshSpeed = 2000;
     private static final ArrayList<String> exts = new ArrayList<String>();
 
     static {
@@ -294,11 +286,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final int FORMAT_SVG = 0;
     public static final int FORMAT_PNG = 1;
     public static final int FORMAT_JPEG = 2;
-    /*
-     * these formats are not supported anymore because of POI drawing limitations
-     */
-    public static final int FORMAT_IJ = 7;
     public static final int FORMAT_TIFF = 5;
+    public static final int FORMAT_IJ = 7;
     public static final int FORMAT_FIGURE_ASSISTANT = 12;
     static final int currentResolution = 72;
     /*
@@ -451,7 +440,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 
     private void addAccelerators() {
         /*
-         * first we add shortcuts to existing buttons
+         * We add shortcuts to existing buttons
          */
         /*
          * ctrl +/zoom +
@@ -576,6 +565,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * We refresh memory usage every 'memoryRefreshSpeed' milliseconds
      */
     private void memoryRefreshTimer() {
+        int memoryRefreshSpeed = 2000;
         refreshMemory.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -1253,14 +1243,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * speeds up scrollbars that would be otherwise terribly slow
      */
     private void speedUpScrollbars() {
-        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
+//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
         CommonClassesLight.speedUpJScrollpane(jScrollPane13);
         CommonClassesLight.speedUpJScrollpane(jScrollPane16);
         CommonClassesLight.speedUpJScrollpane(jScrollPane17);
         CommonClassesLight.speedUpJScrollpane(jScrollPane8);
         CommonClassesLight.speedUpJScrollpane(jScrollPane12);
-        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
-        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
+//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
+//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
     }
 
     /**
