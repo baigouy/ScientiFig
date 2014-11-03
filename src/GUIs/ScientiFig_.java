@@ -5461,6 +5461,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
              * a brand new figure
              */
             clearAll();
+           PanelCounter=1;
+           letter = "A";
         }
         if (source == zoomPlus) {
             /**
@@ -6458,7 +6460,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please add some images in your 'image list' first");
                 return;
             }
-            letter = "A";
             ArrayList<String> images = myList1.getFullList();
             ArrayList<Object> shapes = new ArrayList<Object>();
             int size_x = -1;
@@ -6476,7 +6477,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                      * we put all the images that have the same size or same AR in a panel
                      */
                     Dimension squary_size = best_rectangle_finder(shapes.size());
-                    addMontage(shapes, squary_size.width, squary_size.height, false, letter, getSpaceBetweenImages());
+                    addMontage(shapes, squary_size.width, squary_size.height, false, "", getSpaceBetweenImages());
                     shapes.clear();
                     shapes.add(tmp);
                     size_x = tmp.getImageWidth();
@@ -6485,7 +6486,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
             if (!shapes.isEmpty()) {
                 Dimension squary_size = best_rectangle_finder(shapes.size());
-                addMontage(shapes, squary_size.width, squary_size.height, false, letter, getSpaceBetweenImages());
+                addMontage(shapes, squary_size.width, squary_size.height, false, "", getSpaceBetweenImages());
                 if (remove_when_added) {
                     myList1.clearList();
                 }
