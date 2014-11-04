@@ -210,7 +210,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     DefaultListModel imagesInFigureModel = new DefaultListModel();
     DefaultListModel figureListModel = new DefaultListModel();
     DefaultListModel RowContentListModel = new DefaultListModel();
-    DefaultListModel rowListModel = new DefaultListModel();
     private static String lastSaveName;
     private static String lastOpenName;
     JournalParameters defaultStyle;
@@ -1240,17 +1239,14 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     }
 
     /*
-     * speeds up scrollbars that would be otherwise terribly slow
+     * speeds up scrollbars that would otherwise be terribly slow
      */
     private void speedUpScrollbars() {
-//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
         CommonClassesLight.speedUpJScrollpane(jScrollPane13);
         CommonClassesLight.speedUpJScrollpane(jScrollPane16);
         CommonClassesLight.speedUpJScrollpane(jScrollPane17);
         CommonClassesLight.speedUpJScrollpane(jScrollPane8);
         CommonClassesLight.speedUpJScrollpane(jScrollPane12);
-//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
-//        CommonClassesLight.speedUpJScrollpane(jScrollPane12);
     }
 
     /**
@@ -3376,7 +3372,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
 
     /**
      *
-     * @return the connection to R
+     * restores the connection to R
      */
     public void getRserver() {
         if (CommonClassesLight.r == null || !CommonClassesLight.isRReady()) {
@@ -4096,7 +4092,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
         if (mustWarn) {
             //TODO faire un blinker qui peut blinker plusieurs composants a la fois
-            //blinkAnything(checkText);
             blinkAnything(checkFont);
             String additionalTextForFigs = "";
             if (isFig) {
@@ -5103,74 +5098,74 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             boolean success = false;
             if (showHelpVideoForClickedButton) {
                 if (source == replaceImage) {
-                    CommonClassesLight.browse("http://youtu.be/gvsqkl_oxK4");//updated
+                    CommonClassesLight.browse("http://youtu.be/gvsqkl_oxK4");
                     success = true;
                 }
 
                 if (source == moveColLeft || source == moveColRight) {
-                    CommonClassesLight.browse("http://youtu.be/dbvTZHULTys");//updated
+                    CommonClassesLight.browse("http://youtu.be/dbvTZHULTys");
                     success = true;
                 }
                 if (source == deleteJournalStyle) {
-                    CommonClassesLight.browse("http://youtu.be/afLH98xysG8");//updated
+                    CommonClassesLight.browse("http://youtu.be/afLH98xysG8");
                     success = true;
                 }
                 if (source == deleteSelectColumn) {
-                    CommonClassesLight.browse("http://youtu.be/ra8_BwLhtT8");//updated
+                    CommonClassesLight.browse("http://youtu.be/ra8_BwLhtT8");
                     success = true;
                 }
 
                 if (source == zoomPlus) {
-                    CommonClassesLight.browse("http://youtu.be/Q0yZRvQK3b8");//updated
+                    CommonClassesLight.browse("http://youtu.be/Q0yZRvQK3b8");
                     success = true;
                 }
 
                 if (source == zoomMinus) {
-                    CommonClassesLight.browse("http://youtu.be/d3Yeek-oSys");//updated
+                    CommonClassesLight.browse("http://youtu.be/d3Yeek-oSys");
                     success = true;
                 }
 
                 if (source == bestFitZoom) {
-                    CommonClassesLight.browse("http://youtu.be/_51H265QLwA");//updated
+                    CommonClassesLight.browse("http://youtu.be/_51H265QLwA");
                     success = true;
                 }
 
                 if (source == realSizeZoom) {
-                    CommonClassesLight.browse("http://youtu.be/V4DHpo2f9zQ");//updated
+                    CommonClassesLight.browse("http://youtu.be/V4DHpo2f9zQ");
                     success = true;
                 }
 
                 if (source == addEmptyImageToCurrentBlock) {
-                    CommonClassesLight.browse("http://youtu.be/Lg_aDI2QwoY");//updated
+                    CommonClassesLight.browse("http://youtu.be/Lg_aDI2QwoY");
                     success = true;
                 }
                 if (source == checkSize || source == checkStyle || source == checkFont || source == checkText || source == checkGraph || source == checkLineArts) {
-                    CommonClassesLight.browse("http://youtu.be/uvrXs4t4luk");//updated
+                    CommonClassesLight.browse("http://youtu.be/uvrXs4t4luk");
                     success = true;
                 }
                 if (source == createPanelAutomatically) {
                     /*
                      * demo auto
                      */
-                    CommonClassesLight.browse("http://youtu.be/l0MayjoUcWo");//updated
+                    CommonClassesLight.browse("http://youtu.be/l0MayjoUcWo");
                     success = true;
                 }
                 if (source == showShortcuts) {
                     /*
                      * demo + add to panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/vUroHr_A4PI");//updated
+                    CommonClassesLight.browse("http://youtu.be/vUroHr_A4PI");
                     success = true;
                 }
                 if (source == addSelectionToCurrentPanel) {
                     /*
                      * demo + add to panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");//updated
+                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");
                     success = true;
                 }
                 if (source == addSelectedImagesInCurPanel) {
-                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");//updated
+                    CommonClassesLight.browse("http://youtu.be/mk1P4koujl0");
                     success = true;
                 }
 
@@ -5178,211 +5173,211 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                     /*
                      * demo panel format button
                      */
-                    CommonClassesLight.browse("http://youtu.be/XdH46WBK_pE");//updated
+                    CommonClassesLight.browse("http://youtu.be/XdH46WBK_pE");
                     success = true;
                 }
                 if (source == journalColumnsCombo || source == sizeInCM || source == sizeInPx) {
                     /*
                      * demo changing size
                      */
-                    CommonClassesLight.browse("http://youtu.be/0PCWSE6_ijw");//updated
+                    CommonClassesLight.browse("http://youtu.be/0PCWSE6_ijw");
                     success = true;
                 }
                 if (source == jTextField1 || source == updateLetters /*&& jTabbedPane1.getSelectedIndex() == 1*/) {
                     /*
                      * demo changing letters for panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/9WDWYxDDnh4");//updated
+                    CommonClassesLight.browse("http://youtu.be/9WDWYxDDnh4");
                     success = true;
                 }
                 if (source == changeSpaceBetweenImageInPanel) {
                     /*
                      * demo changing space in panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/4m9TOduT8Sk");//updated
+                    CommonClassesLight.browse("http://youtu.be/4m9TOduT8Sk");
                     success = true;
                 }
                 if (source == createPanelFromSelection) {
                     /*
                      * demo creating a montage arrow button
                      */
-                    CommonClassesLight.browse("http://youtu.be/0ujHIeYHGlA");//updated
+                    CommonClassesLight.browse("http://youtu.be/0ujHIeYHGlA");
                     success = true;
                 }
                 if ((source == cropLeftSpinner || source == cropRightSpinner || source == cropUpSpinner || source == cropDownSpinner)) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/cvPAEptL-mY");//updated
+                    CommonClassesLight.browse("http://youtu.be/cvPAEptL-mY");
                     success = true;
                 }
                 if (source == rotateSpinner) {
-                    CommonClassesLight.browse("http://youtu.be/OAyHEBYlGz0");//updated
+                    CommonClassesLight.browse("http://youtu.be/OAyHEBYlGz0");
                     success = true;
                 }
                 if (source == deleteSelectedImageFromCurrentBlock) {
                     /*
                      * demo delete an image from a panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/et6aL1bhM2U");//updated
+                    CommonClassesLight.browse("http://youtu.be/et6aL1bhM2U");
                     success = true;
                 }
                 if (source == DeleteSelectedBlock) {
                     /*
                      * demo delete panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/bwBEdwvpnIQ");//updated
+                    CommonClassesLight.browse("http://youtu.be/bwBEdwvpnIQ");
                     success = true;
                 }
                 if (source == addTextAboveRow || source == addTextBelowRow || source == AddTextLeftOfRow || source == AddTextRightOfRow) {
                     /*
                      * demo text bars
                      */
-                    CommonClassesLight.browse("http://youtu.be/USraEocAkWQ");//updated
+                    CommonClassesLight.browse("http://youtu.be/USraEocAkWQ");
                     success = true;
                 }
                 if (source == deleteImagesFromTheList) {
                     /*
                      * demo delete panel
                      */
-                    CommonClassesLight.browse("http://youtu.be/71f3OSAjBMs");//updated
+                    CommonClassesLight.browse("http://youtu.be/71f3OSAjBMs");
                     success = true;
                 }
                 if (source == addSelectedPanelToNewRow) {
                     /*
                      * demo delete add new row
                      */
-                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");//updated
+                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");
                     success = true;
                 }
                 if (source == addSelectedPanelToSelectedRow) {
                     /*
                      * demo delete add new row
                      */
-                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");//updated
+                    CommonClassesLight.browse("http://youtu.be/cAKBZZph4l4");
                     success = true;
                 }
                 if (source == journalCombo) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/cPQzlNAyKcw");//updated
+                    CommonClassesLight.browse("http://youtu.be/cPQzlNAyKcw");
                     success = true;
                 }
                 if (source == moveRowRight || source == moveRowLeft) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/oPtKeSd6xM0");//updated
+                    CommonClassesLight.browse("http://youtu.be/oPtKeSd6xM0");
                     success = true;
                 }
                 if (source == removeSelectedRow) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/w0GluC5WBv4");//updated
+                    CommonClassesLight.browse("http://youtu.be/w0GluC5WBv4");
                     success = true;
                 }
                 if (source == AnnotateImageROIs) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/gZ_u6EXq6X8");//updated
+                    CommonClassesLight.browse("http://youtu.be/gZ_u6EXq6X8");
                     success = true;
                 }
                 if (source == AnnotateImageText) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/-0YcXXC53RE");//updated
+                    CommonClassesLight.browse("http://youtu.be/-0YcXXC53RE");
                     success = true;
                 }
                 if (source == removeAllAnnotations || source == removeAnnotations) {
                     /*
                      * demo remove annotations
                      */
-                    CommonClassesLight.browse("http://youtu.be/vbPatQVxt-Y");//updated
+                    CommonClassesLight.browse("http://youtu.be/vbPatQVxt-Y");
                     success = true;
                 }
                 if (source == changeSpaceBetweenRows) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/U2YM_pxg1sg");//updated
+                    CommonClassesLight.browse("http://youtu.be/U2YM_pxg1sg");
                     success = true;
                 }
                 if (source == importFromIJ) {
-                    CommonClassesLight.browse("http://youtu.be/4oVx98t-YPI");//updated
+                    CommonClassesLight.browse("http://youtu.be/4oVx98t-YPI");
                     success = true;
                 }
                 if (source == moveUpInList || source == moveDownInList) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/00odzpvqEFI");//updated
+                    CommonClassesLight.browse("http://youtu.be/00odzpvqEFI");
                     success = true;
                 }
                 if (source == splitColoredImagesToMagentaGreen) {
                     /*
                      * demo changing journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/G7TWJrXTrCU");//updated
+                    CommonClassesLight.browse("http://youtu.be/G7TWJrXTrCU");
                     success = true;
                 }
                 if (source == moveImageInCurrentPanelLeft || source == moveImageInCurrentPanelRight) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/VDGscaiWCVw");//updated
+                    CommonClassesLight.browse("http://youtu.be/VDGscaiWCVw");
                     success = true;
                 }
                 if (source == swapImagesFromCurrentPanel) {
                     /*
                      * demo crop and rotate in panels
                      */
-                    CommonClassesLight.browse("http://youtu.be/m8Fxbkv5tP4");//updated
+                    CommonClassesLight.browse("http://youtu.be/m8Fxbkv5tP4");
                     success = true;
                 }
                 if (source == PIP || source == removePiP) {
                     /*
                      * demo add remove PIP
                      */
-                    CommonClassesLight.browse("http://youtu.be/lxn0t-jD448");//updated
+                    CommonClassesLight.browse("http://youtu.be/lxn0t-jD448");
                     success = true;
                 }
                 if (source == newJournalStyle) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/GpK-nC2Ra0o");//updated
+                    CommonClassesLight.browse("http://youtu.be/GpK-nC2Ra0o");
                     success = true;
                 }
                 if (source == removeAllScaleBars) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/5Y-h_lEgDCY");//updated
+                    CommonClassesLight.browse("http://youtu.be/5Y-h_lEgDCY");
                     success = true;
                 }
                 if (source == removeAllText) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/sB-oXKNA4z4");//updated
+                    CommonClassesLight.browse("http://youtu.be/sB-oXKNA4z4");
                     success = true;
                 }
                 if (source == ChangeStrokeSize) {
                     /*
                      * demo create a new journal style
                      */
-                    CommonClassesLight.browse("http://youtu.be/pia-zYgcYqM");//updated
+                    CommonClassesLight.browse("http://youtu.be/pia-zYgcYqM");
                     success = true;
                 }
                 if (source == jMenuItem12) {
                     /*
                      * demo change font and bg color of text
                      */
-                    CommonClassesLight.browse("http://youtu.be/E2XTfpWm_Kw");//updated
+                    CommonClassesLight.browse("http://youtu.be/E2XTfpWm_Kw");
                     success = true;
                 }
             }
