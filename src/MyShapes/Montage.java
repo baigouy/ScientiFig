@@ -2303,7 +2303,7 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
                 }
             }
             Graphics2D g2d = out.createGraphics();
-            draw(g2d);
+            drawAndFill(g2d);
             g2d.dispose();
         } catch (Exception e) {
         } finally {

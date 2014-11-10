@@ -353,7 +353,6 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
         try {
             jComboBox1.setSelectedIndex(0);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         if (plotStyle.equals("geom_bar") || plotStyle.contains("density")) {
             hideBinWidth(false);
@@ -383,7 +382,6 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
             try {
                 jComboBox2.setSelectedIndex(1);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
         if (!plotStyle.contains("geom_errorbar")) {

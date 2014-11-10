@@ -945,67 +945,12 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         lower_left_text.treatWiselyFirstLetterCapitalization(capitalization);
         lower_right_text.treatWiselyFirstLetterCapitalization(capitalization);
         upper_right_text.treatWiselyFirstLetterCapitalization(capitalization);
-        //scale bar ???
     }
 
     public void capitalizeLetter(String capitalization) {
         letter.treatWiselyFirstLetterCapitalization(capitalization);
     }
 
-//    public void italicizeSingleLetters() {
-////        letter.italicizeSingleLetters(); //we probably don't want to do that for letters or think carefully how to do that
-//        upper_left_text.italicizeSingleLetters();
-//        lower_left_text.italicizeSingleLetters();
-//        lower_right_text.italicizeSingleLetters();
-//        upper_right_text.italicizeSingleLetters();
-//        scale_bar_text.italicizeSingleLetters();
-//    }
-//
-//    public void reformatNumbersWithUnits() {
-//        letter.reformatNumbersWithUnits();
-//        upper_left_text.reformatNumbersWithUnits();
-//        lower_left_text.reformatNumbersWithUnits();
-//        lower_right_text.reformatNumbersWithUnits();
-//        upper_right_text.reformatNumbersWithUnits();
-//        scale_bar_text.reformatNumbersWithUnits();
-//    }
-//
-//    public void replaceMinusByEN_DASH() {
-//        letter.replaceMinusByEN_DASH();
-//        upper_left_text.replaceMinusByEN_DASH();
-//        lower_left_text.replaceMinusByEN_DASH();
-//        lower_right_text.replaceMinusByEN_DASH();
-//        upper_right_text.replaceMinusByEN_DASH();
-//        scale_bar_text.replaceMinusByEN_DASH();
-//    }
-//
-//    public void placePercentSignAtTheEnd() {
-//        letter.placePercentSignAtTheEnd();
-//        upper_left_text.placePercentSignAtTheEnd();
-//        lower_left_text.placePercentSignAtTheEnd();
-//        lower_right_text.placePercentSignAtTheEnd();
-//        upper_right_text.placePercentSignAtTheEnd();
-//        scale_bar_text.placePercentSignAtTheEnd();
-//    }
-//
-//    public void replacePlainTextDegrees() {
-//        letter.replacePlainTextDegrees();
-//        upper_left_text.replacePlainTextDegrees();
-//        lower_left_text.replacePlainTextDegrees();
-//        lower_right_text.replacePlainTextDegrees();
-//        upper_right_text.replacePlainTextDegrees();
-//        scale_bar_text.replacePlainTextDegrees();
-//    }
-//
-//    public void replaceMutliplicationBySymbol() {
-//        letter.replaceMutliplicationBySymbol();
-//        upper_left_text.replaceMutliplicationBySymbol();
-//        lower_left_text.replaceMutliplicationBySymbol();
-//        lower_right_text.replaceMutliplicationBySymbol();
-//        upper_right_text.replaceMutliplicationBySymbol();
-//        scale_bar_text.replaceMutliplicationBySymbol();
-//    }
-    //TODO ajouter une getimage qui recup l'image parinted mais sans translation
     public BufferedImage getFormattedImageWithoutTranslation(boolean precise) {
         double x = rec2d.x;
         double y = rec2d.y;
@@ -1081,12 +1026,21 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
     public void checkFonts(JournalParameters jp) {
 //        createIfNull();
         BufferedImage snap = getFormattedImageWithoutTranslation(false);
-        letter.checkFont(snap, jp.getLetterFont(), jp.getLetterFontName());
-        upper_left_text.checkFont(snap, jp.getUpperLeftTextFont(), jp.getLetterFontName());
-        lower_left_text.checkFont(snap, jp.getLowerLeftTextFont(), jp.getLowerLeftTextFontName());
-        lower_right_text.checkFont(snap, jp.getLowerRightTextFont(), jp.getLowerRightTextFontName());
-        upper_right_text.checkFont(snap, jp.getUpperRightTextFont(), jp.getUpperRightTextFontName());
-        scale_bar_text.checkFont(snap, jp.getScaleBarTextFont(), jp.getScaleBarTextFontName());
+        if (upper_left_text != null) {
+            upper_left_text.checkFont(snap, jp.getUpperLeftTextFont(), jp.getLetterFontName());
+        }
+        if (lower_left_text != null) {
+            lower_left_text.checkFont(snap, jp.getLowerLeftTextFont(), jp.getLowerLeftTextFontName());
+        }
+        if (lower_right_text != null) {
+            lower_right_text.checkFont(snap, jp.getLowerRightTextFont(), jp.getLowerRightTextFontName());
+        }
+        if (upper_right_text != null) {
+            upper_right_text.checkFont(snap, jp.getUpperRightTextFont(), jp.getUpperRightTextFontName());
+        }
+        if (scale_bar_text != null) {
+            scale_bar_text.checkFont(snap, jp.getScaleBarTextFont(), jp.getScaleBarTextFontName());
+        }
         if (associatedObjects != null && !associatedObjects.isEmpty()) {
             for (Object object : associatedObjects) {
                 if (object instanceof MyPoint2D) {
@@ -1099,7 +1053,10 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
         /*
          * now we perform the check for the capitalization of the first letter
          */
-        letter.checkCase(snap, jp.getCapitalisationOfLetter());
+        if (letter != null) {
+            letter.checkFont(snap, jp.getLetterFont(), jp.getLetterFontName());
+            letter.checkCase(snap, jp.getCapitalisationOfLetter());
+        }
     }
 
     public boolean hasLineArts() {

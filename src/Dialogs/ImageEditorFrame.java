@@ -863,7 +863,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
 
     private void scaleBarSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleBarSizeChanged
         try {
-            if (curSel != null && curSel instanceof MyImage2D) {
+            if (!block_update && curSel != null && curSel instanceof MyImage2D) {
                 jSpinner1.commitEdit();
                 if (!block_update) {
                     double size = (getScaleBarLengthInPx() * getScaleBarPixelSize());

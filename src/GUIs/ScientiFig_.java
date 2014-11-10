@@ -201,7 +201,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.98";
+    public static final String version = "2.99";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -298,6 +298,12 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     ROIpanelLight r1 = new ROIpanelLight() {
         @Override
         public void selectionChanged(Object selection) {
+            //System.out.println(current_selected_shapeBlock == this.getSelectedShape());
+            /**
+             * prevents reselecting a selected shape
+             */
+            if (current_selected_shapeBlock == this.getSelectedShape())
+                return ;
             current_selected_shapeBlock = this.getSelectedShape();
             inactivateListUpdate = true;
             selectionUpdate();
@@ -7299,9 +7305,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     JDialog jd = null;
                     try {
                         jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking graphs...");
@@ -7401,8 +7407,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
 
         if (source == checkText) {
@@ -7419,9 +7425,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     JDialog jd = null;
                     try {
                         jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text...");
@@ -7471,8 +7477,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
 
         if (source == checkStyle) {
@@ -7489,9 +7495,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     JDialog jd = null;
                     try {
                         jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text style...");
@@ -7542,8 +7548,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
         if (source == checkSize) {
             /*
@@ -7559,9 +7565,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     JDialog jd = null;
                     try {
                         jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking figure size...");
@@ -7615,8 +7621,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
         if (source == checkLineArts) {
             /*
@@ -7632,9 +7638,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     JDialog jd = null;
                     try {
                         jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking line arts...");
@@ -7724,10 +7730,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
-
         if (source == checkFont) {
             /*
              * Checks text font settings
@@ -7742,9 +7747,9 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     /*
                      * TODO maybe replace by a progress bar
                      */
@@ -7797,8 +7802,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e2) {
                         }
                     }
-                }
-            }).start();
+//                }
+//            }).start();
         }
         if (source == capitalizeFirstLetter) {
             /*

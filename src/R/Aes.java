@@ -287,11 +287,16 @@ public class Aes implements Cloneable, Serializable {
     @Override
     public String toString() {
         String ggplot = "aes(";
+        /**
+         * bug fix for xlsx files that are not read properly --> force string
+         * as.numeric( TODO: maybe only add as.numeric if is.numeric fails for a
+         * column or shall we always do it ?
+         */
         if (x != null) {
-            ggplot += "x=" + x + ", ";
+            ggplot += "x=as.numeric(" + x + "), ";
         }
         if (y != null) {
-            ggplot += "y=" + y + ", ";
+            ggplot += "y=as.numeric(" + y + "), ";
         }
         if (fill != null) {
             ggplot += "fill=as.factor(" + fill + "), ";
@@ -303,22 +308,22 @@ public class Aes implements Cloneable, Serializable {
             ggplot += "shape=as.factor(" + shape + "), ";
         }
         if (xmin != null) {
-            ggplot += "xmin=" + xmin + ", ";
+            ggplot += "xmin=as.numeric(" + xmin + "), ";
         }
         if (xmax != null) {
-            ggplot += "xmax=" + xmax + ", ";
+            ggplot += "xmax=as.numeric(" + xmax + "), ";
         }
         if (ymin != null) {
-            ggplot += "ymin=" + ymin + ", ";
+            ggplot += "ymin=as.numeric(" + ymin + "), ";
         }
         if (ymax != null) {
-            ggplot += "ymax=" + ymax + ", ";
+            ggplot += "ymax=as.numeric(" + ymax + "), ";
         }
         if (xend != null) {
-            ggplot += "xend=" + xend + ", ";
+            ggplot += "xend=as.numeric(" + xend + "), ";
         }
         if (yend != null) {
-            ggplot += "yend=" + yend + ", ";
+            ggplot += "yend=as.numeric(" + yend + "), ";
         }
         if (linetype != null) {
             ggplot += "linetype=" + linetype + ", ";
@@ -365,5 +370,3 @@ public class Aes implements Cloneable, Serializable {
         System.exit(0);
     }
 }
-
-

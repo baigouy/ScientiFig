@@ -84,6 +84,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.rosuda.REngine.REXPMismatchException;
 
+//need to force as numeric in text if I want it to work --> put as.numeric in plots for x and y ...-->
+//TODO force aes as.numeric only when necessary
 /**
  * FiguR_ is a tool to create R graphs (FiguR takes care of font settings for
  * you)
@@ -99,7 +101,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     boolean loading = false;
     ThemeGraph theme;
     String software_name = "FiguR";
-    String version = "1.1 beta";
+    String version = "1.2 beta";
     RLabel titleLabel = new RLabel();
     RLabel xaxisLabel = new RLabel();
     RLabel yaxisLabel = new RLabel();
@@ -320,6 +322,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         ThemePreferences = new javax.swing.JMenuItem();
+        resetTheme = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
@@ -876,6 +879,14 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         });
         jMenu10.add(ThemePreferences);
 
+        resetTheme.setText("reset theme");
+        resetTheme.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runAll(evt);
+            }
+        });
+        jMenu10.add(resetTheme);
+
         jMenuBar1.add(jMenu10);
 
         jMenu3.setText("Legend");
@@ -1097,7 +1108,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
-
+ 
     /**
      *
      * @return an R connection
@@ -1107,7 +1118,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             reinitRsession();
         }
         return rsession;
-    }
+    } 
 
     /**
      * Checks the status of the connection to R, upon success show a green
@@ -1414,6 +1425,9 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
         }
+        if (source == resetTheme) {
+            theme = null;
+        }
         if (source == ThemePreferences) {
             /*
              * Edit the R theme
@@ -1588,7 +1602,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                     final_dpi = "";
                     unit = "";
                 }
-                rsession.eval("ggsave(" + device + "file=\"" + name + "\", plot=" + getFormattedGraph() + ", width=" + width + ", height=" + height + final_dpi + unit + ")");
+                rsession.eval("ggsave(" + device + "file=\"" + name + "\", plot=" + getFormattedGraph(true) + ", width=" + width + ", height=" + height + final_dpi + unit + ")");
                 last_export_folder = name;
             }
             return;
@@ -1856,9 +1870,21 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             rsession.loadCSVorTXT("curDataFigR", name, textSeparator, textDelimtor, decimal);
         }
         /*
-         * we get rid of columns that only contain NAs
+         * we get rid of columns that only contain NAs --> formula is incorrect
          */
-        rsession.eval("curDataFigR <- curDataFigR[,colSums(is.na(curDataFigR)) == 0]");
+//        rsession.eval("curDataFigR <- curDataFigR[,colSums(is.na(curDataFigR)) == 0]");
+
+        //nb in fact only do plot for complete case for the columns of interest --> should be easy
+        //plot(V~Day, type="b", data=na.omit(data.frame(V,Day)))
+//plot(V~Day, type="b", subset=complete.cases(V,Day))
+        /**
+         * we get rid of lines that contain NA (maybe don't do that) --> see
+         * impact on plots
+         */
+        //or maybe check and warn the user and ask for the action to be taken
+//        rsession.eval("curDataFigR <- curDataFigR[complete.cases((curDataFigR)),]");      //
+        //par defaut le language omet les points manquants tout seul --> parfait si on force le omit il enleve toutes les lignes mauvaises ce qui n'a pas de sens la plupart du temps je pense donc le garder comme ca
+        //sans mettre de na.omit(curDataFigR) ou curDataFigR[complete.cases((curDataFigR)),]
         column_names = rsession.getColumnNames("curDataFigR");
         alreadyFactorizableColumns = rsession.getAlreadyFactorizableColumns(column_names);
         Object[] values = rsession.getAllLikelyFactors(column_names, 20);
@@ -2057,13 +2083,16 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         }
         R_code = "";
         if (!plots.isEmpty()) {
-            R_code = getFormattedGraph();
+            R_code = getFormattedGraph(false);
         }
         if (isCustomCode()) {
             R_code = jTextArea3.getText();
         }
         jTextArea2.setText(R_code);
-        updatePreview(R_code);
+        /**
+         * we apply the theme without showing its code
+         */
+        updatePreview(getFormattedGraph(true));
     }
 
     /**
@@ -2139,7 +2168,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * @param include_fonts if true font settings will be added to the plot
      * @return a string that contains the R code of the plot
      */
-    public String getFormattedGraph(/*boolean include_fonts*/) {
+    public String getFormattedGraph(boolean showTheme/*boolean include_fonts*/) {
         if (isCustomCode()) {
             String txt = jTextArea3.getText();
             if (theme != null) {
@@ -2147,6 +2176,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             }
             return txt;
         }
+        R_code = "";
         String mainTitle = title.getText();
         String legendtitle = legendTitle.getText();
         String xaxistitle = xAxisTitle.getText();
@@ -2217,6 +2247,12 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         }
         if (!showYAxisTile.isSelected()) {
             R_code += "\n+ theme(axis.title.y = element_blank()) ";
+        }
+        /**
+         * bug fix for theme not showing
+         */
+        if (showTheme && theme != null) {
+            R_code += "\n+ " + theme.toString();
         }
         return R_code;
     }
@@ -2289,7 +2325,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      */
     public MyPlotVector.Double getGraph() {
         boolean use_non_custom_code = jRadioButton1.isSelected();
-        return new MyPlotVector.Double(rsession, xlsxFile.getText(), getFormattedGraph(), sheet_nb, textSeparator, textDelimtor, decimal, null, use_non_custom_code, theme);
+        return new MyPlotVector.Double(rsession, xlsxFile.getText(), getFormattedGraph(false), sheet_nb, textSeparator, textDelimtor, decimal, null, use_non_custom_code, theme);
     }
 
     private static Dimension getScreenSize() {
@@ -2557,6 +2593,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JMenu openWithIJ;
     private javax.swing.JMenuItem quit;
     private javax.swing.JMenuItem remove_intercept;
+    private javax.swing.JMenuItem resetTheme;
     private javax.swing.JMenuItem save;
     private javax.swing.JMenuItem saveAs;
     private javax.swing.JCheckBoxMenuItem showXAxisTile;
