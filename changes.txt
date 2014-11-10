@@ -6,6 +6,7 @@
 -fixed preview not showing when performing check size on a panel
 -fixed a non reproducible/system dependent freezing bug when applying checks to an image
 -Many thanks to SF users for reporting those bugs and providing me with test samples
+-when scalebar size is null, lower right text is no longer displaced with respect to scalebar position, same for upper right text and letter
 
 03/11/14
 -fixed minor bugs (e.g. erroneous positioning of the insets when using the "ROI --> inset" function)

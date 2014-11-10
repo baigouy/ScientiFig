@@ -1800,6 +1800,10 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 
     public void addScalebar(Graphics2D g2d) {
         if (scale_bar_size_in_px_of_the_real_image == 0) {
+            /**
+             * no scale bar --> we reset the translation
+             */
+            translation_because_of_the_scale_bar = 0;
             return;
         }
         ArrayList<AttributedString> as = scale_bar_text.createAttributedString();
@@ -1809,6 +1813,10 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
 
     public void addLetter(Graphics2D g2d) {
         if (letter == null || !letter.hasText()) {
+            /**
+             * no letter --> we reset the translation due to the letter
+             */
+            translation_because_of_the_letter = 0;
             return;
         }
         ArrayList<AttributedString> as = letter.createAttributedString();
