@@ -139,6 +139,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * dialog objects
      */
     public void loadCurSelParameters() {
+
         if (curSel instanceof MyImage2D) {
             try {
                 updateImageSize();
@@ -188,10 +189,13 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                         curSel.setAssociatedComments(jTextArea1.getText());
                     }
                 });
+
+                block_update = true;
+                jSpinner3.setValue(curSel.getScale_bar_size_in_unit());
+                block_update = true;
+                jSpinner4.setValue(curSel.getSize_of_one_px_in_unit());
                 block_update = true;
                 jSpinner1.setValue((int) curSel.getScale_bar_size_in_px_of_the_real_image());
-                jSpinner3.setValue(curSel.getScale_bar_size_in_unit());
-                jSpinner4.setValue(curSel.getSize_of_one_px_in_unit());
                 paintedButton21.setColor(curSel.getScalebarColor());
                 jSpinner5.setValue(curSel.getSCALE_BAR_STROKE_SIZE());
                 /**
@@ -223,7 +227,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                         jRadioButton9.setSelected(true);
                         break;
                 }
-                block_update = false;
+
                 textPositionChanged(null);
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
@@ -237,6 +241,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             ScientiFig_.imageWidth.setText(" N.A. ");
             ScientiFig_.imageHeight.setText(" N.A. ");
         }
+        block_update = false;
     }
 
     /**
@@ -862,22 +867,19 @@ public class ImageEditorFrame extends javax.swing.JFrame {
     }
 
     private void scaleBarSizeChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleBarSizeChanged
+        if (block_update) {
+            return;
+        }
         try {
-            if (!block_update && curSel != null && curSel instanceof MyImage2D) {
+            if (curSel != null && curSel instanceof MyImage2D) {
+                block_update = true;
                 jSpinner1.commitEdit();
-                if (!block_update) {
-                    double size = (getScaleBarLengthInPx() * getScaleBarPixelSize());
-                    jSpinner3.setValue(size);
-                }
-                if (curSel instanceof MyImage2D) {
-                    ((MyImage2D) curSel).setScale_bar_size_in_px_of_the_real_image(getScaleBarLengthInPx());
-                }
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
-                } else {
-                    ScientiFig_.updateFigure(curSel);
-                }
+                double size = (getScaleBarLengthInPx() * getScaleBarPixelSize());
+                jSpinner3.setValue(size);
+                block_update = false;
+                updateScaleBarSize();
             }
+            block_update = false;
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -886,14 +888,31 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_scaleBarSizeChanged
 
+    private void updateScaleBarSize() {
+        if (curSel instanceof MyImage2D) {
+            ((MyImage2D) curSel).setScale_bar_size_in_px_of_the_real_image(getScaleBarLengthInPx());
+            ((MyImage2D) curSel).setSize_of_one_px_in_unit(getScaleBarPixelSize());
+            ((MyImage2D) curSel).setScale_bar_size_in_unit(getScaleBarLengthInUnit());
+            ((MyImage2D) curSel).setSCALE_BAR_STROKE_SIZE(getScaleBarStrokeSize());
+        }
+        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
+            ScientiFig_.updateTable(curSel);
+        } else {
+            ScientiFig_.updateFigure(curSel);
+        }
+    }
+
     private void scaleLengthChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleLengthChanged
+        if (block_update) {
+            return;
+        }
         try {
+            block_update = true;
             jSpinner3.commitEdit();
             int size_in_px = (int) Math.round(getScaleBarLengthInUnit() / getScaleBarPixelSize());
-            block_update = true;
             jSpinner1.setValue(size_in_px);
-            scaleBarSizeChanged(evt);
             block_update = false;
+            updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -907,19 +926,15 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             return;
         }
         try {
+            block_update = true;
             jSpinner4.commitEdit();
             int size_in_px = (int) Math.round(getScaleBarLengthInUnit() / getScaleBarPixelSize());
-            block_update = true;
             jSpinner1.setValue(size_in_px);
+            block_update = false;
             if (curSel == null) {
                 return;
             }
-            ((MyImage2D) curSel).setSize_of_one_px_in_unit(getScaleBarPixelSize());
-            if (curSel instanceof MyImage2D) {
-                ((MyImage2D) curSel).setScale_bar_size_in_unit(getScaleBarLengthInUnit());
-            }
-            scaleBarSizeChanged(evt);
-            block_update = false;
+            updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -955,14 +970,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             return;
         }
         try {
-            if (curSel != null && curSel instanceof MyImage2D) {
-                ((MyImage2D) curSel).setSCALE_BAR_STROKE_SIZE(getScaleBarStrokeSize());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
-                } else {
-                    ScientiFig_.updateFigure(curSel);
-                }
-            }
+            updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
