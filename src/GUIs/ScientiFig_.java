@@ -288,7 +288,6 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static final int FORMAT_TIFF = 5;
     public static final int FORMAT_IJ = 7;
     public static final int FORMAT_FIGURE_ASSISTANT = 12;
-    static final int currentResolution = 72;
     /*
      * A log window for java errors
      */
