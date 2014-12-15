@@ -220,6 +220,7 @@ public class LogFrame extends javax.swing.JFrame {
         jScrollPane2.setName("jScrollPane2"); // NOI18N
 
         jTextArea2.setColumns(20);
+        jTextArea2.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jTextArea2.setRows(5);
         jTextArea2.setName("jTextArea2"); // NOI18N
         jScrollPane2.setViewportView(jTextArea2);
@@ -243,6 +244,7 @@ public class LogFrame extends javax.swing.JFrame {
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
         jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jTextArea1.setForeground(new java.awt.Color(255, 0, 0));
         jTextArea1.setRows(5);
         jTextArea1.setName("jTextArea1"); // NOI18N
