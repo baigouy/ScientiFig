@@ -33,7 +33,7 @@
  */
 package Debug;
 
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
@@ -59,14 +59,14 @@ public class AutoDebug {
      */
     static ArrayList<Component> forbidden_buttons = new ArrayList<Component>();
     public static ArrayList<Component> interactibles = new ArrayList<Component>();
-    static ScientiFig_ SF;
+    static ScientiFig SF;
 
     public static void clear() {
         forbidden_buttons = new ArrayList<Component>();
         interactibles = new ArrayList<Component>();
     }
 
-    public AutoDebug(ScientiFig_ SF) {
+    public AutoDebug(ScientiFig SF) {
         AutoDebug.SF = SF;
         SF.setVisible(true);
         SF.addAllPanelsToOptions();
@@ -84,7 +84,7 @@ public class AutoDebug {
     public static void populateInteractibleFromSF() {
         interactibles.clear();
         getAllInteractibleComponents(SF);
-        getAllInteractibleComponents(ScientiFig_.ief);
+        getAllInteractibleComponents(ScientiFig.ief);
         for (Component object : interactibles) {
 
             /*
@@ -216,7 +216,7 @@ public class AutoDebug {
             /*
              * empty soft test of all buttons
              */
-            AutoDebug test = new AutoDebug(ScientiFig_.getInstance());
+            AutoDebug test = new AutoDebug(ScientiFig.getInstance());
             test.populateInteractibleFromSF();
         }
         if (execute_test_with_images) {
@@ -224,7 +224,7 @@ public class AutoDebug {
              * test of all buttons with an image loaded
              */
             String name_of_the_file_2_load = "/home/benoit/Bureau/testSF/perfect_test_sample_for_automation.yf5m";
-            ScientiFig_ SF_with_image = ScientiFig_.getInstance();
+            ScientiFig SF_with_image = ScientiFig.getInstance();
             SF_with_image.loadFile(name_of_the_file_2_load, false, true);
             SF_with_image.setVisible(true);
             try {

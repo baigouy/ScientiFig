@@ -1410,9 +1410,6 @@ public class ThemeEditor extends javax.swing.JPanel {
         themeGraph.setThemeName(getThemeName());
         themeGraph.setPath(themeGraph.toXml(CommonClassesLight.getFolder(ThemeEditor.class, "GraphThemes"), themeGraph.getPath()));
         PopulateThemes.themes.set(jComboBox1.getSelectedIndex(), themeGraph);
-//        themes = new PopulateThemes();
-//        themes.reloadThemes(jComboBox1);
-//        reloadTheme(themeGraph);
         this.theme = themeGraph;
     }//GEN-LAST:event_saveThemeActionPerformed
     
@@ -1420,8 +1417,6 @@ public class ThemeEditor extends javax.swing.JPanel {
         ThemeGraph themeGraph = theme.clone();
         themeGraph.setThemeName(getThemeName());
         themeGraph.setPath(themeGraph.toXml(CommonClassesLight.getFolder(ThemeEditor.class, "GraphThemes"), null));
-//        PopulateThemes.themes.add(themeGraph);
-//        themes.reloadThemes(jComboBox1);
         themes = new PopulateThemes();
         themes.reloadThemes(jComboBox1);
         try {

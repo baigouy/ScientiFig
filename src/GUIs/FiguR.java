@@ -87,12 +87,12 @@ import org.rosuda.REngine.REXPMismatchException;
 //need to force as numeric in text if I want it to work --> put as.numeric in plots for x and y ...-->
 //TODO force aes as.numeric only when necessary
 /**
- * FiguR_ is a tool to create R graphs (FiguR takes care of font settings for
- * you)
+ * FiguR is a tool to create R graphs (FiguR takes care of font settings for
+ you)
  *
  * @author Benoit Aigouy
  */
-public class FiguR_ extends javax.swing.JFrame implements PlugIn {
+public class FiguR extends javax.swing.JFrame implements PlugIn {
 
     /**
      * Variables
@@ -142,7 +142,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * Empty constructor
      */
     @SuppressWarnings("LeakingThisInConstructor")
-    public FiguR_() {
+    public FiguR() {
         if (isInstanceAlreadyExisting()) {
             this.dispose();
             return;
@@ -151,8 +151,8 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FiguR");
         }
-        if (!ScientiFig_.propertiesLoaded) {
-            ScientiFig_.load_properties(this.getClass());
+        if (!ScientiFig.propertiesLoaded) {
+            ScientiFig.load_properties(this.getClass());
         }
         initComponents();
         pack();
@@ -202,10 +202,10 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * @return the journal styles
      */
     public static PopulateJournalStyles getStyles() {
-        if (ScientiFig_.styles == null) {
+        if (ScientiFig.styles == null) {
             return new PopulateJournalStyles();
         } else {
-            return ScientiFig_.styles;
+            return ScientiFig.styles;
         }
     }
 
@@ -214,8 +214,8 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      * @return the last instance of FiguR or a new one if no other instance
      * could be found
      */
-    public static FiguR_ getInstance() {
-        FiguR_ ls = isInstanceAlreadyExisting() ? getPreviousInstance() : new FiguR_();
+    public static FiguR getInstance() {
+        FiguR ls = isInstanceAlreadyExisting() ? getPreviousInstance() : new FiguR();
         return ls;
     }
 
@@ -226,7 +226,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
     public static boolean isInstanceAlreadyExisting() {
         Frame[] data = WindowManager.getNonImageWindows();
         for (Frame frame : data) {
-            if (frame instanceof FiguR_) {
+            if (frame instanceof FiguR) {
                 return true;
             }
         }
@@ -237,14 +237,14 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
      *
      * @return the previous FiguR instance
      */
-    private static FiguR_ getPreviousInstance() {
+    private static FiguR getPreviousInstance() {
         Frame[] data = WindowManager.getNonImageWindows();
         for (Frame frame : data) {
-            if (frame instanceof FiguR_) {
-                if (!((FiguR_) frame).isVisible()) {
-                    ((FiguR_) frame).setVisible(true);
+            if (frame instanceof FiguR) {
+                if (!((FiguR) frame).isVisible()) {
+                    ((FiguR) frame).setVisible(true);
                 }
-                return ((FiguR_) frame);
+                return ((FiguR) frame);
             }
         }
         return null;
@@ -1258,7 +1258,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
              * we reopen and reload an existing .figur file
              */
             String name;
-            if (!CommonClassesLight.isWindows() && ScientiFig_.useNativeDialog) {
+            if (!CommonClassesLight.isWindows() && ScientiFig.useNativeDialog) {
                 if (filename != null) {
                     name = CommonClassesLight.openFileNative(this, new File(filename).getParent(), ".figur");
                 } else {
@@ -1934,7 +1934,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
             }
         }
         this.setVisible(false);
-        if (CommonClassesLight.isImageJEmbedded && !ScientiFig_.isInstanceAlreadyExisting()) {
+        if (CommonClassesLight.isImageJEmbedded && !ScientiFig.isInstanceAlreadyExisting()) {
             System.exit(0);
         }
     }//GEN-LAST:event_onQuit
@@ -1995,7 +1995,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ScientiFig_.getInstance().run(null);
+                ScientiFig.getInstance().run(null);
             }
         });
     }//GEN-LAST:event_launchScientiFig
@@ -2013,7 +2013,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
                 return;
             }
         }
-        if (!ScientiFig_.isInstanceAlreadyExisting()) {
+        if (!ScientiFig.isInstanceAlreadyExisting()) {
             try {
                 rsession.close();
                 CommonClassesLight.r = null;
@@ -2337,7 +2337,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                FiguR_ fR = FiguR_.getInstance();
+                FiguR fR = FiguR.getInstance();
                 Dimension size = fR.getSize();
                 if (size.width < 1024 || size.height < 800) {
                     fR.setSize(1024, 800);
@@ -2503,7 +2503,7 @@ public class FiguR_ extends javax.swing.JFrame implements PlugIn {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                FiguR_ fa = FiguR_.getInstance();
+                FiguR fa = FiguR.getInstance();
                 Dimension screen = getScreenSize();
                 fa.setSize(1024, 800);
                 Dimension size = fa.getSize();

@@ -408,10 +408,10 @@ public class CommonClassesLight {
      */
     public static int getJVMArchitecture() {
         try {
-            return System.getProperty("sun.arch.data.model").indexOf("64") == -1 ? 32 : 64; //check wether it also works on a openjdk or not
+            return !System.getProperty("sun.arch.data.model").contains("64") ? 32 : 64; //check wether it also works on a openjdk or not
         } catch (Exception e) {
         }
-        return System.getProperty("os.arch").indexOf("64") == -1 ? 32 : 64;
+        return !System.getProperty("os.arch").contains("64") ? 32 : 64;
     }
 
     public static String getJAVA_HOME() {
@@ -2549,6 +2549,16 @@ public class CommonClassesLight {
         String cur_folder = null;
         try {
             cur_folder = new File(cur_class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+        } catch (Exception exception) {
+            System.out.println(exception);
+        }
+        return cur_folder;
+    }
+
+    public static String getApplicationParentFolder(Class cur_class) {
+        String cur_folder = null;
+        try {
+            cur_folder = new File(getApplicationFolder(cur_class)).getParent();
         } catch (Exception exception) {
             System.out.println(exception);
         }

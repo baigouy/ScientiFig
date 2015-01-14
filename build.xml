@@ -7,7 +7,7 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="ScientiFig_" default="default" basedir=".">
+<project name="ScientiFig" default="default" basedir=".">
     <description>Builds, tests, and runs the project Color_Blind_Assistant_IJ.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -93,12 +93,12 @@
     <target name="-post-jar">
 
         <echo message="Copying licence/changes"/>
-        <copy file="${basedir}/license.txt" todir="${dist.dir}"/>
+        <copy file="${basedir}/license_SF.txt" todir="${dist.dir}"/>
 		 <copy file="${basedir}/test_sample_FiguR.xlsx" todir="${dist.dir}" failonerror="No"/>
 		 <copy file="${basedir}/simple_test_sample_FiguR.xlsx" todir="${dist.dir}" failonerror="No"/>
 		 <copy file="${basedir}/HowToInstall.txt" todir="${dist.dir}" failonerror="No"/>
 <!--        <copy file="${basedir}/../../Html/src/WebSF/tutorial.html" todir="${dist.dir}"/> -->
-        <copy file="${basedir}/changes.txt" todir="${dist.dir}"/>
+        <copy file="${basedir}/changes_SF.txt" todir="${dist.dir}"/>
         
         <!-- "if" evaluates this element -->
         
@@ -175,7 +175,7 @@
             <zipfileset src="${dist.dir}/lib/swing-layout-1.0.4.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
             <zipfileset src="${dist.dir}/lib/xml-apis-ext.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
             <zipfileset dir="${dist.dir}" includes="*.txt"/>
-            <zipfileset src="${dist.dir}/ScientiFig_.jar" includes="**/*"/>
+            <zipfileset src="${dist.dir}/ScientiFig.jar" includes="**/*"/>
         </zip>
         -->
         

@@ -43,7 +43,7 @@ import MyShapes.Row;
 import MyShapes.SerializableBufferedImage2;
 import MyShapes.TopBar;
 import Tools.Converter;
-import Tools.Help_;
+import Tools.Help;
 import Tools.MultiThreadExecuter;
 import Tools.PopulateJournalStyles;
 import Commons.CommonClassesLight;
@@ -129,12 +129,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
 /**
- * ScientiFig_ is a tool to create format and or reformat figures and graphs for
- * scientific publications
+ * ScientiFig is a tool to create format and or reformat figures and graphs for
+ scientific publications
  *
  * @author Benoit Aigouy
  */
-public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
+public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 
     /**
      * list of shortcuts
@@ -315,7 +315,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * Creates new form Figure_Assistants
      */
     @SuppressWarnings("LeakingThisInConstructor")
-    public ScientiFig_() {
+    public ScientiFig() {
         if (isInstanceAlreadyExisting()) {
             this.dispose();
             return;
@@ -335,7 +335,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             } catch (Exception e) {
             }
         }
-        if (!ScientiFig_.propertiesLoaded) {
+        if (!ScientiFig.propertiesLoaded) {
             load_properties(this.getClass());
         }
         CommonClassesLight.setMaxNbOfProcessors(nbOfCPUs2Use);
@@ -1071,7 +1071,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
     public static boolean isInstanceAlreadyExisting() {
         Frame[] data = WindowManager.getNonImageWindows();
         for (Frame frame : data) {
-            if (frame instanceof ScientiFig_) {
+            if (frame instanceof ScientiFig) {
                 return true;
             }
         }
@@ -1082,12 +1082,12 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      *
      * @return the previous instance of SF if it exists or null otherwise
      */
-    public static ScientiFig_ getPreviousInstance() {
+    public static ScientiFig getPreviousInstance() {
         Frame[] data = WindowManager.getNonImageWindows();
         for (Frame frame : data) {
-            if (frame instanceof ScientiFig_) {
-                ((ScientiFig_) frame).setVisible(true);
-                return ((ScientiFig_) frame);
+            if (frame instanceof ScientiFig) {
+                ((ScientiFig) frame).setVisible(true);
+                return ((ScientiFig) frame);
             }
         }
         return null;
@@ -4325,16 +4325,16 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             HashMap<String, String> name_transformation = new HashMap<String, String>();
             if (imports != null && !imports.isEmpty()) {
                 for (Map.Entry<String, SerializableBufferedImage2> entry : imports.entrySet()) {
-                    if (!ScientiFig_.imported_from_J.containsKey(entry.getKey())) {
-                        ScientiFig_.imported_from_J.put(entry.getKey(), entry.getValue());
+                    if (!ScientiFig.imported_from_J.containsKey(entry.getKey())) {
+                        ScientiFig.imported_from_J.put(entry.getKey(), entry.getValue());
                         name_transformation.put(entry.getKey(), entry.getKey());
                         myList1.addDirectlyToList(entry.getKey(), entry.getValue().getBufferedImage());
                     } else {
                         String new_name = entry.getKey() + "2";
-                        while (ScientiFig_.imported_from_J.containsKey(new_name)) {
+                        while (ScientiFig.imported_from_J.containsKey(new_name)) {
                             new_name += "2";
                         }
-                        ScientiFig_.imported_from_J.put(new_name, entry.getValue());
+                        ScientiFig.imported_from_J.put(new_name, entry.getValue());
                         name_transformation.put(entry.getKey(), new_name);
                         myList1.addDirectlyToList(new_name, entry.getValue().getBufferedImage());
                     }
@@ -4804,7 +4804,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             }
         }
 
-        if (CommonClassesLight.isImageJEmbedded && !FiguR_.isInstanceAlreadyExisting()) {
+        if (CommonClassesLight.isImageJEmbedded && !FiguR.isInstanceAlreadyExisting()) {
             System.exit(0);
         }
     }//GEN-LAST:event_onQuit
@@ -7871,7 +7871,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             /*
              * browse the SF default web page
              */
-            new Help_().run(Help_.URL_SF);
+            new Help().run(Help.URL_SF);
         }
         if (source == jMenuItem9) {
             /*
@@ -8461,7 +8461,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                FiguR_.getInstance().run(null);
+                FiguR.getInstance().run(null);
             }
         });
     }//GEN-LAST:event_launchFiguR
@@ -8693,7 +8693,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
          * need to remove the window here to avoid FIJI pbs (FIJI not closing)
          */
         WindowManager.removeWindow(this);
-        if (!FiguR_.isInstanceAlreadyExisting()) {
+        if (!FiguR.isInstanceAlreadyExisting()) {
             try {
                 CommonClassesLight.r.close();
                 CommonClassesLight.r = null;
@@ -8874,7 +8874,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             System.gc();
         } catch (Exception e) {
         }
-        alreadyExists = ScientiFig_.isInstanceAlreadyExisting();
+        alreadyExists = ScientiFig.isInstanceAlreadyExisting();
         if (Macro.getOptions() == null) {
             /*
              * Create and display the form
@@ -8882,7 +8882,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    ScientiFig_ fa = ScientiFig_.getInstance();
+                    ScientiFig fa = ScientiFig.getInstance();
                     CommonClassesLight.GUI = fa;
                     /*
                      * bug fix for buttons showing after restart in FIJI
@@ -8927,7 +8927,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    ScientiFig_ fa = ScientiFig_.getInstance();
+                    ScientiFig fa = ScientiFig.getInstance();
                     CommonClassesLight.GUI = fa;
                     /*
                      * We reload important parameters
@@ -9048,7 +9048,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         }
     }
 
-    private void parseIJCommands(ScientiFig_ fa, String args) {
+    private void parseIJCommands(ScientiFig fa, String args) {
         /*
          * here we interprete IJ/FIJI command line args
          */
@@ -9159,8 +9159,8 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
      * @return the current instance of scientifig if one exists otherwise
      * creates a new instance of scientifig
      */
-    public static ScientiFig_ getInstance() {
-        ScientiFig_ ls = isInstanceAlreadyExisting() ? getPreviousInstance() : new ScientiFig_();
+    public static ScientiFig getInstance() {
+        ScientiFig ls = isInstanceAlreadyExisting() ? getPreviousInstance() : new ScientiFig();
         return ls;
     }
 
@@ -9180,7 +9180,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
                 ScientiFigMacroName = "ScientiFig";
                 ij.IJ.run(ScientiFigMacroName);
             } catch (Exception e) {
-                ScientiFigMacroName = "ScientiFig ";
+                ScientiFigMacroName = "ScientiFig";
             }
         }
     }
@@ -9219,7 +9219,7 @@ public class ScientiFig_ extends javax.swing.JFrame implements PlugIn {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ScientiFig_ fa = ScientiFig_.getInstance();
+                ScientiFig fa = ScientiFig.getInstance();
                 Dimension screen = getScreenSize();
                 Dimension size = fa.getSize();
                 fa.setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);

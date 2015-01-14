@@ -33,7 +33,7 @@
  */
 package Debug;
 
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import MyShapes.ColoredTextPaneSerializable;
 import MyShapes.LineStrokable;
 import MyShapes.MyEllipse2D;
@@ -75,7 +75,7 @@ import javax.swing.JTabbedPane;
  */
 public class WiseDebug {
 
-    ScientiFig_ SF;
+    ScientiFig SF;
     static HashMap<String, Object[]> textNCorrepondingInteractible = new HashMap<String, Object[]>();
     public static ArrayList<Component> interactibles = new ArrayList<Component>();
     public boolean blinkOnExecution = true;
@@ -85,7 +85,7 @@ public class WiseDebug {
         textNCorrepondingInteractible.clear();
     }
 
-    public WiseDebug(ScientiFig_ SF) {
+    public WiseDebug(ScientiFig SF) {
         this.SF = SF;
         SF.addAllPanelsToOptions();
         try {
@@ -101,13 +101,13 @@ public class WiseDebug {
     }
 
     public WiseDebug() {
-        this(new ScientiFig_());
+        this(new ScientiFig());
     }
 
     private void getAllInteractibles() {
         AutoDebug.SF = this.SF;
         AutoDebug.getAllInteractibleComponents(SF);
-        AutoDebug.getAllInteractibleComponents(ScientiFig_.ief);
+        AutoDebug.getAllInteractibleComponents(ScientiFig.ief);
         interactibles = AutoDebug.interactibles;
         textNCorrepondingInteractible = getInteractibleText(interactibles);
     }
@@ -203,8 +203,8 @@ public class WiseDebug {
     public void loadFile(String fileName) {
         ArrayList<String> yf5ms2load = new ArrayList<String>();
         yf5ms2load.add(fileName);
-        ScientiFig_.yf5m_files = yf5ms2load;
-        ScientiFig_.loadAllyf5m.doClick();
+        ScientiFig.yf5m_files = yf5ms2load;
+        ScientiFig.loadAllyf5m.doClick();
     }
 
     public void loadImagesToTheList(ArrayList<String> images) {
@@ -533,8 +533,8 @@ public class WiseDebug {
 
     public void fakeChangeImageText(int pos, String letter, String UL, String UR, String LL, String LR, String scale, int scaleBarSize, int strokeSizeScaleBar, int scaleBarColor) {
         selectObjectsInAList(SF.tableContentList, pos);
-        if (ScientiFig_.cur_sel_image1 instanceof MyImage2D) {
-            MyImage2D.Double tmp = ((MyImage2D.Double) ScientiFig_.cur_sel_image1);
+        if (ScientiFig.cur_sel_image1 instanceof MyImage2D) {
+            MyImage2D.Double tmp = ((MyImage2D.Double) ScientiFig.cur_sel_image1);
             tmp.setLetter(letter);
             tmp.setUpper_left_text(UL);
             tmp.setUpper_right_text(UR);
@@ -544,7 +544,7 @@ public class WiseDebug {
             tmp.setScale_bar_txt(scale);
             tmp.setSCALE_BAR_STROKE_SIZE(strokeSizeScaleBar);
             tmp.setScalebarColor(scaleBarColor);
-            ScientiFig_.updateTable();
+            ScientiFig.updateTable();
             selectObjectsInAList(SF.tableContentList, pos);
         }
         pause(1500);
@@ -552,10 +552,10 @@ public class WiseDebug {
 
     public void fakeAnnotateAnImage(int pos, ArrayList<Object> annotations) {
         selectObjectsInAList(SF.tableContentList, pos);
-        if (ScientiFig_.cur_sel_image1 instanceof MyImage2D) {
-            MyImage2D.Double tmp = ((MyImage2D.Double) ScientiFig_.cur_sel_image1);
+        if (ScientiFig.cur_sel_image1 instanceof MyImage2D) {
+            MyImage2D.Double tmp = ((MyImage2D.Double) ScientiFig.cur_sel_image1);
             tmp.setAssociatedObjects(annotations);
-            ScientiFig_.updateTable();
+            ScientiFig.updateTable();
         }
         pause(1500);
     }
@@ -593,8 +593,8 @@ public class WiseDebug {
      */
     public void fakeAddTextBarsToRow(int pos) {
         selectObjectsInAList(SF.figureList, pos);
-        if (ScientiFig_.current_row instanceof Row) {
-            Row row = (Row) ScientiFig_.current_row;
+        if (ScientiFig.current_row instanceof Row) {
+            Row row = (Row) ScientiFig.current_row;
             if (true) {
                  HashMap<Point3D.Integer, ColoredTextPaneSerializable> posNText = new HashMap<Point3D.Integer, ColoredTextPaneSerializable>();
                 ColoredTextPaneSerializable ctps = new ColoredTextPaneSerializable("pos 1:1 top", Color.blue, new Font("Arial", Font.PLAIN, 12));
@@ -635,7 +635,7 @@ public class WiseDebug {
             }
             row.arrangeRow();
             SF.reforceSameHeight(row);
-            ScientiFig_.updateFigure();
+            ScientiFig.updateFigure();
             pause(2500);
         }
     }
@@ -950,7 +950,7 @@ public class WiseDebug {
         /*
          * force quit the soft
          */
-        ScientiFig_.mustWarnOnQuit = false;
+        ScientiFig.mustWarnOnQuit = false;
         System.exit(0);
 
     }

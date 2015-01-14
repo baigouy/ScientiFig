@@ -38,7 +38,7 @@ package Dialogs;
  *
  * Created on 27-Aug-2008, 12:19:33
  */
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import Commons.IconLabel;
 import Commons.CommonClassesLight;
 import Commons.MyWriter;
@@ -191,7 +191,7 @@ public class MyListLight extends javax.swing.JPanel {
                     continue;
                 }
                 if (string.contains("importJ:")) {
-                    if (ScientiFig_.imported_from_J.containsKey(string)) {//ca marche
+                    if (ScientiFig.imported_from_J.containsKey(string)) {//ca marche
                         addToListNoCheckIfNotExists(string);
                     }
                 } else {
@@ -635,8 +635,8 @@ public class MyListLight extends javax.swing.JPanel {
                 }
             }
             files2add.removeAll(yf5mFiles);
-            ScientiFig_.yf5m_files = yf5mFiles;
-            ScientiFig_.loadAllyf5m.doClick();
+            ScientiFig.yf5m_files = yf5mFiles;
+            ScientiFig.loadAllyf5m.doClick();
         }
         if (files2add != null) {
             //ce truc pourrait etre MT

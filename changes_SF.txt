@@ -1,3 +1,7 @@
+12/01/15
+-removed dependency on Absolute_Layout.jar (automatically added but not removed by netbeans)
+-created an external launcher for SF required to prepare a FIJI update site for Tissue Analyzer
+
 08-10/11/14
 -fixed a bug that used to remove the scalebar when the image was clicked on
 -fixed a bug in FiguR. Software failed to load any column containing an NA value

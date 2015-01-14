@@ -39,7 +39,7 @@ import Commons.MyBufferedImage;
 import Commons.SaverLight;
 import Dialogs.ColorSelector;
 import Dialogs.RLabelEditor;
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import MyShapes.ColoredTextPaneSerializable;
 import MyShapes.GraphFont;
 import MyShapes.JournalParameters;
@@ -1107,7 +1107,7 @@ public class CheckGraphs extends javax.swing.JPanel {
     public void getRserver() {
         if (CommonClassesLight.r == null || !CommonClassesLight.r.isRserverRunning()) {
             try {
-                ScientiFig_.reinitRsession();
+                ScientiFig.reinitRsession();
             } catch (Exception e) {
             }
         }

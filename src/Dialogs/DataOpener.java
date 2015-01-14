@@ -33,7 +33,7 @@
  */
 package Dialogs;
 
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import Commons.CommonClassesLight;
 import java.awt.Frame;
 import java.io.File;
@@ -453,7 +453,7 @@ public class DataOpener extends javax.swing.JPanel {
         exts.add("xls");
         exts.add("xlsx");
         String name;
-        if (!CommonClassesLight.isWindows() && ScientiFig_.useNativeDialog) {
+        if (!CommonClassesLight.isWindows() && ScientiFig.useNativeDialog) {
             name = CommonClassesLight.openFileNative(new Frame(), last_path, exts);
         } else {
             name = CommonClassesLight.open(this, last_path, exts);

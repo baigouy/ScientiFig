@@ -33,7 +33,7 @@
  */
 package Dialogs;
 
-import GUIs.ScientiFig_;
+import GUIs.ScientiFig;
 import MyShapes.MyImage2D;
 import MyShapes.MyImageVector;
 import MyShapes.MyPlotVector;
@@ -71,7 +71,7 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * Creates a new ImageEditorFrame
      */
     public ImageEditorFrame() {
-        ScientiFig_.setLNF();
+        ScientiFig.setLNF();
         initComponents();
     }
 
@@ -81,9 +81,9 @@ public class ImageEditorFrame extends javax.swing.JFrame {
      * @param curSel
      */
     public void setCurSel(Object curSel) {
-        ScientiFig_.AR.setText(" N.A. ");
-        ScientiFig_.imageWidth.setText(" N.A. ");
-        ScientiFig_.imageHeight.setText(" N.A. ");
+        ScientiFig.AR.setText(" N.A. ");
+        ScientiFig.imageWidth.setText(" N.A. ");
+        ScientiFig.imageHeight.setText(" N.A. ");
         if (curSel == null) {
             this.curSel = null;
             this.setVisible(false);
@@ -127,10 +127,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             int width = curSel.getImageWidth();
             int height = curSel.getImageHeight();
             double AR = (double) width / (double) height;
-            ScientiFig_.imageWidth.setText(" " + width + " ");
-            ScientiFig_.imageHeight.setText(" " + height + " ");
+            ScientiFig.imageWidth.setText(" " + width + " ");
+            ScientiFig.imageHeight.setText(" " + height + " ");
             NumberFormat formatter = new DecimalFormat("#.##");
-            ScientiFig_.AR.setText(" " + formatter.format(AR));// + " "
+            ScientiFig.AR.setText(" " + formatter.format(AR));// + " "
         }
     }
 
@@ -237,9 +237,9 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } else {
             this.setVisible(false);
-            ScientiFig_.AR.setText(" N.A. ");
-            ScientiFig_.imageWidth.setText(" N.A. ");
-            ScientiFig_.imageHeight.setText(" N.A. ");
+            ScientiFig.AR.setText(" N.A. ");
+            ScientiFig.imageWidth.setText(" N.A. ");
+            ScientiFig.imageHeight.setText(" N.A. ");
         }
         block_update = false;
     }
@@ -330,10 +330,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                     ((MyPlotVector)curSel).updateGGTitle();
                     ((MyPlotVector)curSel).updatePlot();
                 }
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         };
@@ -895,10 +895,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             ((MyImage2D) curSel).setScale_bar_size_in_unit(getScaleBarLengthInUnit());
             ((MyImage2D) curSel).setSCALE_BAR_STROKE_SIZE(getScaleBarStrokeSize());
         }
-        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-            ScientiFig_.updateTable(curSel);
+        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+            ScientiFig.updateTable(curSel);
         } else {
-            ScientiFig_.updateFigure(curSel);
+            ScientiFig.updateFigure(curSel);
         }
     }
 
@@ -950,10 +950,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             try {
                 if (curSel != null && curSel instanceof MyImage2D) {
                     ((MyImage2D) curSel).setScalebarColor(getScaleBarColor());
-                    if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                        ScientiFig_.updateTable(curSel);
+                    if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                        ScientiFig.updateTable(curSel);
                     } else {
-                        ScientiFig_.updateFigure(curSel);
+                        ScientiFig.updateFigure(curSel);
                     }
                 }
             } catch (Exception e) {
@@ -990,19 +990,19 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             return;
         }
         if (source == addPiP) {
-            ScientiFig_.PIP.doClick();
-            if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                ScientiFig_.updateTable();
+            ScientiFig.PIP.doClick();
+            if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                ScientiFig.updateTable();
             } else {
-                ScientiFig_.updateFigure();
+                ScientiFig.updateFigure();
             }
         }
         if (source == removePiP) {
-            ScientiFig_.removePiP.doClick();
-            if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                ScientiFig_.updateTable();
+            ScientiFig.removePiP.doClick();
+            if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                ScientiFig.updateTable();
             } else {
-                ScientiFig_.updateFigure();
+                ScientiFig.updateFigure();
             }
         }
     }//GEN-LAST:event_runAll
@@ -1014,10 +1014,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         try {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setFraction_of_parent_image_width(getFraction());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1033,10 +1033,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setINSET_POSITION(getInsetPosition());
                 ((MyImage2D) curSel).setFraction_of_parent_image_width(getFraction());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1059,10 +1059,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         try {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setInsetInternalSpace(getInternalSpace());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1080,10 +1080,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             try {
                 if (curSel != null && curSel instanceof MyImage2D) {
                     ((MyImage2D) curSel).setInsetBorderColor(getInsetBorderColor());
-                    if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                        ScientiFig_.updateTable(curSel);
+                    if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                        ScientiFig.updateTable(curSel);
                     } else {
-                        ScientiFig_.updateFigure(curSel);
+                        ScientiFig.updateFigure(curSel);
                     }
                 }
             } catch (Exception e) {
@@ -1104,10 +1104,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         try {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setInsetBorderColor(color);
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1122,10 +1122,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         try {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setScale_barSize_in_pixels_PIP(getInsetScaleBarSize());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1143,10 +1143,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             try {
                 if (curSel != null && curSel instanceof MyImage2D) {
                     ((MyImage2D) curSel).setGelBorderColor(getGelBorderColor());
-                    if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                        ScientiFig_.updateTable(curSel);
+                    if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                        ScientiFig.updateTable(curSel);
                     } else {
-                        ScientiFig_.updateFigure(curSel);
+                        ScientiFig.updateFigure(curSel);
                     }
                 }
             } catch (Exception e) {
@@ -1162,10 +1162,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
         try {
             if (curSel != null && curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setGelBorderSize(getGelBorderSize());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {
@@ -1188,10 +1188,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1210,10 +1210,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1237,10 +1237,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1264,10 +1264,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1291,10 +1291,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1318,10 +1318,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 @Override
                 public void caretUpdate(CaretEvent e) {
                     if (curSel != null) {
-                        if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                            ScientiFig_.updateTable(curSel);
-                        } else if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 2) {
-                            ScientiFig_.updateFigure(curSel);
+                        if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                            ScientiFig.updateTable(curSel);
+                        } else if (ScientiFig.jTabbedPane1.getSelectedIndex() == 2) {
+                            ScientiFig.updateFigure(curSel);
                         }
                     }
                 }
@@ -1348,10 +1348,10 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Stroking Parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 if (result == JOptionPane.OK_OPTION) {
                     ((MyPlotVector) curSel).setStrokeSize(iopane.getNewStrokeSize(), iopane.getNewPointSize(), iopane.isChangeStrokeSizeForGraphs(), iopane.isChangePointSize());
-                    if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                        ScientiFig_.updateTable(curSel);
+                    if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                        ScientiFig.updateTable(curSel);
                     } else {
-                        ScientiFig_.updateFigure(curSel);
+                        ScientiFig.updateFigure(curSel);
                     }
                 }
                 return;
@@ -1362,20 +1362,20 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Stroking Parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 if (result == JOptionPane.OK_OPTION) {
                     ((MyImageVector) curSel).setStrokeSize(getStrokeSize(), iopane.isChangeStrokeSizeForSVGs(), iopane.isStrokeIllustrator());
-                    if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                        ScientiFig_.updateTable(curSel);
+                    if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                        ScientiFig.updateTable(curSel);
                     } else {
-                        ScientiFig_.updateFigure(curSel);
+                        ScientiFig.updateFigure(curSel);
                     }
                 }
                 return;
             }
             if (curSel instanceof MyImage2D) {
                 ((MyImage2D) curSel).setAssociatedShapeStrokeSize(getStrokeSize());
-                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {
-                    ScientiFig_.updateTable(curSel);
+                if (ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {
+                    ScientiFig.updateTable(curSel);
                 } else {
-                    ScientiFig_.updateFigure(curSel);
+                    ScientiFig.updateFigure(curSel);
                 }
             }
         } catch (Exception e) {

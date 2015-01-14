@@ -45,7 +45,7 @@ import ij.plugin.PlugIn;
  * @since <B>FiguR 0.5</B>
  * @author Benoit Aigouy
  */
-public class Help_ implements PlugIn {
+public class Help implements PlugIn {
 
     public static final String URL_SF = "http://srv-gred.u-clermont1.fr/labmirouse/software/";
     public static final String URL_TA = "http://srv-gred.u-clermont1.fr/labmirouse/software/WebPA/index.html";
@@ -53,7 +53,7 @@ public class Help_ implements PlugIn {
     /**
      * Empty constructor
      */
-    public Help_() {
+    public Help() {
     }
 
     /**
@@ -76,7 +76,7 @@ public class Help_ implements PlugIn {
         //
         //http://srv-gred.u-clermont1.fr/labmirouse/software/WebPA/index.html
         String path = URL_SF;
-        new Help_().run(path);
+        new Help().run(path);
     }
 }
 

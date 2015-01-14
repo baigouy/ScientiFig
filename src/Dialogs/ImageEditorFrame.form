@@ -685,7 +685,7 @@
         </Container>
         <Component class="Dialogs.RLabelEditor" name="rLabelEditor1">
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new RLabelEditor() {&#xa;        @Override&#xa;        public void somethingChanged(Object source) {&#xa;                super.somethingChanged(source);&#xa;                if (curSel instanceof MyPlotVector) {&#xa;                    ((MyPlotVector)curSel).updateGGTitle();&#xa;                    ((MyPlotVector)curSel).updatePlot();&#xa;                }&#xa;                if (ScientiFig_.jTabbedPane1.getSelectedIndex() == 1) {&#xa;                    ScientiFig_.updateTable(curSel);&#xa;                } else {&#xa;                    ScientiFig_.updateFigure(curSel);&#xa;                }&#xa;            }&#xa;        };"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new RLabelEditor() {&#xa;        @Override&#xa;        public void somethingChanged(Object source) {&#xa;                super.somethingChanged(source);&#xa;                if (curSel instanceof MyPlotVector) {&#xa;                    ((MyPlotVector)curSel).updateGGTitle();&#xa;                    ((MyPlotVector)curSel).updatePlot();&#xa;                }&#xa;                if (GUIs.ScientiFig.jTabbedPane1.getSelectedIndex() == 1) {&#xa;                    GUIs.ScientiFig.updateTable(curSel);&#xa;                } else {&#xa;                    GUIs.ScientiFig.updateFigure(curSel);&#xa;                }&#xa;            }&#xa;        };"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="jPanel7">
