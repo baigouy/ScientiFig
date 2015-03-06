@@ -1,3 +1,6 @@
+//TODO implementer un zoom --> crop chaque direction de la meme maniere mm nb de px mettre un slider sans nb pr faire ça
+//implementer un drift qui fait changer les valeurs de crop left et right de maniere oppose, i.e. si perd 10 px a gauche alors on les ajoute a droite et faire pareil pour up and down
+
 //TODO allow spacing to be changed once panel is in a row --> need to check the type of object selected
 //TODO implement clean split of IJ images by channel rather than by color in case users gave weird colors to their channels
 /*
