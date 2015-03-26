@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -144,6 +144,25 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
     public static class Double extends MyLine2D implements Serializable {
 
         public static final long serialVersionUID = 2120685573605367646L;
+
+        /**
+         * converts an IJ ROI to a SF one
+         *
+         * @param ijRoi
+         */
+        public Double(Roi ijRoi) {
+            if (!ijRoi.isLine()) {
+                throw new Error("not a line ROI");
+            }
+            l2d = new Line2D.Double(((Line) ijRoi).x1d, ((Line) ijRoi).y1d, ((Line) ijRoi).x2d, ((Line) ijRoi).y2d);
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = strokeCol.getRGB();
+            }
+            //ijRoi.isLine()
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }
 
         /**
          * Constructor
@@ -1291,16 +1310,18 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
 
     @Override
     public String getShapeName() {
-        if (isArrow)
+        if (isArrow) {
             return "Arrow";
-        if (isAccolade)
+        }
+        if (isAccolade) {
             return "Bracket";
+        }
         return "Line";
     }
 
     @Override
     public String toString() {
-        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + "</html>";
+        return "<html><center>" + CommonClassesLight.roundNbAfterComma(getCenter().x, 1) + " " + CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + "</html>";
     }
 
     @Override

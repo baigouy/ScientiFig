@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -51,6 +51,10 @@ public class Aes implements Cloneable, Serializable {
     public static final int UPPER_BAR = 0;
     public static final int LOWER_BAR = 1;
     public static final int BOTH_BARS = 2;
+//    boolean forceAsNumeric = false;
+    
+//    boolean keepOrder = false;
+
     String x;
     String y;
     String color;
@@ -75,7 +79,36 @@ public class Aes implements Cloneable, Serializable {
      */
     public Aes() {
     }
-
+    
+//    /**
+//     * 
+//     * @return 
+//     */
+//    public boolean isKeepOrder() {
+//        return keepOrder;
+//    }
+//
+//    /**
+//     * allows X axis to keep its order in histograms if true
+//     * @param keepOrder 
+//     */
+//    public void setKeepOrder(boolean keepOrder) {
+//        this.keepOrder = keepOrder;
+//    }
+//    /**
+//     * 
+//     * @return true if x should be forced as numeric value
+//     */
+//    public boolean isForceAsNumeric() {
+//        return forceAsNumeric;
+//    }
+//    /**
+//     * decide how to deal with as numeric --> useful for labels of bar plots that should not be changed
+//     * @param forceAsNumeric 
+//     */
+//    public void setForceAsNumeric(boolean forceAsNumeric) {
+//        this.forceAsNumeric = forceAsNumeric;
+//    }
     /**
      *
      * @return the column containing the x end coordinates of rects or lines
@@ -293,7 +326,15 @@ public class Aes implements Cloneable, Serializable {
          * column or shall we always do it ?
          */
         if (x != null) {
-            ggplot += "x=as.numeric(" + x + "), ";
+            /**
+             * bug fix for histograms x axis that was erroneously converted to
+             * numeric
+             */
+            if (!x.toLowerCase().contains("factor(")) {
+                ggplot += "x=as.numeric(" + x + "), ";
+            } else {
+                ggplot += "x=" + x + ", ";
+            }
         }
         if (y != null) {
             ggplot += "y=as.numeric(" + y + "), ";
@@ -353,6 +394,8 @@ public class Aes implements Cloneable, Serializable {
         aes.xend = this.xend;
         aes.yend = this.yend;
         aes.linetype = this.linetype;
+//        aes.keepOrder = this.keepOrder;
+//        aes.forceAsNumeric = this.forceAsNumeric;
         return aes;
     }
 

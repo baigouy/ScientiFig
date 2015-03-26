@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -37,6 +37,7 @@ import Dialogs.ROIpanelLight;
 import Commons.CommonClassesLight;
 import Commons.G2dParameters;
 import Commons.MyBufferedImage;
+import ij.gui.EllipseRoi;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import java.awt.*;
@@ -96,6 +97,37 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
          */
         public static final long serialVersionUID = 2070327142126833034L;
 
+      /**
+         * converts an IJ rect ROI to a SF one
+         *
+         * @param ijRoi
+         */
+        public Double(Roi ijRoi) {
+//            if (ijRoi instanceof EllipseRoi)
+//            {
+            EllipseRoi elRoi = (EllipseRoi)ijRoi;
+            double[] params = elRoi.getParams();
+            el2d = new Ellipse2D.Double(params[0], params[1], params[2]-params[0], params[3]-params[1]);
+//            }else if (ijRoi instanceof OvalRoi)
+//            {
+//             OvalRoi elRoi = (OvalRoi)ijRoi;
+//             
+//            //double[] params = elRoi.getParams();
+//           // el2d = new Ellipse2D.Double(ijRoi.getXBase(), ijRoi.getYBase(),ijRoi.get, elRoi.y );    
+//            }
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = strokeCol.getRGB();
+            }
+            //ijRoi.isLine()
+            Color fillCol = ijRoi.getFillColor();
+            if (fillCol != null) {
+                fillColor = fillCol.getRGB();
+            }
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }        
+        
         /**
          * Constructor
          *

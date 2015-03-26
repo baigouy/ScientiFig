@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -260,7 +260,7 @@ public class ImageTransformations {
         return d1 < d2 ? d1 : d2;
     }
 
-    private static Dimension get_size_of_the_rotated_image(int width, int height, double angle) {
+    public static Dimension get_size_of_the_rotated_image(int width, int height, double angle) {
         Point2D.Double upper_left_corner = calc_pos(0, 0, width, height, angle);
         Point2D.Double lower_left_corner = calc_pos(0, height - 1, width, height, angle);
         Point2D.Double lower_right_corner = calc_pos(width - 1, height - 1, width, height, angle);

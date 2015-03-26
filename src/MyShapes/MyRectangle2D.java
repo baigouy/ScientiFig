@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -87,6 +87,26 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     public static class Double extends MyRectangle2D implements Serializable {
 
         public static final long serialVersionUID = 9057588182065555824L;
+
+        /**
+         * converts an IJ rect ROI to a SF one
+         *
+         * @param ijRoi
+         */
+        public Double(Roi ijRoi) {
+            rec2d = new Rectangle2D.Double(ijRoi.getXBase(), ijRoi.getYBase(), ijRoi.getFloatWidth(), ijRoi.getFloatHeight());
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = strokeCol.getRGB();
+            }
+            //ijRoi.isLine()
+            Color fillCol = ijRoi.getFillColor();
+            if (fillCol != null) {
+                fillColor = fillCol.getRGB();
+            }
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }
 
         /**
          * Constructor
@@ -1103,7 +1123,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
 
     @Override
     public String toString() {
-        return "<html><center>"+  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+" "+ getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color)+ ">contour</font>" + ((this instanceof Fillable) ? " <font color="+CommonClassesLight.toHtmlColor(fillColor)+ ">fill</font>" : "") +"</html>";
+        return "<html><center>" + CommonClassesLight.roundNbAfterComma(getCenter().x, 1) + " " + CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -51,6 +51,9 @@ public interface IJCompatibility extends Serializable {
     public static final int IJ_POLYLINE = Roi.POLYLINE;
     public static final int IJ_POINT = Roi.POINT;
     public static final int IJ_LINE = Roi.LINE;
+    public static final int IJ_FREEHAND = Roi.FREEROI;
+//    public static final int IJ_TXT = Roi.;
+    
 
     /**
      *

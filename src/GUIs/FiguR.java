@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -88,7 +88,7 @@ import org.rosuda.REngine.REXPMismatchException;
 //TODO force aes as.numeric only when necessary
 /**
  * FiguR is a tool to create R graphs (FiguR takes care of font settings for
- you)
+ * you)
  *
  * @author Benoit Aigouy
  */
@@ -101,7 +101,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
     boolean loading = false;
     ThemeGraph theme;
     String software_name = "FiguR";
-    String version = "1.2 beta";
+    String version = "1.21 beta";
     RLabel titleLabel = new RLabel();
     RLabel xaxisLabel = new RLabel();
     RLabel yaxisLabel = new RLabel();
@@ -249,7 +249,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         }
         return null;
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -451,6 +451,11 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         buttonGroup2.add(jRadioButton1);
         jRadioButton1.setSelected(true);
         jRadioButton1.setText("use default software code");
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customCodeOrSoftCode(evt);
+            }
+        });
 
         buttonGroup2.add(jRadioButton2);
         jRadioButton2.setText("use my custom code");
@@ -896,7 +901,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             }
         });
 
-        jMenuItem1.setText("Position");
+        jMenuItem1.setText("Hide or reposition");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
@@ -1108,7 +1113,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             }
         }
     }
- 
+
     /**
      *
      * @return an R connection
@@ -1118,7 +1123,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             reinitRsession();
         }
         return rsession;
-    } 
+    }
 
     /**
      * Checks the status of the connection to R, upon success show a green
@@ -1211,15 +1216,14 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         xaxisLabel = null;
         yaxisLabel = null;
         legendLabel = null;
-
     }
     private static final LinkedHashMap<String, String> replacements = new LinkedHashMap<String, String>();
-
+    
     static {
         replacements.put("degrees", "°");
         replacements.put("*", CommonClassesLight.MULTIPLICATION + "");
         replacements.put("micron", CommonClassesLight.MICRON + "");
-
+        
     }
 
     //can't do this in a string --> improve this
@@ -1247,7 +1251,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             closing(null);
             return;
         }
-
+        
         if (source == capitalizeFirstLetter) {
             /*
              * formats all the text for nature related journals
@@ -1540,7 +1544,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             if (data == null || data.isEmpty()) {
                 CommonClassesLight.Warning(this, "Please open an .xls/.xlsx file first\nClick on File>Open File");
                 return;
-
+                
             }
             rsession.eval("curDataFigR <- edit(curDataFigR)");
         }
@@ -1703,7 +1707,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                  * creation of a graph
                  */
                 String plotStyle = jComboBox1.getSelectedItem().toString();
-
+                
                 if (plotStyle.toLowerCase().contains("error")) {
                     if (plotStyle.contains("oriz")) {
                         plot = "geom_errorbarh";
@@ -1908,7 +1912,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         data.clear();
         data.add(new GGplot("curDataFigR"));
     }
-
+    
     private void checkFiles() {
         if (data == null) {
             data = new ArrayList<Object>();
@@ -1951,6 +1955,9 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
      * Here are the guidelines for users that want to use their own custom code
      */
     private void customCodeOrSoftCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCodeOrSoftCode
+        if (loading == true) {
+            return;
+        }
         if (isCustomCode()) {
             CommonClassesLight.Warning2(this, "You can enter your own custom R code, but there are"
                     + "\nseveral rules that you have to respect if you want things to work properly:"
@@ -1989,6 +1996,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                     + "\n\ncolnames(iris);"
                     + "\nplot(iris$Petal.Length, iris$Sepal.Length);");
         }
+        updateGraph(evt);
     }//GEN-LAST:event_customCodeOrSoftCode
 
     private void launchScientiFig(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchScientiFig
@@ -2060,7 +2068,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             }
         }
     }//GEN-LAST:event_editText
-
+    
     public void checkStatus() {
         if (rsession != null & rsession.isRserverRunning()) {
             Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
@@ -2078,6 +2086,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
      */
     public void updateGraph(Object src) {
         if (plots.isEmpty() && !isCustomCode() && src != jButton7) {
+            imagePaneLight1.setImage(null);
             CommonClassesLight.Warning(this, "Please create at least one plot style by pressing on the green + button");
             return;
         }
@@ -2266,8 +2275,38 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         /*
          * we have to give it a bit more space to avoid pbs with the scrollbars
          */
-        BufferedImage bimg = rsession.getPreview(code, jScrollPane5.getViewportBorderBounds().width - 3, jScrollPane5.getViewportBorderBounds().height - 3);
-        imagePaneLight1.setImage(bimg);
+        //check it doesn't break custom code
+        if (plots.isEmpty() && !isCustomCode()) {
+            /**
+             * nothing to plot, so we set the plot to null and empty all texts
+             */
+            imagePaneLight1.setImage(null);
+//clearText(); //maybe not necessary ??? cause people have to retype it just put a delete button close to edit
+        } else {
+            BufferedImage bimg = rsession.getPreview(code, jScrollPane5.getViewportBorderBounds().width - 3, jScrollPane5.getViewportBorderBounds().height - 3);
+            imagePaneLight1.setImage(bimg);
+        }
+    }
+
+    /**
+     * maybe delete text when there is no plot left or maybe keep it ?
+     */
+    public void clearText() {
+//              column_names.clear();
+//        alreadyFactorizableColumns.clear();
+//        nb_of_factors.clear();
+        plotsListModel.clear();
+//        jTextArea3.setText("");
+        jTextArea2.setText("");
+        title.setText("");
+        legendTitle.setText("");
+        xAxisTitle.setText("");
+        yAxisTitle.setText("");
+//        xlsxFile.setText("");
+//        titleLabel = null;
+//        xaxisLabel = null;
+//        yaxisLabel = null;
+//        legendLabel = null;
     }
 
     /**
@@ -2280,7 +2319,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         R_Legend += ")";
         R_code += R_Legend;
     }
-
+    
     private void removeAllFacets() {
         /*
          * remove all facets objects
@@ -2327,11 +2366,11 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         boolean use_non_custom_code = jRadioButton1.isSelected();
         return new MyPlotVector.Double(rsession, xlsxFile.getText(), getFormattedGraph(false), sheet_nb, textSeparator, textDelimtor, decimal, null, use_non_custom_code, theme);
     }
-
+    
     private static Dimension getScreenSize() {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
-
+    
     @Override
     public void run(String arg) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -2377,11 +2416,14 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
      * @param name
      */
     private void openFile(String name) {
+        loading = true;
         if (name == null) {
+            loading = false;
             return;
         }
         name = CommonClassesLight.change_path_separators_to_system_ones(name);
         if (!new File(name).exists()) {
+            loading = false;
             CommonClassesLight.Warning(this, "Please enter a valid .figur file");
             return;
         }
@@ -2399,12 +2441,14 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         this.xaxisLabel = tmp.getxAxisLabel();
         this.yaxisLabel = tmp.getyAxisLabel();
         this.legendLabel = tmp.getLegendLabel();
-
+        
         jTextArea3.setText(tmp.Rcommand);
-
+        
         if (!tmp.use_non_custom_code || data == null) {
             jRadioButton2.setSelected(true);
-        } else if (data != null) {
+            jRadioButton1.setSelected(false);
+        } else {
+            jRadioButton1.setSelected(true);
             jRadioButton1.setSelected(false);
         }
         if (tmp.Rcommand.toLowerCase().contains("coord_flip()") && tmp.use_non_custom_code) {
@@ -2443,6 +2487,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                 }
                 loadData(xlsxFile.getText(), tmp.sheetnb, tmp.textSeparator, tmp.textDelimtor, tmp.decimal);
             } else {
+                loading = false;
                 return;
             }
         } else {
@@ -2450,6 +2495,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             loadData(xlsxFile.getText(), tmp.sheetnb, tmp.textSeparator, tmp.textDelimtor, tmp.decimal);
         }
         jButton2.doClick();
+        loading = false;
     }
 
     /**
@@ -2484,7 +2530,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             enableOrDisableTextField();
         }
     }
-
+    
     public void enableOrDisableTextField() {
         if (!xlsxFile.getText().trim().equals("")) {
             xlsxFile.setEnabled(true);

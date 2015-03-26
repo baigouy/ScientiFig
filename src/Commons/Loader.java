@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -35,6 +35,8 @@ package Commons;
 
 import ij.CompositeImage;
 import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import ij.io.FileInfo;
 import ij.process.ImageProcessor;
 import java.awt.Graphics2D;
@@ -59,6 +61,7 @@ public class Loader {
 
     public static boolean loaderCanCancel = false;
     FileInfo fifo = null;
+    Object curROIs = null;
 
     public Loader() {
     }
@@ -254,6 +257,7 @@ public class Loader {
      */
     public BufferedImage load(String path, boolean bool) {
         fifo = null;
+        curROIs = null;
         BufferedImage original = null;
         try {
             if (!path.toLowerCase().endsWith(".tiff") && !path.toLowerCase().endsWith(".tif")) {
@@ -313,6 +317,10 @@ public class Loader {
         return fifo;
     }
 
+    public Object getIJRoi() {
+        return curROIs;
+    }
+
     /**
      * I had some palette errors in my load functions this code aims at fixing
      * this (basically I just use ImageJ to open the image if I know the palette
@@ -335,6 +343,19 @@ public class Loader {
         BufferedImage img = null;
         if (original != null) {
             fifo = original.getFileInfo();
+            curROIs = original.getRoi();
+            Overlay ol = original.getOverlay();
+            if (ol != null) {
+                Roi[] rois = ol.toArray();
+//                for (Roi roi : rois) {
+//                    System.out.println(roi);
+//                    //ça marche --> sauver les ROI ds le truc
+//                    //si il y a overlay alors 
+//                }
+                curROIs = rois;
+//                System.out.println((curROIs instanceof Roi) +" "+(curROIs instanceof Roi[]));
+            }
+
             if (original.getBitDepth() == 24) {
                 BufferedImage tmp = original.getBufferedImage();
                 img = CommonClassesLight.copyImg(tmp);
@@ -404,10 +425,11 @@ public class Loader {
                 img.set16Bits(true);
                 //bug fiw for images with two 16bits channels
                 if (original.getNChannels() >= 2 && bit_depth >= 16) {
-                    if (bit_depth == 16)
-                    img.set48Bits(true);
-                    else
-                    img.set96Bits(true);    
+                    if (bit_depth == 16) {
+                        img.set48Bits(true);
+                    } else {
+                        img.set96Bits(true);
+                    }
                     /**
                      * we force the compoosite image to be displayed
                      */
@@ -420,7 +442,7 @@ public class Loader {
                 }
                 img.set8BitsImage(original.getBufferedImage());
             }
-            if (original.getNSlices() != 1 || img.is48Bits || img.is96Bits ) {
+            if (original.getNSlices() != 1 || img.is48Bits || img.is96Bits) {
                 /**
                  * removed because it apparently is useless and prevented proper
                  * loading of images

@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -42,6 +42,8 @@ import Commons.Loader;
 import Commons.MyBufferedImage;
 import Commons.MyGraphics2D;
 import Commons.SaverLight;
+import ij.gui.Roi;
+import ij.io.FileInfo;
 import java.awt.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -1085,7 +1087,28 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
          * @param filename
          */
         public Double(double x_left_corner, double y_left_corner, String filename) {
-            this(x_left_corner, y_left_corner, new Loader().loadWithImageJ8bitFix(filename));
+            Loader l2 = new Loader();
+            BufferedImage curImg = l2.loadWithImageJ8bitFix(filename);
+            FileInfo fifo = l2.getFileInfo();
+            Object r = l2.getIJRoi();
+            if (r != null) {
+                if (r instanceof Roi) {
+                    Object SFRoi = new RoiConverter().convertIJRoiToSFRoi((Roi) r);
+                    addAssociatedObject(SFRoi);
+                } else {
+                    ArrayList<Object> SFRois = new RoiConverter().convertIJRoiToSFRoi((Roi[]) r);
+                    setAssociatedObjects(SFRois);
+                }
+            }
+            if (fifo != null) {
+                setSize_of_one_px_in_unit(fifo.pixelWidth);
+            }
+            curImg = loadImage(curImg);
+            if (curImg != null) {
+                this.bimg = new SerializableBufferedImage2(curImg);
+                rec2d = new Rectangle2D.Double(x_left_corner, y_left_corner, curImg.getWidth(), curImg.getHeight());
+            }
+//            this(x_left_corner, y_left_corner, new Loader().loadWithImageJ8bitFix(filename));
             super.fullName = filename;
             super.shortName = CommonClassesLight.getName(new File(filename).getName());
         }
@@ -1104,14 +1127,7 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
             super.shortName = CommonClassesLight.getName(new File(filename).getName());
         }
 
-        /**
-         * Constructor
-         *
-         * @param x_left_corner
-         * @param y_left_corner
-         * @param bimg
-         */
-        public Double(double x_left_corner, double y_left_corner, BufferedImage bimg) {
+        private BufferedImage loadImage(BufferedImage bimg) {
             if (bimg instanceof MyBufferedImage) {
                 if (((MyBufferedImage) bimg).is16Bits()) {
                     MyBufferedImage tmp = new MyBufferedImage(bimg.getWidth(), bimg.getHeight());
@@ -1123,6 +1139,18 @@ public abstract class MyImage2D extends MyRectangle2D implements Transformable, 
                     bimg = ImageColors.makeWhite(bimg);
                 }
             }
+            return bimg;
+        }
+
+        /**
+         * Constructor
+         *
+         * @param x_left_corner
+         * @param y_left_corner
+         * @param bimg
+         */
+        public Double(double x_left_corner, double y_left_corner, BufferedImage bimg) {
+            bimg = loadImage(bimg);
             if (bimg != null) {
                 this.bimg = new SerializableBufferedImage2(bimg);
                 rec2d = new Rectangle2D.Double(x_left_corner, y_left_corner, bimg.getWidth(), bimg.getHeight());

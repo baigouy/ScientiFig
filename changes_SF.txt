@@ -1,3 +1,17 @@
+23-24/03/15
+-added support for IJ ROI/Overlay (IJ ROIs are imported and converted to SF ROIs)
+
+17/03/15
+-added support for creating image crops from ROIs. Select a panel then press the button "add ROIs, arrows, asterisk, ..." then draw a rectangular ROI over the region to crop then press "ROI-->Crop(s)". All crops are saved as a one liner panel in the Scientifig panels array.
+-added the possibility to change rectangular ROI width or height using spinners in "add ROIs, arrows, asterisk, ..."
+-change version to 3.00
+
+13/03/15
+-I do not force X axis to be as.numeric for histograms (this bug was reported to me by a user)
+-added a function to keep x axis order for histograms (default feature of R is to sort column, which might not be wanted by the user for histograms
+-do not force fill histograms and rose diagram by default anymore
+-better reloading of .figur files that contained custom code
+
 12/01/15
 -removed dependency on Absolute_Layout.jar (automatically added but not removed by netbeans)
 -created an external launcher for SF required to prepare a FIJI update site for Tissue Analyzer

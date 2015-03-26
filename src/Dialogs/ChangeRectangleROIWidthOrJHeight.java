@@ -36,6 +36,8 @@ package Dialogs;
 import Commons.CommonClassesLight;
 import Commons.PaintedButton;
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 
@@ -46,105 +48,90 @@ import javax.swing.JOptionPane;
  * @since <B>FiguR 0.5</B>
  * @author Benoit Aigouy
  */
-public class AddLine extends javax.swing.JPanel {
+public class ChangeRectangleROIWidthOrJHeight extends javax.swing.JPanel {
 
     /**
      * Creates new form AddLine
      */
-    public AddLine() {
+    public ChangeRectangleROIWidthOrJHeight(int width, int height) {
         initComponents();
+        try {
+            jSpinner1.setValue(width);
+        } catch (Exception e) {
+        }
+        try {
+            jSpinner2.setValue(height);
+        } catch (Exception e) {
+        }
+        widthOrHeightChanged(null);
     }
 
     /**
      *
-     * @return the color of the line
+     * @return the rect width
      */
-    public String getColor() {
-        return CommonClassesLight.toHtmlColor(paintedButton21.getColor());
+    public int getRectWidth() {
+        return ((Integer) jSpinner1.getValue());
     }
 
     /**
      *
-     * @return the width of the line
+     * @return the rect height
      */
-    public String getLineWidth() {
-        return lineDialog1.getLineWidth() + "";
+    public int getRectHeight() {
+        return ((Integer) jSpinner2.getValue());
     }
-
-    /**
-     *
-     * @return the type of the line (solid, dashed, ...)
-     */
-    public String getLineType() {
-        return lineDialog1.getLineStyle() + "";
-    }
-
-    /**
-     *
-     * @return the x or y position of the line
-     */
-    public String getPos() {
-        return jSpinner1.getValue().toString();
-    }
-
-    /**
-     *
-     * @return the alpha transparency of the line (1 non transparent, 0
-     * invisible)
-     */
-    public String getAlpha() {
-        return jSpinner2.getValue().toString();
-    }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
         jSpinner1 = new javax.swing.JSpinner();
-        lineDialog1 = new Dialogs.LineDialog();
         jLabel2 = new javax.swing.JLabel();
-        paintedButton21 = new Commons.PaintedButton();
-        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jSpinner2 = new javax.swing.JSpinner();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Parameters"));
 
-        jLabel1.setText("position:");
+        jLabel1.setText("Width:");
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.1d)));
-
-        lineDialog1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
-        jLabel2.setText("Color:");
-
-        paintedButton21.setText("color");
-        paintedButton21.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                colorChooser(evt);
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                widthOrHeightChanged(evt);
             }
         });
 
-        jLabel3.setText("Alpha:");
+        jLabel2.setText("Height:");
 
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, 1.0d, 0.1d));
+        jLabel4.setText("Ratio:");
+
+        jLabel5.setText(" ");
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                widthOrHeightChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lineDialog1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel4))
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(paintedButton21, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSpinner2)
-                    .addComponent(jSpinner1))
+                    .addComponent(jSpinner1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSpinner2))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -156,23 +143,25 @@ public class AddLine extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(paintedButton21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
                     .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lineDialog1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void colorChooser(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooser
-        PaintedButton tmp = (PaintedButton) (evt.getSource());
-        Color color = JColorChooser.showDialog(this, "Pick a Color", tmp.getBackground());
-        if (color != null) {
-            tmp.setColor(color);
+    private void widthOrHeightChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_widthOrHeightChanged
+        try {
+            double width = getRectWidth();
+            double height = getRectHeight();
+            double AR = (double) width / (double) height;
+            NumberFormat formatter = new DecimalFormat("#.##");
+            jLabel5.setText(" " + formatter.format(AR));// + " "
+        } catch (Exception e) {
+            jLabel5.setText("-NA-");
         }
-    }//GEN-LAST:event_colorChooser
+    }//GEN-LAST:event_widthOrHeightChanged
 
     /**
      * The main function is used to test the class and its methods
@@ -181,8 +170,8 @@ public class AddLine extends javax.swing.JPanel {
      * @author Benoit Aigouy
      */
     public static void main(String args[]) {
-        AddLine iopane = new AddLine();
-        int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "AddLine", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+        ChangeRectangleROIWidthOrJHeight iopane = new ChangeRectangleROIWidthOrJHeight(512, 512);
+        int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "Edit Rectangle Width or Height", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
         }
         System.exit(0);
@@ -190,12 +179,9 @@ public class AddLine extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
-    private Dialogs.LineDialog lineDialog1;
-    private Commons.PaintedButton paintedButton21;
     // End of variables declaration//GEN-END:variables
 }
-
-

@@ -31,7 +31,7 @@ public class HandleCopyrightForAllMyClasses {
             + " */\n";
     public static final String formattedBSD = "/*\n"
             + " License ScientiFig (new BSD license)\n\n"
-            + " Copyright (C) 2012-2014 Benoit Aigouy \n"
+            + " Copyright (C) 2012-2015 Benoit Aigouy \n"
             + "\n"
             + " Redistribution and use in source and binary forms, with or without\n"
             + " modification, are permitted provided that the following conditions are\n"

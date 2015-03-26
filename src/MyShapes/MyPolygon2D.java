@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -91,6 +91,30 @@ public abstract class MyPolygon2D extends Polygon2D implements PARoi, Contourabl
     public static class Double extends MyPolygon2D implements Serializable {
 
         public static final long serialVersionUID = -6259937388282345606L;
+
+        /**
+         * converts an IJ rect ROI to a SF one
+         *
+         * @param ijRoi
+         */
+        public Double(Roi ijRoi) {
+            PolygonRoi pr = (PolygonRoi) ijRoi;
+            int[] x = pr.getXCoordinates();
+            int[] y = pr.getYCoordinates();
+            p2d = new Polygon2D(x, y, x.length);
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = strokeCol.getRGB();
+            }
+            translate(pr.getXBase(), pr.getYBase());
+            //ijRoi.isLine()
+            Color fillCol = ijRoi.getFillColor();
+            if (fillCol != null) {
+                fillColor = fillCol.getRGB();
+            }
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }
 
         public Double() {
             p2d = new Polygon2D();
@@ -1318,11 +1342,10 @@ public abstract class MyPolygon2D extends Polygon2D implements PARoi, Contourabl
     public int getShapeType() {
         return ROIpanelLight.POLYGON;
     }
-    
-    
+
     @Override
     public String toString() {
-        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
+        return "<html><center>" + CommonClassesLight.roundNbAfterComma(getCenter().x, 1) + " " + CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " <font color=" + CommonClassesLight.toHtmlColor(color) + ">contour</font>" + ((this instanceof Fillable) ? " <font color=" + CommonClassesLight.toHtmlColor(fillColor) + ">fill</font>" : "") + "</html>";
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -51,6 +51,7 @@ import MyShapes.MyPolygon2D;
 import MyShapes.SerializableBufferedImage2;
 import Tools.ROITools;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
@@ -87,6 +88,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     SerializableBufferedImage2 inset;
     boolean loading = false;
     DefaultListModel ROIListModel = new DefaultListModel();
+    ArrayList<Object> oneLinerCrops = new ArrayList<Object>();
 
     /**
      * Constructor
@@ -438,6 +440,8 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         jLabel17 = new javax.swing.JLabel();
         drawOpacitySpinner = new javax.swing.JSpinner();
         fillOpacitySpinner = new javax.swing.JSpinner();
+        toCrop = new javax.swing.JButton();
+        changeWidthHeight = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -711,7 +715,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
-        Edit.setText("Edit/stop editing selected ROI");
+        Edit.setText("Edit/Finalise selected ROI");
         Edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rectanglerunAll(evt);
@@ -790,6 +794,21 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
+        toCrop.setText("ROI --> Crop(s)");
+        toCrop.setToolTipText("COnvert a rectangular ROI to an image inset");
+        toCrop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
+        changeWidthHeight.setText("width/height");
+        changeWidthHeight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rectanglerunAll(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -798,7 +817,6 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(toImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -813,9 +831,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                             .addComponent(fillColor, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel14))
-                        .addComponent(Edit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(toImage, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(toCrop, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(Edit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                     .addComponent(freehand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -834,14 +856,18 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                                     .addComponent(line, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(changeWidthHeight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(polyline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(Ellipse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                            .addComponent(polyline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                            .addComponent(Ellipse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGap(0, 0, Short.MAX_VALUE)))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -874,7 +900,9 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     .addComponent(polyline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Edit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Edit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(changeWidthHeight))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -896,7 +924,9 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     .addComponent(jLabel9)
                     .addComponent(jSpinner7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(toImage))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(toImage)
+                    .addComponent(toCrop)))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {Edit, Ellipse, accolade, arrow, circle, delete, freehand, line, polygon, polyline, rectangle, square, text});
@@ -1221,6 +1251,21 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         if (evt != null) {
             src = evt.getSource();
         }
+        if (src == changeWidthHeight) {
+            Object raw = rOIpanelLight1.getSelectedShape();
+            if (raw == null || !(raw instanceof MyRectangle2D)) {
+                CommonClassesLight.Warning(this, "Please select or draw a rectangular ROI first");
+                return;
+            } else {
+                ChangeRectangleROIWidthOrJHeight iopane = new ChangeRectangleROIWidthOrJHeight( (int)((MyRectangle2D) raw).rec2d.width, (int)((MyRectangle2D) raw).rec2d.height);
+                int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Edit Rectangle Width or Height", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                if (result == JOptionPane.OK_OPTION) {
+                    ((MyRectangle2D) raw).rec2d.width = iopane.getRectWidth();
+                    ((MyRectangle2D) raw).rec2d.height = iopane.getRectHeight();
+                     rOIpanelLight1.repaint();
+                }
+            }
+        }
         if (src == erode) {
             rOIpanelLight1.erode(1);
         }
@@ -1235,7 +1280,57 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             } catch (Exception e) {
             }
         }
+        if (src == toCrop) {
+            /**
+             * add current ROI as a crop (quick n dirty needs to be recoded)
+             */
+            Object raw = rOIpanelLight1.getSelectedShape();
+            if (raw == null || !(raw instanceof MyRectangle2D)) {
+                CommonClassesLight.Warning(this, "Please select or draw a rectangular ROI first");
+                return;
+            }
+            Object ROI = ((PARoi) raw).getParentInstance();
+            Rectangle2D.Double r = ((Rectangle2D.Double) ROI);
+            double fullRotation = (img.getTheta() - ((PARoi) rOIpanelLight1.getSelectedShape()).getRotation());
+            MyRectangle2D.Double shiftedBack = new MyRectangle2D.Double(r.x + img.getLeft_crop(), r.y + img.getUp_crop(), r.width, r.height);
+            int origWidth = img.getOriginalDisplay().getWidth();
+            int origHeight = img.getOriginalDisplay().getHeight();
+            AffineTransform at2 = new AffineTransform();
+            at2.rotate(-Math.toRadians(img.getTheta()), img.getLeft_crop() + (origWidth - img.getLeft_crop() - img.getRight_crop()) / 2, img.getUp_crop() + (origHeight - img.getUp_crop() - img.getDown_crop()) / 2); //--> ca marche tant qu'il y a pas de displacement
+            AffineTransform at3 = new AffineTransform();
+            Shape shiftedBack2 = at2.createTransformedShape(shiftedBack.rec2d);
+            at3.rotate(Math.toRadians(((PARoi) rOIpanelLight1.getSelectedShape()).getRotation()), shiftedBack2.getBounds2D().getCenterX(), shiftedBack2.getBounds2D().getCenterY());
+            Shape shiftedBack3 = at3.createTransformedShape(shiftedBack2);
+            Dimension rotated = ImageTransformations.get_size_of_the_rotated_image(origWidth, origHeight, fullRotation);
+            Point2D.Double trans = new Point2D.Double((rotated.getWidth() - origWidth) / 2., (rotated.getHeight() - origHeight) / 2.);
+            MyRectangle2D.Double rect = new MyRectangle2D.Double(r);
+            rect.setCenter(new Point2D.Double(shiftedBack3.getBounds2D().getCenterX(), shiftedBack3.getBounds2D().getCenterY()));
+            rect.setDrawColor(0x0000FF);
+            rect.rotate(-(img.getTheta() - ((PARoi) rOIpanelLight1.getSelectedShape()).getRotation()));
+            AffineTransform at5 = new AffineTransform();
+            at5.rotate(Math.toRadians(fullRotation), origWidth / 2, origHeight / 2);
+            Shape finalShape = at5.createTransformedShape(shiftedBack3);
+            rect.rotate(0);
+            rect.setCenter(new Point2D.Double(finalShape.getBounds2D().getCenterX() + trans.x, finalShape.getBounds2D().getCenterY() + trans.y));
+            AffineTransform at6 = new AffineTransform();
+            at6.rotate(Math.toRadians(-fullRotation), rotated.getWidth() / 2, rotated.getHeight() / 2);
+            MyRectangle2D.Double originalRect = new MyRectangle2D.Double(rect);
+            finalShape = at6.createTransformedShape(originalRect.rec2d);
+            originalRect.setCenter(new Point2D.Double(finalShape.getBounds2D().getCenterX() - trans.x, finalShape.getBounds2D().getCenterY() - trans.y));
+            originalRect.rotate(-fullRotation);
+            MyImage2D.Double newCrop = new MyImage2D.Double(0, 0, img.getOriginalDisplay());
+            newCrop.crop((int) originalRect.getX(), (int) ((origWidth - (int) originalRect.getX() - r.getWidth())), (int) originalRect.getY(), ((int) (origHeight - (int) originalRect.getY() - r.getHeight())));
+            newCrop.rotate((fullRotation < 0 ? 360 + fullRotation : fullRotation));
+            newCrop.setFullName(img.getFullName());
+            newCrop.setShortName(img.getShortName() + "-crop-" + CommonClassesLight.create_number_of_the_appropriate_size(oneLinerCrops.size() + 1, 2));
+            newCrop.setSize_of_one_px_in_unit(img.getScale_bar_size_in_unit());
+            oneLinerCrops.add(newCrop);
+            CommonClassesLight.showMessage(this, "Congratulations a crop corresponding to the selected ROI has been succesfully to the panels array of ScientiFig.");
+        }
         if (src == toImage) {
+            /**
+             * converts ROI to inset (quick n dirty needs to be recoded)
+             */
             Object raw = rOIpanelLight1.getSelectedShape();
             if (raw == null || !(raw instanceof MyRectangle2D)) {
                 CommonClassesLight.Warning(this, "Please select or draw a rectangular ROI first");
@@ -1246,39 +1341,30 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             Rectangle2D.Double r = ((Rectangle2D.Double) ROI);
             double fullRotation = (img.getTheta() - ((PARoi) rOIpanelLight1.getSelectedShape()).getRotation());
             MyRectangle2D.Double shiftedBack = new MyRectangle2D.Double(r.x + img.getLeft_crop(), r.y + img.getUp_crop(), r.width, r.height);
-
             BufferedImage orig = CommonClassesLight.copyImg(img.getOriginalDisplay());
             AffineTransform at2 = new AffineTransform();
             at2.rotate(-Math.toRadians(img.getTheta()), img.getLeft_crop() + (orig.getWidth() - img.getLeft_crop() - img.getRight_crop()) / 2, img.getUp_crop() + (orig.getHeight() - img.getUp_crop() - img.getDown_crop()) / 2); //--> ca marche tant qu'il y a pas de displacement
-
             AffineTransform at3 = new AffineTransform();
             Shape shiftedBack2 = at2.createTransformedShape(shiftedBack.rec2d);
             at3.rotate(Math.toRadians(((PARoi) rOIpanelLight1.getSelectedShape()).getRotation()), shiftedBack2.getBounds2D().getCenterX(), shiftedBack2.getBounds2D().getCenterY());
             Shape shiftedBack3 = at3.createTransformedShape(shiftedBack2);
-
             BufferedImage rotated = new ImageTransformations().rotate(orig, fullRotation, ImageTransformations.BICUBIC, true);
             Point2D.Double trans = new Point2D.Double((rotated.getWidth() - orig.getWidth()) / 2., (rotated.getHeight() - orig.getHeight()) / 2.);
-
             MyRectangle2D.Double rect = new MyRectangle2D.Double(r);
             rect.setCenter(new Point2D.Double(shiftedBack3.getBounds2D().getCenterX(), shiftedBack3.getBounds2D().getCenterY()));
             rect.setDrawColor(0x0000FF);
-
             rect.rotate(-(img.getTheta() - ((PARoi) rOIpanelLight1.getSelectedShape()).getRotation()));
             BufferedImage crop = new BufferedImage((int) r.getWidth(), (int) r.getHeight(), BufferedImage.TYPE_INT_RGB);
-
             AffineTransform at5 = new AffineTransform();
             at5.rotate(Math.toRadians(fullRotation), orig.getWidth() / 2, orig.getHeight() / 2);
             Shape finalShape = at5.createTransformedShape(shiftedBack3);
             rect.rotate(0);
-
             rect.setCenter(new Point2D.Double(finalShape.getBounds2D().getCenterX() + trans.x, finalShape.getBounds2D().getCenterY() + trans.y));
             rect.setDrawColor(0xFF00FF);
-
             int width = crop.getWidth();
             int height = crop.getHeight();
             int driftX = (int) rect.getX();
             int driftY = (int) rect.getY();
-
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     try {
@@ -1634,6 +1720,14 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         return inset != null;
     }
 
+    public boolean hasCrops() {
+        return !oneLinerCrops.isEmpty();
+    }
+
+    public ArrayList<Object> getCrops() {
+        return oneLinerCrops;
+    }
+
     public SerializableBufferedImage2 getInset() {
         return inset;
     }
@@ -1644,7 +1738,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        MyImage2D.Double tmp = new MyImage2D.Double(0, 0, new Loader().load("/C/mon_prog/Tissue_Analyzer/test_sample/test.png"));
+        MyImage2D.Double tmp = new MyImage2D.Double(0, 0, new Loader().load("/E/sample_images_PA/trash_test_mem/egg_chambers/Series010.png"));
 //        System.out.println(new Loader().load("C:/Users/aigouy/Desktop/sample_images_PA/trash_test_mem/mini/focused_Series012.png").getHeight());
         tmp.crop(64, 128, 64, 128);
         tmp.rotate(45);
@@ -1690,6 +1784,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JButton auto;
     private javax.swing.JButton bring2front;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton changeWidthHeight;
     private javax.swing.JButton circle;
     private Commons.PaintedButton contourColor;
     private javax.swing.JButton delete;
@@ -1749,6 +1844,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
     private javax.swing.JButton send2back;
     private javax.swing.JButton square;
     private javax.swing.JButton text;
+    private javax.swing.JButton toCrop;
     private javax.swing.JButton toImage;
     private javax.swing.JButton zoomminus;
     private javax.swing.JButton zoomplus;

@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -98,6 +98,44 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
 
         public static final long serialVersionUID = 1776233867505009092L;
 
+            /**
+         * converts an IJ rect ROI to a SF one
+         *
+         * @param ijRoi
+         */
+        public Double(Roi ijRoi) {
+            /**
+             * may fail if type error
+             */
+            this(((PolygonRoi)ijRoi).getPolygon());
+//            PolygonRoi pr = (PolygonRoi)ijRoi;
+//            if (pr.getType() != PolygonRoi.POLYLINE)
+//                throw new Error("not a avalid polyline");
+//            int[] x =  pr.getXCoordinates();
+//            int[] y = pr.getYCoordinates();
+//            int length = pr.getNCoordinates();
+//            
+//            for (int i = 0; i < length; i++) {
+//                int z = y[i];
+//            }
+            
+//            float[] x = pr.getFloatPolygon().xpoints;
+//            float[] y = pr.getFloatPolygon().ypoints;
+//            pr
+            
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = strokeCol.getRGB();
+            }
+            //ijRoi.isLine()
+//            Color fillCol = ijRoi.getFillColor();
+//            if (fillCol != null) {
+//                fillColor = strokeCol.getRGB();
+//            }
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }        
+        
         /**
          * Constructor
          *

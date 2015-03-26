@@ -1,6 +1,22 @@
+//TODO add support for multiple ROIs --> 
+/**
+ * import ij.*; import ij.process.*; import ij.gui.*; import java.awt.*; import
+ * ij.plugin.*; import ij.plugin.frame.*;
+ *
+ * public class My_Plugin implements PlugIn {
+ *
+ * public void run(String arg) { ImagePlus imp = IJ.getImage(); RoiManager rm =
+ * RoiManager.getInstance(); if (rm==null) rm = new RoiManager(); IJ.run("Hide
+ * Overlay", ""); IJ.run("Show Overlay", ""); IJ.run("To ROI Manager", "");
+ * rm.select(0); rm.select(1); rm.select(2); rm.select(1); rm.select(0);
+ * rm.select(1); rm.select(2); rm.runCommand(imp,"Show None");
+ * rm.runCommand(imp,"Show All"); rm.runCommand(imp,"Show None"); rm.select(1);
+ * rm.select(0); rm.select(2); rm.select(0); rm.runCommand(imp,"Show All"); }
+ *
+ * }
+ */
 //TODO implementer un zoom --> crop chaque direction de la meme maniere mm nb de px mettre un slider sans nb pr faire ça
 //implementer un drift qui fait changer les valeurs de crop left et right de maniere oppose, i.e. si perd 10 px a gauche alors on les ajoute a droite et faire pareil pour up and down
-
 //TODO allow spacing to be changed once panel is in a row --> need to check the type of object selected
 //TODO implement clean split of IJ images by channel rather than by color in case users gave weird colors to their channels
 /*
@@ -60,10 +76,12 @@ import Commons.SaverLight;
 import Dialogs.CapitalizeFirstLetterDialog;
 import Dialogs.ListOfShortcuts;
 import MyShapes.MagnificationChangeLoggable;
+import MyShapes.RoiConverter;
 import R.RSession.MyRsessionLogger;
 import Tools.ComponentBlinker;
 import ij.Macro;
 import ij.WindowManager;
+import ij.gui.Roi;
 import ij.io.FileInfo;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
@@ -133,7 +151,7 @@ import org.w3c.dom.svg.SVGDocument;
 
 /**
  * ScientiFig is a tool to create format and or reformat figures and graphs for
- scientific publications
+ * scientific publications
  *
  * @author Benoit Aigouy
  */
@@ -204,7 +222,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "2.99";
+    public static final String version = "3.01";
     public static final String software_name = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
@@ -304,8 +322,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             /**
              * prevents reselecting a selected shape
              */
-            if (current_selected_shapeBlock == this.getSelectedShape())
-                return ;
+            if (current_selected_shapeBlock == this.getSelectedShape()) {
+                return;
+            }
             current_selected_shapeBlock = this.getSelectedShape();
             inactivateListUpdate = true;
             selectionUpdate();
@@ -3525,7 +3544,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 String sel = myList1.getSelectedValue();
                 if (!sel.contains("importJ:")) {
                     if (!sel.toLowerCase().endsWith(".svg") && !sel.toLowerCase().endsWith(".figur")) {
-                        setImageDisplay(new MyImage2D.Double(0, 0, myList1.getSelectedValue()));
+                        MyImage2D.Double prev = new MyImage2D.Double(0, 0, myList1.getSelectedValue());
+                        setImageDisplay(prev);
                     } else if (sel.toLowerCase().endsWith(".figur")) {
                         MyPlotVector.Double tmp = (MyPlotVector.Double) (new Loader().loadObjectRaw(sel));
                         setImageDisplay(tmp);//new MyImage2D.Double(0, 0, new Loader().loadSVG2BufferedImage(tmp.getDocument())));
@@ -4706,7 +4726,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                         Loader l2 = new Loader();
                         BufferedImage bimg = l2.loadWithImageJ8bitFix(string);
                         FileInfo fifo = l2.getFileInfo();
+                        Object r = l2.getIJRoi();
                         tmp = new MyImage2D.Double(0, 0, string, bimg);
+                        if (r != null) {
+                            if (r instanceof Roi) {
+                                Object SFRoi = new RoiConverter().convertIJRoiToSFRoi((Roi) r);
+                                tmp.addAssociatedObject(SFRoi);
+                            } else {
+                                ArrayList<Object> SFRois = new RoiConverter().convertIJRoiToSFRoi((Roi[]) r);
+                                tmp.setAssociatedObjects(SFRois);
+                            }
+                        }
                         if (fifo != null) {
                             tmp.setSize_of_one_px_in_unit(fifo.pixelWidth);
                         }
@@ -5065,7 +5095,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 Loader l2 = new Loader();
                 BufferedImage bimg = l2.loadWithImageJ8bitFix(name);
                 FileInfo fifo = l2.getFileInfo();
+                Object r = l2.getIJRoi();
                 tmp = new MyImage2D.Double(0, 0, name, bimg);
+                if (r != null) {
+                    if (r instanceof Roi) {
+                        Object SFRoi = new RoiConverter().convertIJRoiToSFRoi((Roi) r);
+                        tmp.addAssociatedObject(SFRoi);
+                    } else {
+                        ArrayList<Object> SFRois = new RoiConverter().convertIJRoiToSFRoi((Roi[]) r);
+                        tmp.setAssociatedObjects(SFRois);
+                    }
+                }
                 if (fifo != null) {
                     tmp.setSize_of_one_px_in_unit(fifo.pixelWidth);
                 }
@@ -5464,8 +5504,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
              * a brand new figure
              */
             clearAll();
-           PanelCounter=1;
-           letter = "A";
+            PanelCounter = 1;
+            letter = "A";
         }
         if (source == zoomPlus) {
             /**
@@ -7083,7 +7123,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                         updateFigure();
                         doubleLayerPane2.ROIS.setSelectedShape(cur_sel);
                     }
-
+                    if (iopane.hasCrops()) {
+                        ArrayList<Object> crops = iopane.getCrops();
+                        addMontage(crops, 1, crops.size(), true, "", getSpaceBetweenImages());
+                    }
                 }
                 /**
                  * we keep the copied ROIs so that we can paste them on another
@@ -7310,105 +7353,105 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking graphs...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            boolean containsGraphs = false;
-                            for (Object row : rows) {
-                                if (((Row) row).containsStrictlyMyPlotVector()) {
-                                    containsGraphs = true;
-                                    break;
-                                }
-                            }
-                            if (!containsGraphs) {
-                                for (Object row : rows) {
-                                    ((Row) row).wasCheckedForGraphs = true;
-                                }
-                                figureListValueChanged(null);
-                                return;
-                            }
-                            if (!CommonClassesLight.isRReady()) {
-                                reinitRsession();
-                                if (!CommonClassesLight.isRReady()) {
-                                    blinkAnything(Rstatus);
-                                    JLabel warning = new JLabel("<html><font color=\"#FF0000\">We recommend you first establish a connection<br>to R before running this check</font>");
-                                    int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{warning}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
-                                    if (result == JOptionPane.CANCEL_OPTION) {
-                                        return;
-                                    }
-                                }
-                            }
-                            for (Object row : rows) {
-                                ((Row) row).checkGraph(jp);
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            boolean containsGraphs = false;
-                            for (String string : list_of_tables) {
-                                if (((Montage) panels.get(CommonClassesLight.String2Int(string))).containsStrictlyMyPlotVector()) {
-                                    containsGraphs = true;
-                                    break;
-                                }
-                            }
-                            if (!containsGraphs) {
-                                for (String string : list_of_tables) {
-                                    ((Montage) panels.get(CommonClassesLight.String2Int(string))).wasCheckedForGraphs = true;
-                                }
-                                montageChanged(null);
-                                return;
-                            }
-                            if (!CommonClassesLight.isRReady()) {
-                                reinitRsession();
-                                if (!CommonClassesLight.isRReady()) {
-                                    blinkAnything(Rstatus);
-                                    JLabel warning = new JLabel("<html><font color=\"#FF0000\">We recommend you first establish a connection<br>to R before running this check</font>");
-                                    int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{warning}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
-                                    if (result == JOptionPane.CANCEL_OPTION) {
-                                        return;
-                                    }
-                                }
-                            }
-                            for (String string : list_of_tables) {
-                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkGraph(jp);
-                            }
-                            updateTable();
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking graphs...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    boolean containsGraphs = false;
+                    for (Object row : rows) {
+                        if (((Row) row).containsStrictlyMyPlotVector()) {
+                            containsGraphs = true;
+                            break;
                         }
                     }
+                    if (!containsGraphs) {
+                        for (Object row : rows) {
+                            ((Row) row).wasCheckedForGraphs = true;
+                        }
+                        figureListValueChanged(null);
+                        return;
+                    }
+                    if (!CommonClassesLight.isRReady()) {
+                        reinitRsession();
+                        if (!CommonClassesLight.isRReady()) {
+                            blinkAnything(Rstatus);
+                            JLabel warning = new JLabel("<html><font color=\"#FF0000\">We recommend you first establish a connection<br>to R before running this check</font>");
+                            int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{warning}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+                            if (result == JOptionPane.CANCEL_OPTION) {
+                                return;
+                            }
+                        }
+                    }
+                    for (Object row : rows) {
+                        ((Row) row).checkGraph(jp);
+                    }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    boolean containsGraphs = false;
+                    for (String string : list_of_tables) {
+                        if (((Montage) panels.get(CommonClassesLight.String2Int(string))).containsStrictlyMyPlotVector()) {
+                            containsGraphs = true;
+                            break;
+                        }
+                    }
+                    if (!containsGraphs) {
+                        for (String string : list_of_tables) {
+                            ((Montage) panels.get(CommonClassesLight.String2Int(string))).wasCheckedForGraphs = true;
+                        }
+                        montageChanged(null);
+                        return;
+                    }
+                    if (!CommonClassesLight.isRReady()) {
+                        reinitRsession();
+                        if (!CommonClassesLight.isRReady()) {
+                            blinkAnything(Rstatus);
+                            JLabel warning = new JLabel("<html><font color=\"#FF0000\">We recommend you first establish a connection<br>to R before running this check</font>");
+                            int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{warning}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+                            if (result == JOptionPane.CANCEL_OPTION) {
+                                return;
+                            }
+                        }
+                    }
+                    for (String string : list_of_tables) {
+                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkGraph(jp);
+                    }
+                    updateTable();
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }
@@ -7430,55 +7473,55 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            for (Object row : rows) {
-                                ((Row) row).checkText(jp);
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            for (String string : list_of_tables) {
-                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkText(jp);
-                            }
-                            updateTable();
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
-                        }
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    for (Object row : rows) {
+                        ((Row) row).checkText(jp);
                     }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    for (String string : list_of_tables) {
+                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkText(jp);
+                    }
+                    updateTable();
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }
@@ -7500,56 +7543,56 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text style...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text style...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
 
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            for (Object row : rows) {
-                                ((Row) row).checkStyle();
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            for (String string : list_of_tables) {
-                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkStyle();
-                            }
-                            updateTable();
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
-                        }
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    for (Object row : rows) {
+                        ((Row) row).checkStyle();
                     }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    for (String string : list_of_tables) {
+                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkStyle();
+                    }
+                    updateTable();
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }
@@ -7570,59 +7613,59 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking figure size...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking figure size...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
 
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            for (Object row : rows) {
-                                ((Row) row).checkSize(jp);
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            for (String string : list_of_tables) {
-                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkSize(jp);
-                            }
-                            updateTable();
-                            /*
-                             * we update the size of the montage
-                             */
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
-                        }
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    for (Object row : rows) {
+                        ((Row) row).checkSize(jp);
                     }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    for (String string : list_of_tables) {
+                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkSize(jp);
+                    }
+                    updateTable();
+                    /*
+                     * we update the size of the montage
+                     */
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }
@@ -7643,95 +7686,95 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking line arts...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking line arts...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
 
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            boolean containsImportedVectorGraphics = false;
-                            for (Object row : rows) {
-                                if (((Row) row).containsStrictlyImageVector()) {
-                                    containsImportedVectorGraphics = true;
-                                    break;
-                                }
-                            }
-                            IllustratorOrInkscape iopane = new IllustratorOrInkscape();
-                            if (containsImportedVectorGraphics) {
-                                int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Illustrator or Inkscape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-                                if (result == JOptionPane.OK_OPTION) {
-                                    boolean isIllustrator = iopane.isIllustrator();
-                                    for (Object row : rows) {
-                                        ((Row) row).checklineArts(jp.getObjectsStrokeSize(), isIllustrator);
-                                    }
-                                }
-                            } else {
-                                for (Object row : rows) {
-                                    ((Row) row).checklineArts(jp.getObjectsStrokeSize(), true);
-                                }
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            boolean containsImportedVectorGraphics = false;
-                            for (String string : list_of_tables) {
-                                if (((Montage) panels.get(CommonClassesLight.String2Int(string))).containsStrictlyImageVector()) {
-                                    containsImportedVectorGraphics = true;
-                                    break;
-                                }
-                            }
-                            IllustratorOrInkscape iopane = new IllustratorOrInkscape();
-                            if (containsImportedVectorGraphics) {
-                                int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Illustrator or Inkscape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-                                if (result == JOptionPane.OK_OPTION) {
-                                    boolean isIllustrator = iopane.isIllustrator();
-                                    for (String string : list_of_tables) {
-                                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checklineArts(jp.getObjectsStrokeSize(), isIllustrator);
-                                    }
-                                }
-                            } else {
-                                for (String string : list_of_tables) {
-                                    ((Montage) panels.get(CommonClassesLight.String2Int(string))).checklineArts(jp.getObjectsStrokeSize(), true);
-                                }
-                            }
-                            updateTable();
-                            /*
-                             * we update the size of the montage
-                             */
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    boolean containsImportedVectorGraphics = false;
+                    for (Object row : rows) {
+                        if (((Row) row).containsStrictlyImageVector()) {
+                            containsImportedVectorGraphics = true;
+                            break;
                         }
                     }
+                    IllustratorOrInkscape iopane = new IllustratorOrInkscape();
+                    if (containsImportedVectorGraphics) {
+                        int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Illustrator or Inkscape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                        if (result == JOptionPane.OK_OPTION) {
+                            boolean isIllustrator = iopane.isIllustrator();
+                            for (Object row : rows) {
+                                ((Row) row).checklineArts(jp.getObjectsStrokeSize(), isIllustrator);
+                            }
+                        }
+                    } else {
+                        for (Object row : rows) {
+                            ((Row) row).checklineArts(jp.getObjectsStrokeSize(), true);
+                        }
+                    }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    boolean containsImportedVectorGraphics = false;
+                    for (String string : list_of_tables) {
+                        if (((Montage) panels.get(CommonClassesLight.String2Int(string))).containsStrictlyImageVector()) {
+                            containsImportedVectorGraphics = true;
+                            break;
+                        }
+                    }
+                    IllustratorOrInkscape iopane = new IllustratorOrInkscape();
+                    if (containsImportedVectorGraphics) {
+                        int result = JOptionPane.showOptionDialog(CommonClassesLight.getGUIComponent(), new Object[]{iopane}, "Illustrator or Inkscape", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                        if (result == JOptionPane.OK_OPTION) {
+                            boolean isIllustrator = iopane.isIllustrator();
+                            for (String string : list_of_tables) {
+                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checklineArts(jp.getObjectsStrokeSize(), isIllustrator);
+                            }
+                        }
+                    } else {
+                        for (String string : list_of_tables) {
+                            ((Montage) panels.get(CommonClassesLight.String2Int(string))).checklineArts(jp.getObjectsStrokeSize(), true);
+                        }
+                    }
+                    updateTable();
+                    /*
+                     * we update the size of the montage
+                     */
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }
@@ -7753,57 +7796,57 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //                @Override
 //                public void run() {
                     /*
-                     * TODO maybe replace by a progress bar
-                     */
-                    JDialog jd = null;
-                    try {
-                        jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking fonts...");
-                        JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
-                        jd.add(jl);
-                        jd.validate();
-                        jd.pack();
-                        jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
-                        jd.setVisible(true);
-                        JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
-                        if (jTabbedPane1.getSelectedIndex() == 2) {
-                            for (Object row : rows) {
-                                ((Row) row).checkFonts(jp);
-                            }
-                            updateFigure();
-                            figureListValueChanged(null);
-                            createBackup();
-                        } else {
-                            ArrayList<String> list_of_tables = getListContent(tableListModel);
-                            for (String string : list_of_tables) {
-                                ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkFonts(jp);
-                            }
-                            updateTable();
-                            montageChanged(null);
-                            createBackup();
-                        }
-                    } catch (OutOfMemoryError E) {
-                        StringWriter sw = new StringWriter();
-                        E.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                        try {
-                            System.gc();
-                            CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
-                        } catch (Exception e) {
-                        }
-                    } catch (Exception e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
-                        System.err.println(stacktrace);
-                    } finally {
-                        try {
-                            if (jd != null) {
-                                jd.dispose();
-                            }
-                        } catch (Exception e2) {
-                        }
+             * TODO maybe replace by a progress bar
+             */
+            JDialog jd = null;
+            try {
+                jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking fonts...");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                jd.add(jl);
+                jd.validate();
+                jd.pack();
+                jd.setLocationRelativeTo(CommonClassesLight.getParentFrame());
+                jd.setVisible(true);
+                JournalParameters jp = PopulateJournalStyles.journalStyles.get(journalCombo.getSelectedIndex());
+                if (jTabbedPane1.getSelectedIndex() == 2) {
+                    for (Object row : rows) {
+                        ((Row) row).checkFonts(jp);
                     }
+                    updateFigure();
+                    figureListValueChanged(null);
+                    createBackup();
+                } else {
+                    ArrayList<String> list_of_tables = getListContent(tableListModel);
+                    for (String string : list_of_tables) {
+                        ((Montage) panels.get(CommonClassesLight.String2Int(string))).checkFonts(jp);
+                    }
+                    updateTable();
+                    montageChanged(null);
+                    createBackup();
+                }
+            } catch (OutOfMemoryError E) {
+                StringWriter sw = new StringWriter();
+                E.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+                try {
+                    System.gc();
+                    CommonClassesLight.Warning((Component) CommonClassesLight.GUI, "Sorry, not enough memory!\nPlease restart the software with more memory.");
+                } catch (Exception e) {
+                }
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                String stacktrace = sw.toString();
+                System.err.println(stacktrace);
+            } finally {
+                try {
+                    if (jd != null) {
+                        jd.dispose();
+                    }
+                } catch (Exception e2) {
+                }
+            }
 //                }
 //            }).start();
         }

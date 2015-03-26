@@ -1,7 +1,7 @@
 /*
  License ScientiFig (new BSD license)
 
- Copyright (C) 2012-2014 Benoit Aigouy 
+ Copyright (C) 2012-2015 Benoit Aigouy 
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -39,6 +39,7 @@ import Commons.G2dParameters;
 import Commons.SaverLight;
 import ij.gui.PointRoi;
 import ij.gui.Roi;
+import ij.gui.TextRoi;
 import java.awt.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.Ellipse2D;
@@ -75,6 +76,37 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
          * Variables
          */
         public static final long serialVersionUID = -7663519835012699241L;
+
+        public Double(Roi ijRoi) {
+            if (ijRoi.getTypeAsString().toLowerCase().contains("ext")) {
+                TextRoi txt = (TextRoi) ijRoi;
+                //
+            Color strokeCol = ijRoi.getStrokeColor();
+            if (strokeCol != null) {
+                color = txt.getStrokeColor().getRGB();
+            }
+
+//                        Color fillCol = ;
+//            if (fillCol != null) {
+//                fillColor = fillCol.getRGB();
+//            }
+                
+                text = new ColoredTextPaneSerializable(txt.getText()); //, strokeColor, txt.getCurrentFont());
+                    text.setTextAndBgColor(color, ijRoi.getFillColor(), txt.getCurrentFont(), true, true, true, false, false);
+                
+//                else 
+//                text = new ColoredTextPaneSerializable(txt.getText(), strokeColor, txt.getCurrentFont());    
+                el2d = new Ellipse2D.Double(ijRoi.getBounds().getCenterX()-0.5, ijRoi.getBounds().getCenterY()-0.5, 1, 1);
+                //isText()
+                //txt.getText()
+            } else {
+                el2d = new Ellipse2D.Double(ijRoi.getBounds().getCenterX() - 0.5, ijRoi.getBounds().getCenterX() - 0.5, 1, 1);
+            }
+//            el2d = new Ellipse2D.Double(params[0], params[1], params[2]-params[0], params[3]-params[1]);
+            
+            strokeSize = ijRoi.getStrokeWidth();
+            //ijRoi.getZpos
+        }
 
         /**
          * Constructor
@@ -516,7 +548,7 @@ public abstract class MyPoint2D extends MyEllipse2D implements Serializable {
                 txt += "...";
             }
         }
-        return "<html><center>" +  CommonClassesLight.roundNbAfterComma(getCenter().x, 1)+" "+ CommonClassesLight.roundNbAfterComma(getCenter().y, 1)+ " " + getShapeName() +" "+ txt;
+        return "<html><center>" + CommonClassesLight.roundNbAfterComma(getCenter().x, 1) + " " + CommonClassesLight.roundNbAfterComma(getCenter().y, 1) + " " + getShapeName() + " " + txt;
     }
 
     @Override
