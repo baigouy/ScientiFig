@@ -47,8 +47,8 @@ import ij.plugin.PlugIn;
  */
 public class Help implements PlugIn {
 
-    public static final String URL_SF = "http://srv-gred.u-clermont1.fr/labmirouse/software/";
-    public static final String URL_TA = "http://srv-gred.u-clermont1.fr/labmirouse/software/WebPA/index.html";
+    public static final String URL_SF = "https://grr.gred-clermont.fr/labmirouse/software/";
+    public static final String URL_TA = "https://grr.gred-clermont.fr/labmirouse/software/WebPA/index.html";
     
     /**
      * Empty constructor
@@ -74,7 +74,7 @@ public class Help implements PlugIn {
      */
     public static void main(String args[]) {
         //
-        //http://srv-gred.u-clermont1.fr/labmirouse/software/WebPA/index.html
+        //https://grr.gred-clermont.fr/labmirouse/software/WebPA/index.html
         String path = URL_SF;
         new Help().run(path);
     }

@@ -169,7 +169,7 @@ public class MyRsession {
             }
         }
         String FiguR = "To cite FiguR in publications, please use:"
-                + "\n\nB. Aigouy. and V. Mirouse. FiguR: a GUI for R focusing on figure creation\nhttp://srv-gred.u-clermont1.fr/labmirouse/software/";
+                + "\n\nB. Aigouy. and V. Mirouse. FiguR: a GUI for R focusing on figure creation\nhttps://grr.gred-clermont.fr/labmirouse/software/";
         out += FiguR;
         return out;
     }

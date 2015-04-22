@@ -1,3 +1,6 @@
+//  ~/Library/Preferences/ http://rsbweb.nih.gov/ij/docs/guide/146-13.html --> TODO save the prefs of SF in there !!! --> will prevent me from having trouble
+//--> but need to do the same for TA ???
+
 //TODO add support for multiple ROIs --> 
 /**
  * import ij.*; import ij.process.*; import ij.gui.*; import java.awt.*; import
@@ -4408,7 +4411,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     }
                 }
             }
-
             /*
              * if needed we open a connection to R
              * connecting to R is a very time consuming process (probably because I load several libraries)
@@ -4718,7 +4720,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             int size_x = -1;
             int size_y = -1;
             double AspectRatio = -1;
-//            boolean ignore_size_errors = false;
             for (String string : images) {
                 MyImage2D tmp;
                 if (!string.contains("importJ:")) {
@@ -4762,7 +4763,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 if ((size_x == tmp.getImageWidth() && size_y == tmp.getImageHeight()) || AspectRatio == tmp.getAR() || tmp instanceof MyPlotVector) {
                     shapes.add(tmp);
                 } else if (!ignore_size_errors) {
-                    JLabel iopane = new JLabel("<html><font color=\"#FF0000\">Your images have different sizes and different aspect-ratios,<br>it probably does not make sense to have them in the same panel. <BR>Alternatively you may crop some images to recover a visually appealing panel.<BR><BR>Do you really want to continue ?</font></html>");
+                    JLabel iopane = new JLabel("<html><font color=\"#FF0000\">Your images have different sizes and different aspect-ratios,<br>it probably does not make sense to have them in the same panel. <BR>Alternatively you may crop some images to recover a visually appealing panel<BR>or you can make it a one liner (image having just one row or one column).<BR><BR>Do you really want to continue ?</font></html>");
                     int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Warning", JOptionPane.CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
                     if (result == JOptionPane.OK_OPTION) {
                         ignore_size_errors = true;
@@ -4836,7 +4837,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.logger = null;
             }
         }
-
         if (CommonClassesLight.isImageJEmbedded && !FiguR.isInstanceAlreadyExisting()) {
             System.exit(0);
         }
@@ -5931,7 +5931,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     + "Nat Methods.\n"
                     + "2013 Oct 30;10(11):1048.\n"
                     + "doi: 10.1038/nmeth.2692.\n"
-                    + "\nweb: http://srv-gred.u-clermont1.fr/labmirouse/software/"
+                    + "\nweb: https://grr.gred-clermont.fr/labmirouse/software/"
                     + "\n\nTo cite FiguR please launch FiguR and click on About/Citations>Citations to get a full list of citations");
         }
         if ((source == updateLetters || source == jTextField1) && jTabbedPane1.getSelectedIndex() == 1) {
