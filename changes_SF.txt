@@ -1,3 +1,6 @@
+22/08/15
+-added radiobuttons to generate single col or single row layouts in "Reformat table"
+
 23-24/03/15
 -added support for IJ ROI/Overlay (IJ ROIs are imported and converted to SF ROIs)
 

@@ -1153,12 +1153,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         propertiesLoaded = true;
         FileInputStream in = null;
         try {
+             String folder_of_jar = CommonClassesLight.getApplicationFolder(c);
+             new File(folder_of_jar + "/ScientiFigPrefs.txt").delete();
+        } catch (Exception e) {
+        }
+        try {
             String folder_of_jar = CommonClassesLight.getApplicationFolder(c);
-            if (!new File(folder_of_jar + "/ScientiFigPrefs.txt").exists()) {
+            if (!new File(folder_of_jar + "/ScientiFigPrefs.prefs").exists()) {
                 allowUndoRedo();
                 return;
             }
-            in = new FileInputStream(folder_of_jar + "/ScientiFigPrefs.txt");
+            in = new FileInputStream(folder_of_jar + "/ScientiFigPrefs.prefs");
             Properties p = new Properties();
             /*
              * prefs are saved in xml format
@@ -1251,7 +1256,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             p.setProperty("Show help info window", showHelpInfoWindow + "");
             p.setProperty("Force usage of all cores", useAllCores + "");
             p.setProperty("Max number of processors to use", nbOfCPUs2Use + "");
-            out = new FileOutputStream(folder_of_jar + "/ScientiFigPrefs.txt");
+            out = new FileOutputStream(folder_of_jar + "/ScientiFigPrefs.prefs");
             p.storeToXML(out, "last update " + new Date().toString());//put date
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -8910,9 +8915,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
      */
     @Override
     public void run(String arg) {
-
         final String args = arg;
-
         /*
          * on fait le menage
          */
@@ -8955,7 +8958,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     if (!alreadyExists) {
                         fa.setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);
                     }
-
                     /*
                      * here we interprete IJ/FIJI command line args
                      */
@@ -8963,6 +8965,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             });
         } else {
+            if (Macro.getOptions().contains("import")) {
+                name_to_load = Macro.getValue(Macro.getOptions(), "import", null);
+            }
             if (Macro.getOptions().contains("code")) {
                 macro = Macro.getValue(Macro.getOptions(), "code", null);
             }
@@ -9001,6 +9006,15 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                      * here we interprete IJ/FIJI command line args
                      */
                     parseIJCommands(fa, args);
+                    
+                    /**
+                     * first attempt to import files from macro --> a bit crappy --> ignore for now
+                     */
+//                    if (name_to_load!=null)
+//                    {
+//                         loadNonMTFile(name_to_load, true);
+//                        name_to_load=null;
+//                    }
                     if (macro != null) {
                         if (macro.toLowerCase().contains("/figure")) {
                             Figure rh = new Figure(macro);

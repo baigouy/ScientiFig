@@ -84,13 +84,12 @@ public class MontageParameters extends javax.swing.JPanel {
         total_nb_of_images = nb_of_images;
     }
 
-    /**
-     * Empty constructor
-     */
-    public MontageParameters() {
-        initComponents();
-    }
-
+//    /**
+//     * Empty constructor
+//     */
+//    public MontageParameters() {
+//        initComponents();
+//    }
     /**
      *
      * @return the number of rows of the montage
@@ -132,6 +131,7 @@ public class MontageParameters extends javax.swing.JPanel {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -149,6 +149,9 @@ public class MontageParameters extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
+        custom = new javax.swing.JRadioButton();
+        allInARow = new javax.swing.JRadioButton();
+        allInACol = new javax.swing.JRadioButton();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Parameters"));
 
@@ -199,6 +202,31 @@ public class MontageParameters extends javax.swing.JPanel {
         jLabel10.setForeground(new java.awt.Color(0, 153, 51));
         jLabel10.setText("Dimensions ok");
 
+        buttonGroup2.add(custom);
+        custom.setSelected(true);
+        custom.setText("Custom Nb of Rows and Cols");
+        custom.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tableOrganizationStateChanged(evt);
+            }
+        });
+
+        buttonGroup2.add(allInARow);
+        allInARow.setText("All in a row");
+        allInARow.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tableOrganizationStateChanged(evt);
+            }
+        });
+
+        buttonGroup2.add(allInACol);
+        allInACol.setText("All in one column");
+        allInACol.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tableOrganizationStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,12 +266,25 @@ public class MontageParameters extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSpinner2)
-                            .addComponent(jSpinner1))))
+                            .addComponent(jSpinner1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(custom)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(allInARow)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(allInACol)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(custom)
+                    .addComponent(allInARow)
+                    .addComponent(allInACol))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -300,6 +341,28 @@ public class MontageParameters extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_numberOfRowsOrColsChanged
 
+    private void tableOrganizationStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tableOrganizationStateChanged
+        if (evt != null) {
+            if (allInACol.isSelected()) {
+                setEnableSpinners(false);
+                jSpinner1.setValue(total_nb_of_images);
+                jSpinner2.setValue(1);
+            } else if (allInARow.isSelected()) {
+                setEnableSpinners(false);
+                jSpinner1.setValue(1);
+                jSpinner2.setValue(total_nb_of_images);
+
+            } else {
+                setEnableSpinners(true);
+            }
+        }
+    }//GEN-LAST:event_tableOrganizationStateChanged
+
+    private void setEnableSpinners(boolean show) {
+        jSpinner1.setEnabled(show);
+        jSpinner2.setEnabled(show);
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -307,14 +370,18 @@ public class MontageParameters extends javax.swing.JPanel {
      * @author Benoit Aigouy
      */
     public static void main(String args[]) {
-        MontageParameters iopane = new MontageParameters();
+        MontageParameters iopane = new MontageParameters(new Dimension(3, 2), 6);
         int result = JOptionPane.showOptionDialog(null, new Object[]{iopane}, "Montage Parameters", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
         }
         System.exit(0);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton allInACol;
+    private javax.swing.JRadioButton allInARow;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JRadioButton custom;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -333,5 +400,3 @@ public class MontageParameters extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
-
-
