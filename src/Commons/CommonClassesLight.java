@@ -30,6 +30,7 @@ import javax.swing.*;
  * @author Benoit Aigouy
  */
 public class CommonClassesLight {
+
     /*
      * various color modes
      */
@@ -639,10 +640,8 @@ public class CommonClassesLight {
                 if (string.equals("*.*")) {
                     takeAllFiles = true;
                     break;
-                } else {
-                    if (string.startsWith("*")) {
-                        string = string.substring(1);
-                    }
+                } else if (string.startsWith("*")) {
+                    string = string.substring(1);
                 }
                 extensionPatterns[i] = string;
                 i++;
@@ -1529,6 +1528,9 @@ public class CommonClassesLight {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static void browse(String url) {
+        if (url == null || url.isEmpty() || url.endsWith("...")) {
+            return;
+        }
         try {
             URI uri = new URI(url);
             Desktop desktop = null;
@@ -1641,10 +1643,8 @@ public class CommonClassesLight {
             if (sel.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 return sel.getSelectedFile().toString();
             }
-        } else {
-            if (sel.showOpenDialog(CommonClassesLight.getGUIComponent()) == JFileChooser.APPROVE_OPTION) {
-                return sel.getSelectedFile().toString();
-            }
+        } else if (sel.showOpenDialog(CommonClassesLight.getGUIComponent()) == JFileChooser.APPROVE_OPTION) {
+            return sel.getSelectedFile().toString();
         }
         return null;
     }
