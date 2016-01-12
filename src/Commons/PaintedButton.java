@@ -107,7 +107,7 @@ public class PaintedButton extends JButton {
     public void setActive(boolean active) {
         if (!active) {
             super.setBackground(Color.BLACK);
-            super.setForeground(new Color(0xFFFFFFFF));
+            super.setForeground(Color.WHITE);
             super.setText("N.A.");
             //super.setEnabled(false);
         } else {

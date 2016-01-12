@@ -4152,7 +4152,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         JDialog jd = null;
         try {
             jd = new JDialog(this, "Saving...");
-            JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when saving is over!</center></html>");
+            JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when saving is over!</center></html>");
             jd.add(jl);
             jd.validate();
             jd.pack();
@@ -7361,7 +7361,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking graphs...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();
@@ -7481,7 +7481,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();
@@ -7551,7 +7551,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text style...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();
@@ -7621,7 +7621,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking figure size...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();
@@ -7694,7 +7694,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking line arts...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();
@@ -7806,7 +7806,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking fonts...");
-                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window be closed automatically when controls are over!</center></html>");
+                JLabel jl = new JLabel("<html><center><h1><font color=\"#FF0000\">Please wait...</font></h1><br><br>NB: this window will close automatically when controls are over!</center></html>");
                 jd.add(jl);
                 jd.validate();
                 jd.pack();

@@ -433,7 +433,10 @@ public class SaverLight {
                  * bug fix for imageJ showtime error, does not seem to cause
                  * problems elsewhere
                  */
-                Interpreter.batchMode = true;
+                /**
+                 * this was preventing IJ/FIJI to display images (due to batch mode). Furthermore it no longer seems necessary when a recent version of IJ is used.
+                 */
+                //Interpreter.batchMode = true;
                 /*
                  * I use ImageJ to save as tif (could also use JAI)
                  */

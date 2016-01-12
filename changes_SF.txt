@@ -1,3 +1,6 @@
+12/01/16
+-fixed a bug that prevented IJ/FIJI from opening images (many thanks to G. Kale for reporting and identifying the bug).
+
 22/08/15
 -added radiobuttons to generate single col or single row layouts in "Reformat table"
 
