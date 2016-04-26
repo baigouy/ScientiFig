@@ -1,3 +1,15 @@
+11/04/16
+-likely fixed several memory leaks throuhout SF
+
+31/03/16
+-updated R plugins/R install to handle the R 3.2.4 version
+
+22-23/03/16
+-fixed erroneous "se" flags in figurs for geom_line plots instead of geom_smooth
+-improved detection of R in a windows environment
+-added Rcpp install as it now seems to be require for ggplot2 to function
+-automated fix for "se" error upon reloading of a .yf5m file
+
 12/01/16
 -fixed a bug that prevented IJ/FIJI from opening images (many thanks to G. Kale for reporting and identifying the bug).
 

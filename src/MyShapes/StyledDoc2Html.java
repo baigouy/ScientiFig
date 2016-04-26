@@ -592,8 +592,8 @@ public class StyledDoc2Html extends StyledDocTools {
             }
         } catch (BadLocationException e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         return doc;
@@ -993,8 +993,8 @@ public class StyledDoc2Html extends StyledDocTools {
         } catch (Exception e) {
             // Logger.getLogger(StyledDoc2Html.class.getName()).log(Level.SEVERE, null, ex);
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         System.exit(0);

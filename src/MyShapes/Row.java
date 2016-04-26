@@ -195,8 +195,8 @@ public class Row extends MyRectangle2D implements Drawable, Transformable, Magni
             } catch (Exception e) {
                 System.err.println("Invalid montage width at:");
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }

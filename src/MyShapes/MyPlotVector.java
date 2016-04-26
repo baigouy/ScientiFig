@@ -113,7 +113,9 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
     RLabel yAxisLabel;
     RLabel legendLabel;
 
-    public void updatePlot() {
+    
+    public void updatePlotCommand()
+    {
         if (use_non_custom_code) {
             updateGGTitle();
             Rcommand = "";
@@ -138,6 +140,10 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
                 Rcommand = Rcommand.substring(0, Rcommand.length() - 4);
             }
         }
+    }
+    
+    public void updatePlot() {
+        updatePlotCommand();
         String source_data_file = getTempFile();
         if (source_data_file == null || !CommonClassesLight.isRReady()) {
             return;
@@ -186,8 +192,8 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
             super.Rcommand = Rcommand;
@@ -364,8 +370,8 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
             fos2.close();
         } catch (IOException e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -705,8 +711,8 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
             fis.close();
         } catch (IOException e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -731,8 +737,8 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
             tmp_file.deleteOnExit();
         } catch (IOException e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -753,8 +759,8 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
                     byteArrayToFile();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                     return null;
                 }
@@ -762,16 +768,16 @@ public class MyPlotVector extends MyImageVector implements Drawable, Serializabl
                     return CommonClassesLight.change_path_separators_to_system_ones(tmp_file.toString());
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                     return null;
                 }
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
             return null;
         }

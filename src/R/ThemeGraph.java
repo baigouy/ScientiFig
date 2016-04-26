@@ -217,8 +217,8 @@ public class ThemeGraph implements Serializable, Cloneable {
         } catch (Exception e) {
             all_ok = false;
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             if (in != null) {
@@ -242,8 +242,8 @@ public class ThemeGraph implements Serializable, Cloneable {
                 file = java.io.File.createTempFile("theme", ".txt", new File(graphThemeFolder));//I had to remove the _ to prevent IJ from importing those files
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
                 System.err.println("Error could not create the file file, maybe the disk is write protected");
                 return null;
@@ -297,8 +297,8 @@ public class ThemeGraph implements Serializable, Cloneable {
             p.storeToXML(out, "last update " + new Date().toString());
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             if (out != null) {

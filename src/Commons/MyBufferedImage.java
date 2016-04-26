@@ -214,8 +214,8 @@ public class MyBufferedImage extends BufferedImage {
             setStackImage(0);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }

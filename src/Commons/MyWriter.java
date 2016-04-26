@@ -130,8 +130,8 @@ public class MyWriter extends GenericFunctionTools {
                 fw.close();
             } catch (IOException ioe) {
                 StringWriter sw = new StringWriter();
-                ioe.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); ioe.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }

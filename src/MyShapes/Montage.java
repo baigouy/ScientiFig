@@ -268,8 +268,8 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
             } catch (Exception e) {
                 System.err.println("Invalid montage width at:");
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -1689,6 +1689,17 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
         }
     }
 
+    /**
+     * bug fix for erroneous R commands
+     */
+    public void updateGraphScripts() {
+        for (Object object : pos_n_shapes) {
+            if (object instanceof MyPlotVector) {
+                ((MyPlotVector) object).updatePlotCommand();
+            }
+        }
+    }
+
     public void setROIDrawOpacity(float opacity) {
         for (Object object : pos_n_shapes) {
             if (object instanceof MyImage2D) {
@@ -2442,7 +2453,7 @@ public class Montage extends MyRectangle2D implements Transformable, Drawable, S
             }
         }
         Graphics2D g2d = test2.createGraphics();
-        Montage test = new Montage(shapes, 2,1, false, 3);
+        Montage test = new Montage(shapes, 2, 1, false, 3);
         //Montage test = new Montage(null);
         test.setToWidth(128);
         test.drawAndFill(g2d);

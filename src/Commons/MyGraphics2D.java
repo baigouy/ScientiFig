@@ -1373,16 +1373,16 @@ public class MyGraphics2D extends Graphics2D {
             imgBytes = baos.toByteArray();
         } catch (IOException e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println("\nError:\n" + stacktrace);
         } finally {
             try {
                 baos.close();
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println("\nError:\n" + stacktrace);
             }
         }
@@ -1393,8 +1393,8 @@ public class MyGraphics2D extends Graphics2D {
                 encoder.write(imgBytes);
             } catch (IOException e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println("\nError:\n" + stacktrace);
             } finally {
                 try {
@@ -1403,8 +1403,8 @@ public class MyGraphics2D extends Graphics2D {
                     b64out.close();
                 } catch (IOException e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println("\nError:\n" + stacktrace);
                 }
             }

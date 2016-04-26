@@ -39,15 +39,18 @@ import MyShapes.GraphFont;
 import R.RTools;
 import R.ThemeGraph;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -75,6 +78,7 @@ public class MyRsession {
     /*
      * Various R libraries we need to load
      */
+    static final String Rcpp = "Rcpp";//now seems to be required for ggplot2
     static final String GRIDEXTRA_MULTIPLOT = "gridExtra";
     static final String GGPLOT2_QPLOT_NICE_PLOT = "ggplot2";
     static final String Rserver = "Rserve";
@@ -86,6 +90,7 @@ public class MyRsession {
     static final String XLSXJARS = "xlsxjars";
     static final String GRID = "grid";
     static final String EXTRAFONTS = "extrafont";
+    static final String SVGLITE = "svglite";//required since R 3.2.4 on windows
     public PrintStream in;
 //    public static final String ERROR = "qsdsqdqsdq";
     /*
@@ -103,7 +108,11 @@ public class MyRsession {
     String preview_file = "previewFigR.png";
 
     static {
+        required_packages.add(Rcpp);//now seems to be required for ggplot2
         required_packages.add(GGPLOT2_QPLOT_NICE_PLOT);
+        if (!CommonClassesLight.isLinux()) {
+            required_packages.add(SVGLITE);
+        }
 //        required_packages.add(DDPLY);
         required_packages.add(RJAVA);
         required_packages.add(XLSXJARS);
@@ -181,10 +190,10 @@ public class MyRsession {
             fonts.addAll(Arrays.asList(r.asStrings()));
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
-            //likely to be no fonts availbale in R
+            //likely to be no fonts available in R
             return fonts;
         }
         return fonts;
@@ -210,7 +219,7 @@ public class MyRsession {
      * @return and R command to install an R package
      */
     private static String installPackageText(String package_name) {
-        return "install.packages(\"" + package_name + "\")\n";
+        return "install.packages('" + package_name + "')\n";
     }
 
     /**
@@ -219,7 +228,7 @@ public class MyRsession {
      * @return and R command to remove an R package
      */
     private static String removePackageText(String package_name) {
-        return "remove.packages(\"" + package_name + "\")\n";
+        return "remove.packages('" + package_name + "')\n";
     }
 
     /**
@@ -256,8 +265,8 @@ public class MyRsession {
             eval("source(\"" + file + "\")");
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -277,6 +286,7 @@ public class MyRsession {
         return home;
     }
 
+    //generate the text dynamically
     /**
      *
      * @return guidelines to install or execute R
@@ -300,18 +310,22 @@ public class MyRsession {
                 + "\nsudo apt-get install r-cran-rjava"
                 + "\nsudo apt-get install r-cran-cairodevice"
                 + "\n\n\n2/The first time you start R, please run the following commands (this might take several minutes, and you may need to inactivate your antivirus)"
-                + "\n\ninstall.packages(\"ggplot2\")"
-                + "\ninstall.packages(\"rJava\")"
-                + "\ninstall.packages(\"xlsxjars\")"
-                + "\ninstall.packages(\"xlsx\")"
-                + "\ninstall.packages(\"grid\")"
-                + "\ninstall.packages(\"mgcv\")"
-                + "\ninstall.packages(\"MASS\")"
-                + "\ninstall.packages(\"Rserve\")"
-                + "\ninstall.packages(\"extrafont\")"
+                + "\n\n"
+                //                + "install.packages(\"ggplot2\")"
+                //                + "\ninstall.packages(\"rJava\")"
+                //                + "\ninstall.packages(\"xlsxjars\")"
+                //                + "\ninstall.packages(\"xlsx\")"
+                //                + "\ninstall.packages(\"grid\")"
+                //                + "\ninstall.packages(\"mgcv\")"
+                //                + "\ninstall.packages(\"MASS\")"
+                //                + "\ninstall.packages(\"Rserve\")"
+                //                + "\ninstall.packages(\"extrafont\")"
+                + installAllPackages()
+                + "library(Rserve)"
+                + "\nRserve(args='--vanilla')"
                 + "\nlibrary(extrafont)"
                 + "\nfont_import()"
-                + "\n\nNB: please close and reopen R for the installation to complete (fonts will be available only after a restart"
+                + "\n\nNB: please close and reopen R for the installation of fonts to complete (it may require the Rserver to be started again, see below)"
                 + "\nNB2: to see if the fonts where installed properly you could type 'fonts()' in the R terminal"
                 + "\n\n\n3/To increase the number of fonts available in R, please run the following commands (this might take several minutes, and you may need to inactivate your antivirus)"
                 + "\ninstall.packages(\"extrafont\")"
@@ -360,8 +374,8 @@ public class MyRsession {
             eval("font_import()");
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -384,12 +398,47 @@ public class MyRsession {
          * Otherwise it uses the wrong port under windows. 
          * My naive guess is that they set some port property in FIJI which occupies the Rsession port on windows systems.
          */
-        RserverConf r = new RserverConf("localhost", 6311, null, null, null);
+        //System.err.println("dsqdqsdqsdq" +System.getProperty("R_HOME") );
+        RserverConf r;
+        Properties p = new Properties();
+        if (System.getProperty("R_HOME") == null && CommonClassesLight.isWindows()) {
+//            Properties p = new Properties();
+            String pathToR = "";
+            String test1 = executeCommand("cmd", "/c", "REG", "QUERY", "HKEY_CURRENT_USER\\SOFTWARE\\R-core\\R\\");
+            if (test1.isEmpty()) {
+                test1 = executeCommand("cmd", "/c", "REG", "QUERY", "HKEY_LOCAL_MACHINE\\SOFTWARE\\R-core\\R\\");
+            }
+            if (!test1.isEmpty()) {
+                String windowsPath = ".*\\s+(.*:\\.*).*";
+                String[] split = test1.split("\n");
+                for (String string : split) {
+                    if (string.matches(windowsPath)) {
+                        pathToR = string.replaceAll(".*\\s+(.*:\\.*)", "$1");
+                    }
+                }
+                if (!pathToR.isEmpty()) {
+                    System.setProperty("R_HOME", pathToR);
+
+                    p.setProperty("R_HOME", pathToR);
+                }
+            }
+        }
+        /**
+         * NB sending the full system properties to Rserveconf was causing huge
+         * errors --> the solution is just to send a clean property stuff
+         */
+        r = new RserverConf("localhost", 6311, null, null, p);
         try {
             if (in == null) {
                 s = Rsession.newInstanceTry(System.out, r);//new RConnection();//Rsession.newInstanceTry(System.out, r);
             } else {
-                s = Rsession.newInstanceTry(in, r);//new RConnection();//Rsession.newInstanceTry(System.out, r);
+                try {
+                    s = Rsession.newInstanceTry(System.out, r);//new RConnection();//Rsession.newInstanceTry(System.out, r);    
+                } catch (Exception e) {
+                } catch (Error er) {
+
+                }
+
             }
             if (s != null) {
                 String lastSuccessfulPathToR = CommonClassesLight.change_path_separators_to_system_ones(s.eval("R.home()").asString());
@@ -422,8 +471,8 @@ public class MyRsession {
                 temporary_folder.deleteOnExit();
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
             if (temporary_folder != null) {
@@ -437,8 +486,8 @@ public class MyRsession {
                 preview.deleteOnExit();
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
             if (preview != null) {
@@ -459,8 +508,8 @@ public class MyRsession {
             eval("names(" + table + ") <- " + formattedNames);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -503,8 +552,8 @@ public class MyRsession {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -536,8 +585,8 @@ public class MyRsession {
             nb = r.asInteger();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         return nb;
@@ -604,8 +653,8 @@ public class MyRsession {
             factors.addAll(Arrays.asList(r.asStrings()));
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         return factors;
@@ -637,8 +686,8 @@ public class MyRsession {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -670,8 +719,8 @@ public class MyRsession {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -690,8 +739,8 @@ public class MyRsession {
             eval(variableName + " <- read.xlsx(\"" + xls + "\", " + sheet_nb + ")");
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -723,8 +772,8 @@ public class MyRsession {
             eval(out);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -768,8 +817,8 @@ public class MyRsession {
             return s.eval(command);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
             System.out.println("Execution of the following command has FAILED:\n" + "\"" + command + "\"");
         }
@@ -854,8 +903,8 @@ public class MyRsession {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         return new Loader().load(preview_file);
@@ -892,8 +941,8 @@ public class MyRsession {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         return new Loader().loadSVGDocument(CommonClassesLight.getName(preview_file) + ".svg");
@@ -995,6 +1044,26 @@ public class MyRsession {
         return out;
     }
 
+    private String executeCommand(String... cmds) {
+        String output = "";
+        try {
+            ProcessBuilder pb = new ProcessBuilder(Arrays.asList(cmds));
+            Process p = pb.start();
+            String line;
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            while ((line = in.readLine()) != null) {
+                output += line + "\n";
+            }
+            in.close();
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
+            System.err.println(stacktrace);
+        }
+        return output;
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -1051,4 +1120,5 @@ public class MyRsession {
         rlt.close();
         System.exit(0);
     }
+
 }

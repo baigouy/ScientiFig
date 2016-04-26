@@ -98,7 +98,7 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
 
         public static final long serialVersionUID = 1776233867505009092L;
 
-            /**
+        /**
          * converts an IJ rect ROI to a SF one
          *
          * @param ijRoi
@@ -107,35 +107,14 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
             /**
              * may fail if type error
              */
-            this(((PolygonRoi)ijRoi).getPolygon());
-//            PolygonRoi pr = (PolygonRoi)ijRoi;
-//            if (pr.getType() != PolygonRoi.POLYLINE)
-//                throw new Error("not a avalid polyline");
-//            int[] x =  pr.getXCoordinates();
-//            int[] y = pr.getYCoordinates();
-//            int length = pr.getNCoordinates();
-//            
-//            for (int i = 0; i < length; i++) {
-//                int z = y[i];
-//            }
-            
-//            float[] x = pr.getFloatPolygon().xpoints;
-//            float[] y = pr.getFloatPolygon().ypoints;
-//            pr
-            
+            this(((PolygonRoi) ijRoi).getPolygon());
             Color strokeCol = ijRoi.getStrokeColor();
             if (strokeCol != null) {
                 color = strokeCol.getRGB();
             }
-            //ijRoi.isLine()
-//            Color fillCol = ijRoi.getFillColor();
-//            if (fillCol != null) {
-//                fillColor = strokeCol.getRGB();
-//            }
             strokeSize = ijRoi.getStrokeWidth();
-            //ijRoi.getZpos
-        }        
-        
+        }
+
         /**
          * Constructor
          *
@@ -1288,6 +1267,35 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
         }
     }
 
+    public void popEnds(int nbOfErosion) {
+        if (nbOfErosion < 0) {
+            nbOfErosion = -nbOfErosion;
+        }
+        for (int i = 0; i < nbOfErosion; i++) {
+            popEnds();
+        }
+    }
+
+    /**
+     * In fact this works better than eroding lines, we just pop out the two
+     * extremities, be careful lost pixels are irreversibly lost. This is for
+     * example a good method to remove vertices of a bond
+     */
+    public void popEnds() {
+        /**
+         * we remove the first and the last line
+         */
+        if (polyline != null) {
+            if (polyline.size() > 1) {
+                polyline.remove(polyline.size() - 1);
+            }
+            if (polyline.size() > 1) {
+                polyline.remove(0);
+            }
+            updateMasterRect();
+        }
+    }
+
     @Override
     public void erode(int nb_erosions) {
         computeNewMorphology(-nb_erosions);
@@ -1316,6 +1324,9 @@ public abstract class MyPolyline2D implements PARoi, Contourable, LineStrokable,
      */
     private void computeNewMorphology(int sizeChange) {
         Rectangle2D currentBoundingRect = getBounds2D();
+        if (currentBoundingRect == null) {
+            return;
+        }
         double curWidth = currentBoundingRect.getWidth();
         double finalWitdth = curWidth + 2. * sizeChange;
         /**

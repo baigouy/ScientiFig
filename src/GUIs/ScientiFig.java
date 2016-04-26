@@ -1,6 +1,5 @@
 //  ~/Library/Preferences/ http://rsbweb.nih.gov/ij/docs/guide/146-13.html --> TODO save the prefs of SF in there !!! --> will prevent me from having trouble
 //--> but need to do the same for TA ???
-
 //TODO add support for multiple ROIs --> 
 /**
  * import ij.*; import ij.process.*; import ij.gui.*; import java.awt.*; import
@@ -423,8 +422,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     super.drop(dtde);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
                     String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
                 myList1.addAllToList();
@@ -471,7 +472,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         /*
          * We add shortcuts to existing buttons
          */
-        /*
+ /*
          * ctrl +/zoom +
          */
         InputMap im = new ComponentInputMap(zoomPlus);
@@ -1153,8 +1154,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         propertiesLoaded = true;
         FileInputStream in = null;
         try {
-             String folder_of_jar = CommonClassesLight.getApplicationFolder(c);
-             new File(folder_of_jar + "/ScientiFigPrefs.txt").delete();
+            String folder_of_jar = CommonClassesLight.getApplicationFolder(c);
+            new File(folder_of_jar + "/ScientiFigPrefs.txt").delete();
         } catch (Exception e) {
         }
         try {
@@ -1212,8 +1213,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         } finally {
             if (in != null) {
@@ -1260,8 +1263,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             p.storeToXML(out, "last update " + new Date().toString());//put date
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         } finally {
             if (out != null) {
@@ -1378,8 +1383,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             doubleLayerPane2.repaint();
         } catch (OutOfMemoryError E) {
             StringWriter sw = new StringWriter();
-            E.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            E.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             try {
                 System.gc();
@@ -3379,18 +3386,16 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.r.reopenConnection();
             } catch (Exception e) {
             }
+        } else if (CommonClassesLight.r != null) {
+            try {
+                CommonClassesLight.r.reopenConnection();
+            } catch (REXPMismatchException ex) {
+            }
         } else {
-            if (CommonClassesLight.r != null) {
-                try {
-                    CommonClassesLight.r.reopenConnection();
-                } catch (REXPMismatchException ex) {
-                }
-            } else {
-                try {
-                    CommonClassesLight.r = new MyRsessionLogger();
-                    CommonClassesLight.r.reopenConnection();
-                } catch (Exception e) {
-                }
+            try {
+                CommonClassesLight.r = new MyRsessionLogger();
+                CommonClassesLight.r.reopenConnection();
+            } catch (Exception e) {
             }
         }
     }
@@ -3560,10 +3565,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     } else {
                         setImageDisplay(new MyImageVector.Double(new Loader().loadSVGDocument(sel)));
                     }
-                } else {
-                    if (imported_from_J.containsKey(sel)) {
-                        setImageDisplay(new MyImage2D.Double(0, 0, sel, imported_from_J.get(sel).getBufferedImage()));
-                    }
+                } else if (imported_from_J.containsKey(sel)) {
+                    setImageDisplay(new MyImage2D.Double(0, 0, sel, imported_from_J.get(sel).getBufferedImage()));
                 }
             }
         }
@@ -3770,7 +3773,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
      * @param fichier name of the output file
      * @param dpi output resolution (72dpi --> illustrator 90dpi --> inkscape)
      */
-    public void saveAsSVG(SVGGraphics2D g2d, String fichier, double dpi) {
+    public static void saveAsSVG(SVGGraphics2D g2d, String fichier, double dpi) {
         SVGDocument doc = (SVGDocument) g2d.getDOMFactory();
         Element root = doc.getDocumentElement();
         /*
@@ -3780,7 +3783,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
          * http://inkscape-forum.andreas-s.net/topic/202198
          * http://www.inkscapeforum.com/viewtopic.php?f=20&t=836
          */
-        /*
+ /*
          * 21 X 29.7cm in pixels at 72 dpi
          * 595.275590551181
          * 841.8897637795275
@@ -4034,8 +4037,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         } catch (OutOfMemoryError E) {
             StringWriter sw = new StringWriter();
-            E.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            E.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             try {
                 /*
@@ -4233,8 +4238,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             loadNonMTFile(name, add_backup);
                         } catch (Exception e) {
                             StringWriter sw = new StringWriter();
-                            e.printStackTrace(new PrintWriter(sw));
+                            PrintWriter pw = new PrintWriter(sw);
+                            e.printStackTrace(pw);
                             String stacktrace = sw.toString();
+                            pw.close();
                             System.err.println(stacktrace);
                         }
                     }
@@ -4409,8 +4416,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             tableListModel.removeElement(CommonClassesLight.String2Int(string));
                         } catch (Exception e) {
                             StringWriter sw = new StringWriter();
-                            e.printStackTrace(new PrintWriter(sw));
+                            PrintWriter pw = new PrintWriter(sw);
+                            e.printStackTrace(pw);
                             String stacktrace = sw.toString();
+                            pw.close();
                             System.err.println(stacktrace);
                         }
                     }
@@ -4425,8 +4434,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     checkRstatus();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
                     String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             }
@@ -4456,8 +4467,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             loading = false;
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             loading = false;
         } catch (OutOfMemoryError E) {
@@ -4465,8 +4478,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
              * file too big to be loaded
              */
             StringWriter sw = new StringWriter();
-            E.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            E.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             loading = false;
             try {
@@ -4702,12 +4717,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
                 doubleLayerPane1.ROIS.setSelectedShape(cur_sel_image1);
                 ief.setCurSel(cur_sel_image1);
-            } else {
-                if (pos == -1) {
-                    ief.setCurSel(null);
-                    ief.setVisible(false);
-                    cur_sel_image1 = null;
-                }
+            } else if (pos == -1) {
+                ief.setCurSel(null);
+                ief.setVisible(false);
+                cur_sel_image1 = null;
             }
             dontChangeCropSize = false;
             dontChangeAngle = false;
@@ -4782,8 +4795,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         } catch (OutOfMemoryError E) {
             StringWriter sw = new StringWriter();
-            E.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            E.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             try {
                 System.gc();
@@ -5692,14 +5707,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     }
                     showAppropriateOptions(tableList);
                     createBackup();
-                } else {
-                    if (result == JOptionPane.OK_OPTION) {
-                        ArrayList<Object> shapes = new ArrayList<Object>();
-                        shapes.add(new MySpacer.Double(iopane.getEmptyWidth(), iopane.getEmptyHeight()));
-                        addMontage(shapes, 1, 1, true, "", getSpaceBetweenImages());
-                        showAppropriateOptions(tableList);
-                        createBackup();
-                    }
+                } else if (result == JOptionPane.OK_OPTION) {
+                    ArrayList<Object> shapes = new ArrayList<Object>();
+                    shapes.add(new MySpacer.Double(iopane.getEmptyWidth(), iopane.getEmptyHeight()));
+                    addMontage(shapes, 1, 1, true, "", getSpaceBetweenImages());
+                    showAppropriateOptions(tableList);
+                    createBackup();
                 }
                 updateTable();
             } else {
@@ -5770,51 +5783,49 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     CommonClassesLight.Warning(this, "Please select an image in your 'image list'");
                     return;
                 }
-            } else {
+            } else if (!myList1.isEmpty()) {
+                if (myList1.isEmpty()) {
+                    blinkAnything(myList1);
+                    CommonClassesLight.Warning(this, "Please add images to your 'image list' first");
+                    return;
+                }
                 if (!myList1.isEmpty()) {
-                    if (myList1.isEmpty()) {
-                        blinkAnything(myList1);
-                        CommonClassesLight.Warning(this, "Please add images to your 'image list' first");
-                        return;
-                    }
-                    if (!myList1.isEmpty()) {
-                        MyListLight ml2 = new MyListLight((DefaultListModel) myList1.list.getModel());
-                        ml2.list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-                        int result = JOptionPane.showOptionDialog(this, new Object[]{ml2}, "Add inset", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-                        if (result == JOptionPane.OK_OPTION) {
-                            String sel = ml2.getSelectedValue();
-                            if (sel != null) {
-                                Object cur_sel;
-                                if (jTabbedPane1.getSelectedIndex() == 1) {
-                                    cur_sel = cur_sel_image1;
-                                } else {
-                                    cur_sel = cur_sel_image2;
-                                }
-                                if (cur_sel instanceof MyImage2D) {
-                                    if (curPanel != null) {
-                                        MyImage2D m = getImage(sel);
-                                        if (curPanel.replace(cur_sel, m)) {
-                                            curPanel.update();
-                                            forceSameHeight(current_row);
-                                            figureListValueChanged(null);
-                                            updateFigure();
-                                        }
+                    MyListLight ml2 = new MyListLight((DefaultListModel) myList1.list.getModel());
+                    ml2.list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+                    int result = JOptionPane.showOptionDialog(this, new Object[]{ml2}, "Add inset", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                    if (result == JOptionPane.OK_OPTION) {
+                        String sel = ml2.getSelectedValue();
+                        if (sel != null) {
+                            Object cur_sel;
+                            if (jTabbedPane1.getSelectedIndex() == 1) {
+                                cur_sel = cur_sel_image1;
+                            } else {
+                                cur_sel = cur_sel_image2;
+                            }
+                            if (cur_sel instanceof MyImage2D) {
+                                if (curPanel != null) {
+                                    MyImage2D m = getImage(sel);
+                                    if (curPanel.replace(cur_sel, m)) {
+                                        curPanel.update();
+                                        forceSameHeight(current_row);
+                                        figureListValueChanged(null);
+                                        updateFigure();
                                     }
                                 }
                             }
-                        } else {
-                            return;
                         }
                     } else {
-                        blinkAnything(myList1);
-                        CommonClassesLight.Warning(this, "Please add images to your 'image list' first");
                         return;
                     }
                 } else {
                     blinkAnything(myList1);
-                    CommonClassesLight.Warning(this, "Please add images to your image list then select one of them");
+                    CommonClassesLight.Warning(this, "Please add images to your 'image list' first");
                     return;
                 }
+            } else {
+                blinkAnything(myList1);
+                CommonClassesLight.Warning(this, "Please add images to your image list then select one of them");
+                return;
             }
         }
         if (source == PIP || source == removePiP) {
@@ -5888,25 +5899,23 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                         }
                                     }
                                 }
-                            } else {
-                                if (cur_sel instanceof MyImage2D) {
-                                    if (name.contains("importJ:")) {
-                                        if (!deletePiP) {
-                                            ((MyImage2D) cur_sel).setInset(imported_from_J.get(name));
-                                        } else {
-                                            ((MyImage2D) cur_sel).setInset(null);
-                                        }
-                                        ((MyImage2D) cur_sel).setINSET_POSITION(pos);
-                                        ((MyImage2D) cur_sel).setFraction_of_parent_image_width(fraction);
+                            } else if (cur_sel instanceof MyImage2D) {
+                                if (name.contains("importJ:")) {
+                                    if (!deletePiP) {
+                                        ((MyImage2D) cur_sel).setInset(imported_from_J.get(name));
                                     } else {
-                                        if (!deletePiP) {
-                                            ((MyImage2D) cur_sel).setInset(new SerializableBufferedImage2(new Loader().loadWithImageJ8bitFix(name)));
-                                        } else {
-                                            ((MyImage2D) cur_sel).setInset(null);
-                                        }
-                                        ((MyImage2D) cur_sel).setINSET_POSITION(pos);
-                                        ((MyImage2D) cur_sel).setFraction_of_parent_image_width(fraction);
+                                        ((MyImage2D) cur_sel).setInset(null);
                                     }
+                                    ((MyImage2D) cur_sel).setINSET_POSITION(pos);
+                                    ((MyImage2D) cur_sel).setFraction_of_parent_image_width(fraction);
+                                } else {
+                                    if (!deletePiP) {
+                                        ((MyImage2D) cur_sel).setInset(new SerializableBufferedImage2(new Loader().loadWithImageJ8bitFix(name)));
+                                    } else {
+                                        ((MyImage2D) cur_sel).setInset(null);
+                                    }
+                                    ((MyImage2D) cur_sel).setINSET_POSITION(pos);
+                                    ((MyImage2D) cur_sel).setFraction_of_parent_image_width(fraction);
                                 }
                             }
                         } else {
@@ -6156,15 +6165,13 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                 imagesInFigureList.setSelectedIndex(curPos - 1);
                             }
                         }
-                    } else {
-                        if (jTabbedPane1.getSelectedIndex() == 1) {
-                            if (curPos + 1 < tableContentListModel.getSize()) {
-                                tableContentList.setSelectedIndex(curPos + 1);
-                            }
-                        } else if (jTabbedPane1.getSelectedIndex() == 2) {
-                            if (curPos + 1 < imagesInFigureModel.getSize()) {
-                                imagesInFigureList.setSelectedIndex(curPos + 1);
-                            }
+                    } else if (jTabbedPane1.getSelectedIndex() == 1) {
+                        if (curPos + 1 < tableContentListModel.getSize()) {
+                            tableContentList.setSelectedIndex(curPos + 1);
+                        }
+                    } else if (jTabbedPane1.getSelectedIndex() == 2) {
+                        if (curPos + 1 < imagesInFigureModel.getSize()) {
+                            imagesInFigureList.setSelectedIndex(curPos + 1);
                         }
                     }
                 }
@@ -6194,22 +6201,20 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                  * bug fix if images are not of the same size
                  */
                 createBackup();
-            } else {
-                if (jTabbedPane1.getSelectedIndex() == 1) {
-                    if (source == swapImagesFromCurrentPanel) {
-                        blinkAnything(tableContentList.getParent());
-                        CommonClassesLight.Warning(this, "Please Select Exactly 2 Images In The 'Panel content' List");
-                        return;
-                    } else {
-                        blinkAnything(tableContentList.getParent());
-                        CommonClassesLight.Warning(this, "Please select a single image from the 'Panel content' list");
-                        return;
-                    }
+            } else if (jTabbedPane1.getSelectedIndex() == 1) {
+                if (source == swapImagesFromCurrentPanel) {
+                    blinkAnything(tableContentList.getParent());
+                    CommonClassesLight.Warning(this, "Please Select Exactly 2 Images In The 'Panel content' List");
+                    return;
                 } else {
-                    blinkAnything(imagesInFigureList.getParent());
-                    CommonClassesLight.Warning(this, "Please select a single image from the 'Panel/col content' list");
+                    blinkAnything(tableContentList.getParent());
+                    CommonClassesLight.Warning(this, "Please select a single image from the 'Panel content' list");
                     return;
                 }
+            } else {
+                blinkAnything(imagesInFigureList.getParent());
+                CommonClassesLight.Warning(this, "Please select a single image from the 'Panel/col content' list");
+                return;
             }
         }
         /*
@@ -6247,16 +6252,14 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                         source = DeleteSelectedBlock;
                         goOn = false;
                     }
-                } else {
-                    if (cur_sel != null) {
-                        if (b.size() == 1) {
-                            if (jTabbedPane1.getSelectedIndex() == 1) {
-                                source = DeleteSelectedBlock;
-                            } else if (jTabbedPane1.getSelectedIndex() == 2) {
-                                source = deleteSelectColumn;
-                            }
-                            goOn = false;
+                } else if (cur_sel != null) {
+                    if (b.size() == 1) {
+                        if (jTabbedPane1.getSelectedIndex() == 1) {
+                            source = DeleteSelectedBlock;
+                        } else if (jTabbedPane1.getSelectedIndex() == 2) {
+                            source = deleteSelectColumn;
                         }
+                        goOn = false;
                     }
                 }
                 if (goOn) {
@@ -6280,10 +6283,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                             imported_from_J.put(name, sb);
                                         }
                                         myList1.addDirectlyToList(name, sb.getBufferedImage());
-                                    } else {
-                                        if (name != null && new File(name).exists()) {
-                                            files_to_add.add(name);
-                                        }
+                                    } else if (name != null && new File(name).exists()) {
+                                        files_to_add.add(name);
                                     }
                                 }
                             }
@@ -6318,11 +6319,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                         imported_from_J.put(name, sb);
                                     }
                                     myList1.addDirectlyToList(name, sb.getBufferedImage());
-                                } else {
-                                    if (name != null) {
-                                        if (new File(name).exists()) {
-                                            files_to_add.add(name);
-                                        }
+                                } else if (name != null) {
+                                    if (new File(name).exists()) {
+                                        files_to_add.add(name);
                                     }
                                 }
                                 myList1.addAllNoCheck(files_to_add);
@@ -7006,15 +7005,13 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     styles.reloadStyles(journalCombo);
                     journalCombo.setSelectedIndex(style_pos);
                 }
+            } else if (style_pos != -1) {
+                CommonClassesLight.Warning(this, "No Journal Style could be found\nin the folder entitled '" + PopulateJournalStyles.journalStyleFolder + "'");
+                return;
             } else {
-                if (style_pos != -1) {
-                    CommonClassesLight.Warning(this, "No Journal Style could be found\nin the folder entitled '" + PopulateJournalStyles.journalStyleFolder + "'");
-                    return;
-                } else {
-                    blinkAnything(journalCombo);
-                    CommonClassesLight.Warning(this, "Please select a journal style first");
-                    return;
-                }
+                blinkAnything(journalCombo);
+                CommonClassesLight.Warning(this, "Please select a journal style first");
+                return;
             }
         }
         if (source == deleteJournalStyle) {
@@ -7436,8 +7433,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7446,8 +7445,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7506,8 +7507,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7516,8 +7519,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7577,8 +7582,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7587,8 +7594,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7650,8 +7659,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7660,8 +7671,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7759,8 +7772,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7769,8 +7784,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7800,7 +7817,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    /*
+            /*
              * TODO maybe replace by a progress bar
              */
             JDialog jd = null;
@@ -7831,8 +7848,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (OutOfMemoryError E) {
                 StringWriter sw = new StringWriter();
-                E.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                E.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
                 try {
                     System.gc();
@@ -7841,8 +7860,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             } finally {
                 try {
@@ -7993,13 +8014,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                 ex.save(panels, rows, myList1.getFullList(), style, imported_from_J, imported_from_pixel_size, true, saveName);
                             } catch (Exception e) {
                                 StringWriter sw = new StringWriter();
-                                e.printStackTrace(new PrintWriter(sw));
+                                PrintWriter pw = new PrintWriter(sw);
+                                e.printStackTrace(pw);
                                 String stacktrace = sw.toString();
+                                pw.close();
                                 System.err.println(stacktrace);
                             } catch (OutOfMemoryError E) {
                                 StringWriter sw = new StringWriter();
-                                E.printStackTrace(new PrintWriter(sw));
+                                PrintWriter pw = new PrintWriter(sw);
+                                E.printStackTrace(pw);
                                 String stacktrace = sw.toString();
+                                pw.close();
                                 System.err.println(stacktrace);
                                 try {
                                     System.gc();
@@ -8029,8 +8054,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                         } catch (Exception e) {
                         } catch (OutOfMemoryError E) {
                             StringWriter sw = new StringWriter();
-                            E.printStackTrace(new PrintWriter(sw));
+                            PrintWriter pw = new PrintWriter(sw);
+                            E.printStackTrace(pw);
                             String stacktrace = sw.toString();
+                            pw.close();
                             System.err.println(stacktrace);
                             try {
                                 System.gc();
@@ -8081,13 +8108,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             ex.save(panels, rows, myList1.getFullList(), style, imported_from_J, imported_from_pixel_size, true, saveName);
                         } catch (Exception e) {
                             StringWriter sw = new StringWriter();
-                            e.printStackTrace(new PrintWriter(sw));
+                            PrintWriter pw = new PrintWriter(sw);
+                            e.printStackTrace(pw);
                             String stacktrace = sw.toString();
+                            pw.close();
                             System.err.println(stacktrace);
                         } catch (OutOfMemoryError E) {
                             StringWriter sw = new StringWriter();
-                            E.printStackTrace(new PrintWriter(sw));
+                            PrintWriter pw = new PrintWriter(sw);
+                            E.printStackTrace(pw);
                             String stacktrace = sw.toString();
+                            pw.close();
                             System.err.println(stacktrace);
                             try {
                                 System.gc();
@@ -8169,12 +8200,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                     tb = new TopBar((Row) current_row, pos_n_text, TopBar.VERTICAL_RIGHT);
                                     ((Row) current_row).setRightTextBar(tb);
                                 }
+                            } else if (source == AddTextLeftOfRow) {
+                                ((Row) current_row).setLeftTextBar(null);
                             } else {
-                                if (source == AddTextLeftOfRow) {
-                                    ((Row) current_row).setLeftTextBar(null);
-                                } else {
-                                    ((Row) current_row).setRightTextBar(null);
-                                }
+                                ((Row) current_row).setRightTextBar(null);
                             }
                             ((Row) current_row).arrangeRow();
                             /*
@@ -8225,12 +8254,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             } else {
                                 ((Row) current_row).setBottomTextBar(tb);
                             }
+                        } else if (source == addTextAboveRow) {
+                            ((Row) current_row).setTopTextBar(null);
                         } else {
-                            if (source == addTextAboveRow) {
-                                ((Row) current_row).setTopTextBar(null);
-                            } else {
-                                ((Row) current_row).setBottomTextBar(null);
-                            }
+                            ((Row) current_row).setBottomTextBar(null);
                         }
                         ((Row) current_row).arrangeRow();
                         updateFigure();
@@ -9006,9 +9033,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                      * here we interprete IJ/FIJI command line args
                      */
                     parseIJCommands(fa, args);
-                    
+
                     /**
-                     * first attempt to import files from macro --> a bit crappy --> ignore for now
+                     * first attempt to import files from macro --> a bit crappy
+                     * --> ignore for now
                      */
 //                    if (name_to_load!=null)
 //                    {
@@ -9070,13 +9098,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                         ex.save(panels, rows, myList1.getFullList(), style, imported_from_J, imported_from_pixel_size, true, save);
                                     } catch (Exception e) {
                                         StringWriter sw = new StringWriter();
-                                        e.printStackTrace(new PrintWriter(sw));
+                                        PrintWriter pw = new PrintWriter(sw);
+                                        e.printStackTrace(pw);
                                         String stacktrace = sw.toString();
+                                        pw.close();
                                         System.err.println(stacktrace);
                                     } catch (OutOfMemoryError E) {
                                         StringWriter sw = new StringWriter();
-                                        E.printStackTrace(new PrintWriter(sw));
+                                        PrintWriter pw = new PrintWriter(sw);
+                                        E.printStackTrace(pw);
                                         String stacktrace = sw.toString();
+                                        pw.close();
                                         System.err.println(stacktrace);
                                         try {
                                             System.gc();

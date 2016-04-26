@@ -411,8 +411,8 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -441,8 +441,8 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             w.close();
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
         if (assign) {
@@ -570,8 +570,8 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             createDocStuff();
         } catch (java.io.IOException ex) {
             StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }

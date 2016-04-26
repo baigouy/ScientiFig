@@ -231,8 +231,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 textPositionChanged(null);
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         } else {
@@ -882,8 +882,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             block_update = false;
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_scaleBarSizeChanged
@@ -915,8 +915,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_scaleLengthChanged
@@ -937,8 +937,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_conversionFactorChanged
@@ -958,8 +958,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -973,8 +973,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             updateScaleBarSize();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_barHeightChanged
@@ -1022,8 +1022,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_PiPFractionChanged
@@ -1041,8 +1041,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_PiPPositionChanged
@@ -1067,8 +1067,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_insetSpacerChanged
@@ -1088,8 +1088,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -1112,8 +1112,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_forceBlackOrWhite
@@ -1130,8 +1130,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_InsetScaleBarChanged
@@ -1151,8 +1151,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -1170,8 +1170,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_gelBorderSizeChanged
@@ -1380,8 +1380,8 @@ public class ImageEditorFrame extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         }
     }//GEN-LAST:event_reForceStrokeSize

@@ -34,7 +34,6 @@ public class CommonClassesLight {
     /*
      * various color modes
      */
-
     public static final int UNKNOWN = -1;
     public static final int CH1 = 0;
     public static final int CH2 = 1;
@@ -1229,6 +1228,12 @@ public class CommonClassesLight {
                 if (ext instanceof String) {
                     return name.endsWith((String) ext);
                 } else {
+                    /**
+                     * if no ext specified --> accept any extension
+                     */
+                    if (ext == null) {
+                        return true;
+                    }
                     ArrayList<String> txt = (ArrayList<String>) ext;
                     for (String string : txt) {
                         if (fichier.endsWith(string)) {
@@ -1514,8 +1519,10 @@ public class CommonClassesLight {
             temp_file.deleteOnExit();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         return temp_file;
@@ -1542,8 +1549,10 @@ public class CommonClassesLight {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
             String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -1559,18 +1568,23 @@ public class CommonClassesLight {
             Desktop desktop = null;
             if (Desktop.isDesktopSupported()) {
                 desktop = Desktop.getDesktop();
-            }
+            } 
             if (desktop != null) {
                 File f = new File(file);
                 if (f.exists()) {
-                    desktop.open(f);
+                    if (desktop.isSupported(Desktop.Action.OPEN)) {
+                        desktop.open(f);
+                    }
                 }
             }
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
-            System.err.println(stacktrace);
+            /**
+             * useless to warn the user for this
+             */
+//            StringWriter sw = new StringWriter();
+//             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+//            String stacktrace = sw.toString();pw.close();
+//            System.err.println(stacktrace);
         }
     }
 
@@ -1601,7 +1615,6 @@ public class CommonClassesLight {
             if (CommonClassesLight.GUI != null) {
                 System.getProperties().setProperty("plugins.dir", CommonClassesLight.getApplicationFolder(CommonClassesLight.GUI.getClass()));
             }
-
             if (ij == null) {
                 ij = new ImageJ();
                 ij.exitWhenQuitting(false);
@@ -1705,9 +1718,7 @@ public class CommonClassesLight {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static String getTempDirectory() {
-        String property = "java.io.tmpdir";
-        String tempDir = System.getProperty(property);
-        return tempDir;
+        return System.getProperty("java.io.tmpdir");
     }
 
     /**
@@ -2451,7 +2462,14 @@ public class CommonClassesLight {
      * @since <B>Packing Analyzer 2.0</B>
      */
     public static int String2Int(String word) {
-        return Integer.parseInt(word.trim());
+        /**
+         * now added support for hexadecimal colors
+         */
+        if (!word.startsWith("#")) {
+            return Integer.parseInt(word.trim());
+        } else {
+            return getColorFromHtmlColor(word);
+        }
     }
 
     public static Integer String2Integer(String word) {
@@ -2695,8 +2713,10 @@ public class CommonClassesLight {
                 files.add(uri.getPath());
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
                 String stacktrace = sw.toString();
+                pw.close();
                 System.err.println(stacktrace);
             }
         }

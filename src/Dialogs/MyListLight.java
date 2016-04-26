@@ -55,7 +55,9 @@ import javax.swing.*;
  *
  * @author Benoit Aigouy
  */
-public class MyListLight extends javax.swing.JPanel {
+public class MyListLight extends javax.swing.JPanel implements Serializable{ 
+    
+        public static final long serialVersionUID = 3246616476071799889L;
 
     public DefaultListModel listModel;
     public IconListCellRenderer iconListCellRenderer = new IconListCellRenderer();
@@ -299,7 +301,9 @@ public class MyListLight extends javax.swing.JPanel {
      * @param idx
      */
     public void select(int idx) {
-        list.setSelectedIndex(idx);
+        if (idx != getSelectedIndex()) {
+            list.setSelectedIndex(idx);
+        }
     }
 
     /**
@@ -361,7 +365,7 @@ public class MyListLight extends javax.swing.JPanel {
     public ArrayList<String> getSelectedValues() {
         int[] indices = list.getSelectedIndices();
         ArrayList<String> selected_indices = new ArrayList<String>();
-        if (indices != null) {
+        if (indices != null && indices.length!=0) {
             for (int i : indices) {
                 selected_indices.add(listModel.elementAt(i).toString());
             }

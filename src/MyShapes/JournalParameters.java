@@ -503,8 +503,8 @@ public class JournalParameters implements Serializable {
                 file = java.io.File.createTempFile("journal_", ".txt", new File(journalStyleFolder));
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
                 System.err.println("Error could not create the file file, maybe the disk is write protected");
                 return null;
@@ -568,8 +568,8 @@ public class JournalParameters implements Serializable {
             p.storeToXML(out, "last update " + new Date().toString());
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             if (out != null) {
@@ -739,8 +739,8 @@ public class JournalParameters implements Serializable {
         } catch (Exception e) {
             all_ok = false;
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             if (in != null) {

@@ -141,8 +141,8 @@ public class DropTargetHandler implements DropTargetListener {
             dtde.dropComplete(false);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
             dtde.dropComplete(false);
         }

@@ -107,7 +107,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         /*
          * we load the combo with arrows
          */
-        Vector arrows = new Vector();
+        //Vector arrows = new Vector();
         /*
          * NB: the order should match ARROW_HEAD_TYPE in MyLine2D
          */
@@ -120,13 +120,13 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
          arrows.add(CommonClassesLight.RIGHT_INHIBITION_SYMBOL);
          arrows.add(CommonClassesLight.LEFT_INHIBITION_SYMBOL + "" + CommonClassesLight.RIGHT_INHIBITION_SYMBOL);
          */
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow.png")));
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow_half_head_down.png")));
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow_half_head_up.png")));
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_arrow.png")));
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/inhibition_arrow.png")));
-        arrows.add(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_inhibition_arrow.png")));
-        jComboBox2.setModel(new DefaultComboBoxModel(arrows));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow.png")));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow_half_head_down.png")));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/arrow_half_head_up.png")));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_arrow.png")));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/inhibition_arrow.png")));
+        jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_inhibition_arrow.png")));
+        //jComboBox2.setModel(new DefaultComboBoxModel(arrows));
         if (copiedROIs != null && (copiedROIs instanceof ArrayList)) {
             rOIpanelLight1.copy = copiedROIs;
         }
@@ -948,21 +948,21 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             }
         });
 
-        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
         jSpinner4.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 dotSizeChanged(evt);
             }
         });
 
-        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(6, 1, null, 1));
         jSpinner5.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 dashSizeChanged(evt);
             }
         });
 
-        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(6), Integer.valueOf(1), null, Integer.valueOf(1)));
+        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(6, 1, null, 1));
         jSpinner6.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 skipSizeChanged(evt);
@@ -971,7 +971,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jLabel1.setText("Size:");
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.65f), Float.valueOf(0.01f), null, Float.valueOf(0.25f)));
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(0.65f, 0.01f, null, 0.25f));
         jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinner1strokeChanged(evt);
@@ -1030,7 +1030,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jLabel3.setText("Width:");
 
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(15.0d), Double.valueOf(1.0d), null, Double.valueOf(1.0d)));
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(15.0d, 1.0d, null, 1.0d));
         jSpinner2.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 arrowHeadWidthChanged(evt);
@@ -1039,7 +1039,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jLabel10.setText("Height:");
 
-        jSpinner8.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(30.0d), Double.valueOf(1.0d), null, Double.valueOf(1.0d)));
+        jSpinner8.setModel(new javax.swing.SpinnerNumberModel(30.0d, 1.0d, null, 1.0d));
         jSpinner8.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 arrowHeadHeightOrLengthChanged(evt);
@@ -1110,7 +1110,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
 
         jLabel4.setText("Bracket Width:");
 
-        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(6.0d), Double.valueOf(1.0d), null, Double.valueOf(1.0d)));
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(6.0d, 1.0d, null, 1.0d));
         jSpinner3.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinner3arrowheadSizeChanged(evt);
@@ -1434,8 +1434,8 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     }
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             }

@@ -249,9 +249,14 @@ public class Exportable implements Serializable {
             if (tables != null) {
                 for (Montage object : tables.values()) {
                     object.recreateStyledDoc();
+                    object.updateGraphScripts();
                 }
 
             }
+            
+            //TODO force update plot code to get rid of errors
+            //but do not update display
+            
             if (version < 1) {
                 /**
                  * allows for retrocompatibility of files saved using SF
@@ -302,8 +307,8 @@ public class Exportable implements Serializable {
                 pr.close();
             }
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             /*

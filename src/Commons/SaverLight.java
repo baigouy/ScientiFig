@@ -321,8 +321,8 @@ public class SaverLight {
                     ImageIO.write(image, "jpg", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PNG) {
@@ -330,8 +330,8 @@ public class SaverLight {
                     ImageIO.write(image, "png", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_GIF) {
@@ -339,8 +339,8 @@ public class SaverLight {
                     ImageIO.write(image, "gif", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PPM_P6) {
@@ -360,8 +360,8 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PPM_P3) {
@@ -397,8 +397,8 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_RAW || format == FORMAT_RAW_GNUPLOT) {
@@ -409,8 +409,8 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    String stacktrace = sw.toString();
+                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                    String stacktrace = sw.toString();pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_BMP) {
@@ -483,8 +483,8 @@ public class SaverLight {
             DOMUtilities.writeDocument(in, writer);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             System.err.println(stacktrace);
         } finally {
             try {

@@ -71,7 +71,7 @@ public class GeomPlot implements Serializable {
     /**
      * specific for smooth
      */
-    public String SE;
+    String SE;
     String REGRESSION_TYPE;
     String family;
     String formula;
@@ -742,9 +742,13 @@ public class GeomPlot implements Serializable {
             }
         }
 
-        if (SE == null) {
-            ggplot += "se=FALSE, ";
-        } else {
+        if (SE != null) {
+            /**
+             * here I had introduced a bug by adding SE = false to plots, pb is SF does not update automatically the plot --> maybe I shoudl do that on reload 
+             * -->regenerate the command on reload
+             */
+//            ggplot += "se=FALSE, ";
+//        } else {
             if (geomType.toLowerCase().contains("_smooth")) {
                 ggplot += "se=TRUE, ";
             }

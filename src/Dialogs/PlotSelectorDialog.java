@@ -83,8 +83,8 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
                 lineDialog1.setLineWidth(CommonClassesLight.String2Double(gp.getSize()));
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -96,8 +96,8 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
                 lineDialog1.setLineStyle(CommonClassesLight.String2Int(gp.getLineType()));
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }
@@ -110,8 +110,8 @@ public class PlotSelectorDialog extends javax.swing.JPanel {
                 jSpinner1.setValue(CommonClassesLight.String2Float(gp.getBinWidth()));
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String stacktrace = sw.toString();
+                 PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                String stacktrace = sw.toString();pw.close();
                 System.err.println(stacktrace);
             }
         }

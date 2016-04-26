@@ -81,13 +81,23 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
     float opacity = 1.f;
     public Line2D.Double l2d;
     float strokeSize = 0.65f;
+    /**
+     * below are the types of arrowheads
+     */
     public int ARROW_HEAD_TYPE = TYPE_FULL_ARROW;
     public static final int TYPE_FULL_ARROW = 0;
+    private static String DEFAULT_ARROW = "DEFAULT_ARROW";
     public static final int TYPE_HALF_HEAD_UP_ARROW = 1;
+    private static String HALF_HEAD_UP_ARROW = "HALF_HEAD_UP_ARROW";
     public static final int TYPE_HALF_HEAD_DOWN_ARROW = 2;
+    private static String HALF_HEAD_DOWN_ARROW = "HALF_HEAD_DOWN_ARROW";
     public static final int TYPE_DOUBLE_HEAD_FULL_ARROW = 3;
+    private static String DOUBLE_HEAD_ARROW = "DOUBLE_HEAD_ARROW";
     public static final int TYPE_INIBITION_ARROW = 4;
+    private static String INIBITION_ARROW = "INIBITION_ARROW";
     public static final int TYPE_DOUBLE_HEADED_INIBITION = 5;
+    private static String DOUBLE_HEADED_INIBITION = "DOUBLE_HEADED_INIBITION";
+
     public int FILLING = FILLING_FILLED;
     public static final int FILLING_FILLED = 0;
     public static final int FILLING_OUTLINE = 1;
@@ -123,6 +133,26 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
 
     public int getARROW_HEAD_TYPE() {
         return ARROW_HEAD_TYPE;
+    }
+
+    public void setARROW_HEAD_TYPE(String ARROW_HEAD_TYPE) {
+        if (ARROW_HEAD_TYPE == null || ARROW_HEAD_TYPE.isEmpty()) {
+            return;
+        }
+        String typeOfHead = ARROW_HEAD_TYPE.toUpperCase();
+        if (typeOfHead.equals(DEFAULT_ARROW)) {
+            setARROW_HEAD_TYPE(TYPE_FULL_ARROW);
+        } else if (typeOfHead.equals(HALF_HEAD_UP_ARROW)) {
+            setARROW_HEAD_TYPE(TYPE_HALF_HEAD_UP_ARROW);
+        } else if (typeOfHead.equals(HALF_HEAD_DOWN_ARROW)) {
+            setARROW_HEAD_TYPE(TYPE_HALF_HEAD_DOWN_ARROW);
+        } else if (typeOfHead.equals(DOUBLE_HEAD_ARROW)) {
+            setARROW_HEAD_TYPE(TYPE_DOUBLE_HEAD_FULL_ARROW);
+        } else if (typeOfHead.equals(INIBITION_ARROW)) {
+            setARROW_HEAD_TYPE(TYPE_INIBITION_ARROW);
+        } else if (typeOfHead.equals(DOUBLE_HEADED_INIBITION)) {
+            setARROW_HEAD_TYPE(TYPE_DOUBLE_HEADED_INIBITION);
+        }
     }
 
     public void setARROW_HEAD_TYPE(int ARROW_HEAD_TYPE) {

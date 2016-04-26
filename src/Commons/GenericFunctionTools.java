@@ -454,8 +454,8 @@ public class GenericFunctionTools implements Callable<Object> {
         } catch (Exception e) {
             cancel = true;
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             fireError("\nError:\n" + stacktrace);
             if (popUpWindowWhenOutOfMemoryError && stacktrace.contains("OutOfMemoryError")) {
                 try {
@@ -496,8 +496,8 @@ public class GenericFunctionTools implements Callable<Object> {
                         output.get(l).get();
                     } catch (Exception e) {
                         StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
+                         PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                        String stacktrace = sw.toString();pw.close();
                         fireError("\nError:\n" + stacktrace);
                     }
                 }
@@ -516,16 +516,16 @@ public class GenericFunctionTools implements Callable<Object> {
                         }
                     } catch (Exception e) {
                         StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        String stacktrace = sw.toString();
+                         PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+                        String stacktrace = sw.toString();pw.close();
                         fireError("\nError:\n" + stacktrace);
                     }
                 }
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stacktrace = sw.toString();
+             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
+            String stacktrace = sw.toString();pw.close();
             fireError("\nError:\n" + stacktrace);
         }
         if (runGarbageCollectionWhenExecuted) {
