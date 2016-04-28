@@ -256,6 +256,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     public static boolean showHelpInfoWindow = true;
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
     private static final ArrayList<String> exts = new ArrayList<String>();
+    /**
+     * alternate between fit width or height
+     */
+    private static boolean fitWidth = true;
 
     static {
         exts.add(".figur");
@@ -1560,6 +1564,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         rotateLeft = new javax.swing.JButton();
         rotateRight = new javax.swing.JButton();
         Flip = new javax.swing.JButton();
+        bestFitWidthOrHeight = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
@@ -1633,7 +1638,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         });
 
-        sizeInPx.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(595), Integer.valueOf(1), null, Integer.valueOf(1)));
+        sizeInPx.setModel(new javax.swing.SpinnerNumberModel(595, 1, null, 1));
         sizeInPx.setToolTipText("Size of the panel/row in px");
         sizeInPx.setMinimumSize(new java.awt.Dimension(90, 24));
         sizeInPx.setPreferredSize(new java.awt.Dimension(90, 24));
@@ -1659,11 +1664,11 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         });
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                onQuit(evt);
-            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closing(evt);
+            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                onQuit(evt);
             }
         });
 
@@ -1862,7 +1867,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel2.setToolTipText("Size of the panel/row in cm");
         jToolBar1.add(jLabel2);
 
-        sizeInCM.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(21.0d), Double.valueOf(0.001d), null, Double.valueOf(0.05d)));
+        sizeInCM.setModel(new javax.swing.SpinnerNumberModel(21.0d, 0.001d, null, 0.05d));
         sizeInCM.setToolTipText("Size of the panel/row in cm");
         sizeInCM.setMinimumSize(new java.awt.Dimension(90, 24));
         sizeInCM.setPreferredSize(new java.awt.Dimension(90, 24));
@@ -2303,7 +2308,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel10.setToolTipText("Crop images from the left");
         jPanel7.add(jLabel10);
 
-        cropLeftSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        cropLeftSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         cropLeftSpinner.setToolTipText("Crop images from the left");
         cropLeftSpinner.setMaximumSize(null);
         cropLeftSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -2317,7 +2322,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel11.setToolTipText("Crop images from the right");
         jPanel7.add(jLabel11);
 
-        cropRightSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        cropRightSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         cropRightSpinner.setToolTipText("Crop images from the right");
         cropRightSpinner.setMaximumSize(null);
         cropRightSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -2345,7 +2350,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel12.setToolTipText("Crop images from the top");
         jPanel7.add(jLabel12);
 
-        cropUpSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        cropUpSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         cropUpSpinner.setToolTipText("Crop images from the top");
         cropUpSpinner.setMaximumSize(null);
         cropUpSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -2359,7 +2364,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel13.setToolTipText("Crop images from the bottom");
         jPanel7.add(jLabel13);
 
-        cropDownSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        cropDownSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         cropDownSpinner.setToolTipText("Crop images from the bottom");
         cropDownSpinner.setMaximumSize(null);
         cropDownSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -2498,7 +2503,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jLabel5.setText("<html><center>Space<br>(px):");
         jLabel5.setToolTipText("Empty space between images of the same block");
 
-        changeSpaceBetweenImageInPanel.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(3), Integer.valueOf(1), null, Integer.valueOf(1)));
+        changeSpaceBetweenImageInPanel.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
         changeSpaceBetweenImageInPanel.setToolTipText("Empty space between images of the same block");
         changeSpaceBetweenImageInPanel.setMinimumSize(new java.awt.Dimension(90, 37));
         changeSpaceBetweenImageInPanel.setPreferredSize(new java.awt.Dimension(80, 37));
@@ -2532,7 +2537,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             }
         });
 
-        changeSpaceBetweenRows.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(3), Integer.valueOf(1), null, Integer.valueOf(1)));
+        changeSpaceBetweenRows.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
         changeSpaceBetweenRows.setToolTipText("Empty space between rows and columns within a row");
         changeSpaceBetweenRows.setMinimumSize(new java.awt.Dimension(90, 37));
         changeSpaceBetweenRows.setPreferredSize(new java.awt.Dimension(80, 37));
@@ -2805,6 +2810,14 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         rotateNFlip.add(Flip);
 
         optionsPanel.add(rotateNFlip);
+
+        bestFitWidthOrHeight.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_diagonal_arrow.gif"))); // NOI18N
+        bestFitWidthOrHeight.setToolTipText("Alternate between best fit in height or in width");
+        bestFitWidthOrHeight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runAll(evt);
+            }
+        });
 
         jMenu1.setText("File");
 
@@ -3138,7 +3151,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             .addComponent(zoomPlus)
                             .addComponent(zoomMinus)
                             .addComponent(bestFitZoom)
-                            .addComponent(realSizeZoom)))
+                            .addComponent(realSizeZoom)
+                            .addComponent(bestFitWidthOrHeight)))
                     .addComponent(optionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
@@ -3158,7 +3172,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(bestFitZoom)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(realSizeZoom))
+                                .addComponent(bestFitWidthOrHeight)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(realSizeZoom)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(optionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -5584,6 +5601,55 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     doubleLayerPane2.best_fit_zoom(jScrollPane16.getViewportBorderBounds().width, jScrollPane16.getViewportBorderBounds().height);
                     break;
             }
+            ignoreWarnForSave = true;
+        }
+        /**
+         * adds support for best fit of the image in width or in height
+         */
+        if (source == bestFitWidthOrHeight) {
+            /**
+             * adjusts zoom to best adapt to the content
+             */
+            int src = jTabbedPane1.getSelectedIndex();
+            switch (src) {
+                case 0:
+                    if (true) {
+                        int width = jScrollPane17.getViewportBorderBounds().width;
+                        int height = jScrollPane17.getViewportBorderBounds().height;
+                        if (fitWidth) {
+                            height = Integer.MAX_VALUE;
+                        } else {
+                            width = Integer.MAX_VALUE;
+                        }
+                        doubleLayerPane3.best_fit_zoom(width, height);
+                    }
+                    break;
+                case 1:
+                    if (true) {
+                        int width = jScrollPane8.getViewportBorderBounds().width;
+                        int height = jScrollPane8.getViewportBorderBounds().height;
+                        if (fitWidth) {
+                            height = Integer.MAX_VALUE;
+                        } else {
+                            width = Integer.MAX_VALUE;
+                        }
+                        doubleLayerPane1.best_fit_zoom(width, height);
+                    }
+                    break;
+                case 2:
+                    if (true) {
+                        int width = jScrollPane16.getViewportBorderBounds().width;
+                        int height = jScrollPane16.getViewportBorderBounds().height;
+                        if (fitWidth) {
+                            height = Integer.MAX_VALUE;
+                        } else {
+                            width = Integer.MAX_VALUE;
+                        }
+                        doubleLayerPane2.best_fit_zoom(width, height);
+                    }
+                    break;
+            }
+            fitWidth = !fitWidth;
             ignoreWarnForSave = true;
         }
         if (source == realSizeZoom) {
@@ -9344,6 +9410,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JButton addSelectionToCurrentPanel;
     public static javax.swing.JButton addTextAboveRow;
     public static javax.swing.JButton addTextBelowRow;
+    private javax.swing.JButton bestFitWidthOrHeight;
     private javax.swing.JButton bestFitZoom;
     private javax.swing.JButton buttonHelp;
     private javax.swing.JMenuItem capitalizeFirstLetter;

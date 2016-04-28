@@ -1,3 +1,6 @@
+28/04/16
+-added best fit button that alternates between best fit in width or height
+
 11/04/16
 -likely fixed several memory leaks throuhout SF
 

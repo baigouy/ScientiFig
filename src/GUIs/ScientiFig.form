@@ -507,6 +507,7 @@
                           <Component id="zoomMinus" min="-2" max="-2" attributes="0"/>
                           <Component id="bestFitZoom" min="-2" max="-2" attributes="0"/>
                           <Component id="realSizeZoom" min="-2" max="-2" attributes="0"/>
+                          <Component id="bestFitWidthOrHeight" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="optionsPanel" pref="0" max="32767" attributes="0"/>
@@ -531,7 +532,10 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="bestFitZoom" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
+                              <Component id="bestFitWidthOrHeight" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="realSizeZoom" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Component id="jPanel5" max="32767" attributes="0"/>
                       </Group>
@@ -2379,5 +2383,16 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="bestFitWidthOrHeight">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Icons/double_diagonal_arrow.gif"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Alternate between best fit in height or in width"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runAll"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
