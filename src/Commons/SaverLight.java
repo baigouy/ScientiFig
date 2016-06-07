@@ -33,11 +33,11 @@
  */
 package Commons;
 
+import GUIs.ScientiFig;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
-import ij.macro.Interpreter;
 import ij.process.ImageProcessor;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -270,6 +270,18 @@ public class SaverLight {
      */
     public static void save(BufferedImage image, String fichier) {
         save(FORMAT_AUTO, image, fichier);
+    }
+    
+    public static void save(Object image, String fichier) {
+        //save(FORMAT_AUTO, image, fichier);
+        if (image instanceof MyGraphics2D)
+        {
+            if (fichier.toLowerCase().endsWith(".svg"))
+                ScientiFig.saveAsSVG(((MyGraphics2D)image).getGraphics2DSVG(), fichier,72);
+            else
+                save(((MyGraphics2D)image).getBufferedImage(), fichier);
+        }else if (image instanceof BufferedImage)
+            save(FORMAT_AUTO, (BufferedImage)image, fichier);
     }
 
     /**

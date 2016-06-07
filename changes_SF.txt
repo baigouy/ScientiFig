@@ -1,3 +1,6 @@
+12/05/16
+-may have fixed a serious list loading issue (but maybe not)
+
 28/04/16
 -added best fit button that alternates between best fit in width or height
 

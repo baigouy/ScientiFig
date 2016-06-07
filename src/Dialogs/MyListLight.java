@@ -55,9 +55,9 @@ import javax.swing.*;
  *
  * @author Benoit Aigouy
  */
-public class MyListLight extends javax.swing.JPanel implements Serializable{ 
-    
-        public static final long serialVersionUID = 3246616476071799889L;
+public class MyListLight extends javax.swing.JPanel implements Serializable {
+
+    public static final long serialVersionUID = 3246616476071799889L;
 
     public DefaultListModel listModel;
     public IconListCellRenderer iconListCellRenderer = new IconListCellRenderer();
@@ -365,7 +365,7 @@ public class MyListLight extends javax.swing.JPanel implements Serializable{
     public ArrayList<String> getSelectedValues() {
         int[] indices = list.getSelectedIndices();
         ArrayList<String> selected_indices = new ArrayList<String>();
-        if (indices != null && indices.length!=0) {
+        if (indices != null && indices.length != 0) {
             for (int i : indices) {
                 selected_indices.add(listModel.elementAt(i).toString());
             }
@@ -650,11 +650,19 @@ public class MyListLight extends javax.swing.JPanel implements Serializable{
                 if (elt == null) {
                     continue;
                 }
-                IconLabel l = createLabel(elt);
+                final IconLabel l = createLabel(elt);
                 if (l == null) {
                     continue;
                 }
-                listModel.addElement(l);
+                /**
+                 * attempt to fix bugs
+                 */
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        listModel.addElement(l);
+                    }
+                });
                 updateList();
             }
         }
