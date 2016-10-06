@@ -220,7 +220,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     public static int nbOfCPUs2Use = CommonClassesLight.getNumberOfCores();
     private static int import_J = 0;
     public static boolean rowAutoSameHeight = true;
-    String letter = "A";
+    String letter = "B";
     public static final String currentyear = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
