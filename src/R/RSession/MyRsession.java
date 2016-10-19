@@ -61,6 +61,8 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.w3c.dom.svg.SVGDocument;
+//import org.w3c.dom.Document;
+//import org.w3c.dom.svg.SVGDocument;
 
 /**
  * MyRsession connects ScientiFig and FiguR to R

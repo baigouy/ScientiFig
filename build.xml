@@ -163,22 +163,7 @@
                 </copy>
         -->
 
-        <!-- maybe it would be simpler to distribute this with imageJ-->
-        <!--
-        <echo message="All In One JAR"/>
-        <zip destfile="${dist.dir}/ScientiFigOneJar.jar">
-            <zipfileset src="${dist.dir}/lib/AbsoluteLayout.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/batik-all-1.7.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/IJ.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/poi-3.7-20101029.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/poi-scratchpad-3.7-20101029.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/swing-layout-1.0.4.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset src="${dist.dir}/lib/xml-apis-ext.jar" includes="**/*" excludes="META-INF/MANIFEST.MF"/>
-            <zipfileset dir="${dist.dir}" includes="*.txt"/>
-            <zipfileset src="${dist.dir}/ScientiFig.jar" includes="**/*"/>
-        </zip>
-        -->
-        
+       
         <!--
                 <copy todir="/home/benoit/Fiji.app/plugins/lib" failonerror="No">
                     <fileset dir="${dist.dir}/lib" />

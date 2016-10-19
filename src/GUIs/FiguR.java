@@ -82,6 +82,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
+import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.rosuda.REngine.REXPMismatchException;
 
 //need to force as numeric in text if I want it to work --> put as.numeric in plots for x and y ...-->
@@ -93,6 +96,18 @@ import org.rosuda.REngine.REXPMismatchException;
  * @author Benoit Aigouy
  */
 public class FiguR extends javax.swing.JFrame implements PlugIn {
+
+    /**
+     * just to fix a bug related to batik 1.8 see:
+     * https://issues.apache.org/jira/browse/BATIK-1125 and
+     * https://github.com/hazelcast/hazelcast/issues/6614
+     */
+    static {
+        final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+        registry.register(new PNGRegistryEntry());
+        registry.register(new TIFFRegistryEntry());
+        System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+    }
 
     /**
      * Variables
@@ -249,7 +264,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         }
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1097,19 +1112,17 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                 rsession.reopenConnection();
             } catch (Exception e) {
             }
+        } else if (CommonClassesLight.r != null) {
+            rsession = CommonClassesLight.r;
+            try {
+                rsession.reopenConnection();
+            } catch (REXPMismatchException ex) {
+            }
         } else {
-            if (CommonClassesLight.r != null) {
-                rsession = CommonClassesLight.r;
-                try {
-                    rsession.reopenConnection();
-                } catch (REXPMismatchException ex) {
-                }
-            } else {
-                try {
-                    rsession = new MyRsessionLogger();
-                    rsession.reopenConnection();
-                } catch (Exception e) {
-                }
+            try {
+                rsession = new MyRsessionLogger();
+                rsession.reopenConnection();
+            } catch (Exception e) {
             }
         }
     }
@@ -1150,16 +1163,14 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         boolean isconnected = CommonClassesLight.isRReady();
         if (isconnected) {
             Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
+        } else if (rsession.isRserverRunning()) {
+            Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
         } else {
-            if (rsession.isRserverRunning()) {
-                Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
-            } else {
-                Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/red_light.png")));
-                /*
+            Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/red_light.png")));
+            /*
                  * conncetion failed --> we open the guidelines indicating how one can connect to R
-                 */
-                CommonClassesLight.Warning2(this, MyRsessionLogger.generateRInstallationText());
-            }
+             */
+            CommonClassesLight.Warning2(this, MyRsessionLogger.generateRInstallationText());
         }
     }
 
@@ -1218,12 +1229,12 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         legendLabel = null;
     }
     private static final LinkedHashMap<String, String> replacements = new LinkedHashMap<String, String>();
-    
+
     static {
         replacements.put("degrees", "°");
         replacements.put("*", CommonClassesLight.MULTIPLICATION + "");
         replacements.put("micron", CommonClassesLight.MICRON + "");
-        
+
     }
 
     //can't do this in a string --> improve this
@@ -1251,7 +1262,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             closing(null);
             return;
         }
-        
+
         if (source == capitalizeFirstLetter) {
             /*
              * formats all the text for nature related journals
@@ -1534,7 +1545,8 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please open an .xls/.xlsx file first\nClick on File>Open File");
                 return;
             }
-            rsession.eval("edit(curDataFigR)");
+            /* we now preview only the 10 first lines of a file */
+            rsession.eval("edit(head(curDataFigR,10))");
             return;
         }
         if (source == jMenuItem8) {
@@ -1544,7 +1556,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             if (data == null || data.isEmpty()) {
                 CommonClassesLight.Warning(this, "Please open an .xls/.xlsx file first\nClick on File>Open File");
                 return;
-                
+
             }
             rsession.eval("curDataFigR <- edit(curDataFigR)");
         }
@@ -1707,7 +1719,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                  * creation of a graph
                  */
                 String plotStyle = jComboBox1.getSelectedItem().toString();
-                
+
                 if (plotStyle.toLowerCase().contains("error")) {
                     if (plotStyle.contains("oriz")) {
                         plot = "geom_errorbarh";
@@ -1795,14 +1807,11 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                 if (source == jButton3) {
                     plots.add(0, geomPlot);
                     plotsListModel.addElement(geomPlot);
-                } else {
-                    /*
+                } else /*
                      * we update the plot
-                     */
-                    if (jList1.getSelectedIndex() != -1) {
-                        plotsListModel.set(jList1.getSelectedIndex(), geomPlot);
-                        plots.set(plots.indexOf(gp), geomPlot);
-                    }
+                 */ if (jList1.getSelectedIndex() != -1) {
+                    plotsListModel.set(jList1.getSelectedIndex(), geomPlot);
+                    plots.set(plots.indexOf(gp), geomPlot);
                 }
             } else {
                 return;
@@ -1912,7 +1921,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         data.clear();
         data.add(new GGplot("curDataFigR"));
     }
-    
+
     private void checkFiles() {
         if (data == null) {
             data = new ArrayList<Object>();
@@ -2068,7 +2077,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             }
         }
     }//GEN-LAST:event_editText
-    
+
     public void checkStatus() {
         if (rsession != null & rsession.isRserverRunning()) {
             Rstatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/green_light.png")));
@@ -2128,12 +2137,10 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                     colnames_and_nb_of_factors.put(aesFill, nb);
                 }
                 gp.setNb_of_Fill_colors(nb);
+            } else if (aesFill != null) {
+                gp.setNb_of_Fill_colors(1);
             } else {
-                if (aesFill != null) {
-                    gp.setNb_of_Fill_colors(1);
-                } else {
-                    gp.setNb_of_Fill_colors(0);
-                }
+                gp.setNb_of_Fill_colors(0);
             }
         }
     }
@@ -2162,12 +2169,10 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
                     colnames_and_nb_of_factors.put(aesColor, nb);
                 }
                 gp.setNb_of_Color_colors(nb);
+            } else if (aesColor != null) {
+                gp.setNb_of_Color_colors(1);
             } else {
-                if (aesColor != null) {
-                    gp.setNb_of_Color_colors(1);
-                } else {
-                    gp.setNb_of_Color_colors(0);
-                }
+                gp.setNb_of_Color_colors(0);
             }
         }
     }
@@ -2319,7 +2324,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         R_Legend += ")";
         R_code += R_Legend;
     }
-    
+
     private void removeAllFacets() {
         /*
          * remove all facets objects
@@ -2366,11 +2371,11 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         boolean use_non_custom_code = jRadioButton1.isSelected();
         return new MyPlotVector.Double(rsession, xlsxFile.getText(), getFormattedGraph(false), sheet_nb, textSeparator, textDelimtor, decimal, null, use_non_custom_code, theme);
     }
-    
+
     private static Dimension getScreenSize() {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
-    
+
     @Override
     public void run(String arg) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -2441,9 +2446,9 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
         this.xaxisLabel = tmp.getxAxisLabel();
         this.yaxisLabel = tmp.getyAxisLabel();
         this.legendLabel = tmp.getLegendLabel();
-        
+
         jTextArea3.setText(tmp.Rcommand);
-        
+
         if (!tmp.use_non_custom_code || data == null) {
             jRadioButton2.setSelected(true);
             jRadioButton1.setSelected(false);
@@ -2530,7 +2535,7 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
             enableOrDisableTextField();
         }
     }
-    
+
     public void enableOrDisableTextField() {
         if (!xlsxFile.getText().trim().equals("")) {
             xlsxFile.setEnabled(true);

@@ -47,15 +47,19 @@ import java.awt.image.ColorModel;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import javax.imageio.ImageIO;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+//import org.apache.batik.dom.svg12.SVG12OMDocument;
+//import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.CanvasGraphicsNode;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.svg.SVGDocument;
+//import org.w3c.dom.Document;
+//import org.w3c.dom.svg.SVGDocument;
 
 public class Loader {
 
@@ -90,8 +94,10 @@ public class Loader {
             } catch (Exception e3) {
             }
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         return obj;
@@ -121,8 +127,10 @@ public class Loader {
             } catch (Exception e2) {
             }
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         return obj;
@@ -140,9 +148,10 @@ public class Loader {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory saxsvgdf = new SAXSVGDocumentFactory(parser);
             File file = new File(complete_name);
-            SVGDocument document = (SVGDocument) saxsvgdf.createDocument(file.toURI().toURL().toString());
+            SVGDocument document = saxsvgdf.createSVGDocument(file.toURI().toURL().toString());
             return document;
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -163,8 +172,10 @@ public class Loader {
             return loadSVG2BufferedImage(document);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             return null;
         }
@@ -231,8 +242,10 @@ public class Loader {
             return bufferedImage;
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         return null;
@@ -347,13 +360,7 @@ public class Loader {
             Overlay ol = original.getOverlay();
             if (ol != null) {
                 Roi[] rois = ol.toArray();
-//                for (Roi roi : rois) {
-//                    System.out.println(roi);
-//                    //ça marche --> sauver les ROI ds le truc
-//                    //si il y a overlay alors 
-//                }
                 curROIs = rois;
-//                System.out.println((curROIs instanceof Roi) +" "+(curROIs instanceof Roi[]));
             }
 
             if (original.getBitDepth() == 24) {
@@ -375,21 +382,6 @@ public class Loader {
                 }
                 BufferedImage tmp = original.getBufferedImage();
                 img = CommonClassesLight.copyImg(tmp);
-
-                /**
-                 * bug fix for 8 bits images not loading
-                 */
-//                int width = img.getWidth();
-//                int height = img.getHeight();
-//                for (int i = 0; i < width; i++) {
-//                    for (int j = 0; j < height; j++) {
-//                        int blue = img.getRGB(i, j) & 0xFF;
-//                        int blue = img.getRGB(i, j) & 0xFF;
-//                        int blue = img.getRGB(i, j) & 0xFF;
-//                        int RGB = ((blue) << 16) + ((blue) << 8) + (blue);
-//                        img.setRGB(i, j, RGB);
-//                    }
-//                }
             } else {
                 img = loadWithImageJ(name);
             }

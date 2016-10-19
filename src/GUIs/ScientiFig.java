@@ -85,6 +85,7 @@ import ij.Macro;
 import ij.WindowManager;
 import ij.gui.Roi;
 import ij.io.FileInfo;
+import ij.io.ImageWriter;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
 import java.awt.Color;
@@ -146,6 +147,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ActionMapUIResource;
+import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
+import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.rosuda.REngine.REXPMismatchException;
 import org.w3c.dom.Element;
@@ -158,6 +162,20 @@ import org.w3c.dom.svg.SVGDocument;
  * @author Benoit Aigouy
  */
 public class ScientiFig extends javax.swing.JFrame implements PlugIn {
+
+    /**
+     * just to fix a bug related to batik 1.8 see:
+     * https://issues.apache.org/jira/browse/BATIK-1125 and
+     * https://github.com/hazelcast/hazelcast/issues/6614
+     */
+    static {
+        final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+        registry.register(new PNGRegistryEntry());
+        registry.register(new TIFFRegistryEntry());
+        System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+  //      ImageWriter writer = ImageWriterRegistry.getInstance().getWriterFor("image/png");
+//writer.writeImage(buf, os);
+    }
 
     /**
      * list of shortcuts
@@ -1173,7 +1191,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             /*
              * prefs are saved in xml format
              */
-            p.loadFromXML(in);
+                p.loadFromXML(in);
             /*
              * load soft parameters
              */
@@ -3820,6 +3838,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             root.setAttributeNS(null, "height", "841.89");
             root.setAttributeNS(null, "viewBox", "0 0 595.28 841.89");
         }
+        
+        //root.setAttributeNS(null, "viewBox", "0 0 2000 2000");
+		//	root.setAttributeNS(null, "preserveAspectRatio", "xMinYMin slice");		
+                	root.setAttributeNS(null, "preserveAspectRatio", "none");		
+			root.setAttributeNS(null, "style", "position: absolute; top:0; left:0; padding: 0; margin: 0;");
+        
         g2d.getRoot(root);
         g2d.dispose();
         SaverLight.saveAsSVG(doc, fichier);
@@ -4207,6 +4231,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 CommonClassesLight.Warning(this, "Please create a panel or a Figure first!");
             }
         } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (jd != null) {

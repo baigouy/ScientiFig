@@ -35,6 +35,7 @@ package MyShapes;
 
 import Commons.CommonClassesLight;
 import Commons.Loader;
+import Commons.MyGraphics2D;
 import Commons.SaverLight;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -54,18 +55,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+//import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.util.DOMUtilities;
+import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
+import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.apache.batik.gvt.CanvasGraphicsNode;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
+//import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
+//import org.w3c.dom.svg.SVGDocument;
 
 /**
  * MyImageVector extends myImage2D, but specifically handles vector images
@@ -79,11 +87,14 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
      * Variables
      */
     public static final long serialVersionUID = -6176423765056197861L;
-
-    static {
-        System.setProperty("org.apache.batik.warn_destination", "false");
+ static {
+     System.setProperty("org.apache.batik.warn_destination", "false");   
+     final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+        registry.register(new PNGRegistryEntry());
+        registry.register(new TIFFRegistryEntry());
+        System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
     }
-    double initial_elems_width;
+        double initial_elems_width;
     double initial_elems_height;
     AffineTransform at = new AffineTransform();
     double init_transX = 0;
@@ -261,6 +272,8 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         UserAgent userAgent = new UserAgentAdapter();
         DocumentLoader loader = new DocumentLoader(userAgent);
         BridgeContext bridgeContext = new BridgeContext(userAgent, loader);
+        bridgeContext.setDynamic(true);
+            bridgeContext.setDynamicState(BridgeContext.DYNAMIC);
         GVTBuilder builder = new GVTBuilder();
         if (document == null) {
             reloadDocFromString();
@@ -411,8 +424,10 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -441,8 +456,10 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             w.close();
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         if (assign) {
@@ -497,6 +514,11 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         cropping_rect.width = right;
         cropping_rect.y = up;
         cropping_rect.height = down;
+
+        /* we update the pdf viewBox */
+        /* TODO NB this might be useless and can be buggy too --> maybe remove ??? */
+        setViewSize((int) cropping_rect.x, (int) cropping_rect.y, (int) cropping_rect.width, (int) cropping_rect.height);
+
         isCropped = true;
     }
 
@@ -570,8 +592,10 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             createDocStuff();
         } catch (java.io.IOException ex) {
             StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
     }
@@ -581,36 +605,67 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         if (document == null) {
             reloadDocFromString();
         }
-        AffineTransform at2 = g2d.getTransform();
-        Shape clip = g2d.getClip();
-        Paint pt = g2d.getPaint();
-        if (clip != null) {
-            int begin_x = (int) Math.max((rec2d.x), clip.getBounds2D().getX());
-            int begin_y = (int) Math.max((rec2d.y), clip.getBounds2D().getY());
-            int end_x = (int) Math.min(rec2d.x + rec2d.width, clip.getBounds2D().getWidth() + clip.getBounds2D().getX());
-            int end_y = (int) Math.min(rec2d.y + rec2d.height, clip.getBounds2D().getHeight() + clip.getBounds2D().getY());
-            g2d.setClip(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
-        } else {
-            g2d.setClip((int) rec2d.x, (int) rec2d.y, (int) rec2d.width, (int) rec2d.height);
-        }
-        /*
+
+        if (true /*!(g2d instanceof MyGraphics2D) || ((g2d instanceof MyGraphics2D) && !((MyGraphics2D) g2d).isSVGPrecision())*/) {
+            AffineTransform at2 = g2d.getTransform();
+            Shape clip = g2d.getClip();
+            Paint pt = g2d.getPaint();
+            if (clip != null) {
+                int begin_x = (int) Math.max((rec2d.x), clip.getBounds2D().getX());
+                int begin_y = (int) Math.max((rec2d.y), clip.getBounds2D().getY());
+                int end_x = (int) Math.min(rec2d.x + rec2d.width, clip.getBounds2D().getWidth() + clip.getBounds2D().getX());
+                int end_y = (int) Math.min(rec2d.y + rec2d.height, clip.getBounds2D().getHeight() + clip.getBounds2D().getY());
+                g2d.setClip(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
+            } else {
+                g2d.setClip((int) rec2d.x, (int) rec2d.y, (int) rec2d.width, (int) rec2d.height);
+            }
+            /*
          * I implemented the crop of SVG via clipping
-         */
-        updateAT();
-        at.translate(-cropping_rect.x, -cropping_rect.y);
-        g2d.transform(at);
-        /*
-         * we paint the svg to the g2d
-         */
-        graphicsNode.paint(g2d);
-        /*
-         * we restore the initial paint parameters to avoid pbs
-         */
-        g2d.setClip(null);
-        g2d.setTransform(at2);
-        g2d.setPaint(pt);
-        super.drawAndFill(g2d);
-        g2d.setClip(clip);
+             */
+            updateAT();
+            at.translate(-cropping_rect.x, -cropping_rect.y);
+            g2d.transform(at);
+            
+            
+            
+            /*  
+             * we paint the svg to the g2d
+             */
+            graphicsNode.paint(g2d);
+            /*
+             * we restore the initial paint parameters to avoid pbs
+             */
+            g2d.setClip(null);
+            g2d.setTransform(at2);
+            g2d.setPaint(pt);
+            super.drawAndFill(g2d);
+            g2d.setClip(clip);
+        } else {
+
+            System.out.println(" initial_elems_width;" + initial_elems_width);
+            System.out.println(" initial_elems_height;" + initial_elems_height);
+            System.out.println(" init_transX;" + init_transX);
+            System.out.println(" init_transY;" + init_transY);
+            System.out.println("cur_pos" + cur_pos);
+            System.out.println(" top_initial_elems_width;" + top_initial_elems_width);
+            System.out.println(" top_initial_elems_height;" + top_initial_elems_height);
+            System.out.println(" top_init_transX = 0;" + top_init_transX);
+            System.out.println(" top_init_transY = 0;" + top_init_transY);
+            System.out.println("rec2d " +rec2d);
+            /* hack to fix erroneous drawing of svg images --> we simply embed them */
+//            Shape clip = g2d.getClip();
+//            if (clip != null) {
+//                System.out.println(clip.getBounds2D() + " " + rec2d.getBounds2D());
+//            }
+//            AffineTransform at = g2d.getTransform();
+//            if (at!=null)
+//            {
+//                System.out.println(at.getTranslateX()+" "+at.getTranslateY());
+//            }
+            //get the bounds of the doc
+            ((MyGraphics2D) g2d).drawImage(svg_content_serializable, 0,0, initial_elems_width, initial_elems_height);
+            super.drawAndFill(g2d);
+        }
     }
 
     @Override
@@ -660,6 +715,28 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         return "";
     }
 
+    public void setViewSize(int x, int y, int width, int height) {
+//        DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation(); 
+//String svgNS = "http://www.w3.org/2000/svg"; 
+//Document document = domImpl.createDocument(svgNS, "svg", null); 
+//
+//File fil = new File("C:/htmlTest.svg"); 
+//SVGGraphics2D svgGenerator = new SVGGraphics2D(document); 
+//
+//svgGenerator.setSVGCanvasSize(new Dimension(500,500)); 
+//txtCompLbl.print(svgGenerator); 
+
+        //Ã§a marche aussi en fait c'est comme cela qu'il faut appliquer un crop dans une sauvegarde
+        Element root = document.getDocumentElement();
+        root.setAttributeNS(null, "viewBox", x + " " + y + " " + width + " " + height);
+        //in fact this is the crop
+
+//voir comment gerer ca mais ca ne doit pas etre trop dur, il suffit de modifier le doc et de le cloner avec ca
+//sinon s'en foutre et reset la bbox à chaque import --> autre bonne solution en fait
+        doc2String(true);
+
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -692,5 +769,3 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         System.exit(0);
     }
 }
-
-

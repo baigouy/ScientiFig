@@ -46,10 +46,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
 import javax.imageio.ImageIO;
-import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+//import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
+//import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -59,7 +61,7 @@ import org.w3c.dom.svg.SVGDocument;
  * @since <B>Packing Analyzer 3.0</B>
  */
 public class SaverLight {
-
+    
     /**
      * Saving formats
      */
@@ -491,7 +493,7 @@ public class SaverLight {
         File f = new File(out);
         OutputStreamWriter writer = null;
         try {
-            writer = new OutputStreamWriter(new FileOutputStream(f), "utf-8");
+            writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             DOMUtilities.writeDocument(in, writer);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
