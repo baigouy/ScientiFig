@@ -224,7 +224,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
 
         buttonGroup2.add(jRadioButton4);
         jRadioButton4.setSelected(true);
-        jRadioButton4.setText("Cutsom");
+        jRadioButton4.setText("Custom");
         jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideOrShowJcombo2(evt);
@@ -248,7 +248,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
 
         buttonGroup3.add(jRadioButton6);
         jRadioButton6.setSelected(true);
-        jRadioButton6.setText("Cutsom");
+        jRadioButton6.setText("Custom");
         jRadioButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideOrShowJcombo3(evt);
@@ -272,7 +272,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
 
         buttonGroup4.add(jRadioButton8);
         jRadioButton8.setSelected(true);
-        jRadioButton8.setText("Cutsom");
+        jRadioButton8.setText("Custom");
         jRadioButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideOrShowJcombo4(evt);
@@ -296,7 +296,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Cutsom");
+        jRadioButton1.setText("Custom");
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideOrShowJcombo1(evt);
@@ -419,7 +419,7 @@ public class RMathFormulaEditor extends javax.swing.JPanel {
                                 .addComponent(jButton6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton7)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(0, 20, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(55, 55, 55)

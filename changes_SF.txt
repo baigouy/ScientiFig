@@ -1,3 +1,6 @@
+24/10/16
+-fixed typos
+
 16/10/16
 -minor improvments to emebedded/exprted svg files
 

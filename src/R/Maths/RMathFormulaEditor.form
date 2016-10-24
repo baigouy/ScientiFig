@@ -395,7 +395,7 @@
                   <ComponentRef name="buttonGroup2"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Cutsom"/>
+                <Property name="text" type="java.lang.String" value="Custom"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideOrShowJcombo2"/>
@@ -435,7 +435,7 @@
                   <ComponentRef name="buttonGroup3"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Cutsom"/>
+                <Property name="text" type="java.lang.String" value="Custom"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideOrShowJcombo3"/>
@@ -475,7 +475,7 @@
                   <ComponentRef name="buttonGroup4"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Cutsom"/>
+                <Property name="text" type="java.lang.String" value="Custom"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideOrShowJcombo4"/>
@@ -515,7 +515,7 @@
                   <ComponentRef name="buttonGroup1"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Cutsom"/>
+                <Property name="text" type="java.lang.String" value="Custom"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideOrShowJcombo1"/>
