@@ -61,7 +61,7 @@ import org.w3c.dom.svg.SVGDocument;
  * @since <B>Packing Analyzer 3.0</B>
  */
 public class SaverLight {
-    
+
     /**
      * Saving formats
      */
@@ -273,17 +273,18 @@ public class SaverLight {
     public static void save(BufferedImage image, String fichier) {
         save(FORMAT_AUTO, image, fichier);
     }
-    
+
     public static void save(Object image, String fichier) {
         //save(FORMAT_AUTO, image, fichier);
-        if (image instanceof MyGraphics2D)
-        {
-            if (fichier.toLowerCase().endsWith(".svg"))
-                ScientiFig.saveAsSVG(((MyGraphics2D)image).getGraphics2DSVG(), fichier,72);
-            else
-                save(((MyGraphics2D)image).getBufferedImage(), fichier);
-        }else if (image instanceof BufferedImage)
-            save(FORMAT_AUTO, (BufferedImage)image, fichier);
+        if (image instanceof MyGraphics2D) {
+            if (fichier.toLowerCase().endsWith(".svg")) {
+                ScientiFig.saveAsSVG(((MyGraphics2D) image).getGraphics2DSVG(), fichier, 72);
+            } else {
+                save(((MyGraphics2D) image).getBufferedImage(), fichier);
+            }
+        } else if (image instanceof BufferedImage) {
+            save(FORMAT_AUTO, (BufferedImage) image, fichier);
+        }
     }
 
     /**
@@ -335,8 +336,10 @@ public class SaverLight {
                     ImageIO.write(image, "jpg", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PNG) {
@@ -344,8 +347,10 @@ public class SaverLight {
                     ImageIO.write(image, "png", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_GIF) {
@@ -353,8 +358,10 @@ public class SaverLight {
                     ImageIO.write(image, "gif", fichier);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PPM_P6) {
@@ -374,8 +381,10 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_PPM_P3) {
@@ -411,8 +420,10 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_RAW || format == FORMAT_RAW_GNUPLOT) {
@@ -423,8 +434,10 @@ public class SaverLight {
                     sortie.close();
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             } else if (format == FORMAT_BMP) {
@@ -443,14 +456,6 @@ public class SaverLight {
             } else if (format == FORMAT_VOLATILE) {
                 popJ(image);
             } else if (format == FORMAT_TIF) {
-                /**
-                 * bug fix for imageJ showtime error, does not seem to cause
-                 * problems elsewhere
-                 */
-                /**
-                 * this was preventing IJ/FIJI to display images (due to batch mode). Furthermore it no longer seems necessary when a recent version of IJ is used.
-                 */
-                //Interpreter.batchMode = true;
                 /*
                  * I use ImageJ to save as tif (could also use JAI)
                  */
@@ -458,7 +463,6 @@ public class SaverLight {
                 ij.IJ.saveAs(ip, "tiff", fichier.toString());
                 ip.close();
                 ip.flush();
-//                Interpreter.batchMode=false;
             }
         }
     }
@@ -497,8 +501,10 @@ public class SaverLight {
             DOMUtilities.writeDocument(in, writer);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);ex.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         } finally {
             try {
@@ -507,6 +513,12 @@ public class SaverLight {
                     writer = null;
                 }
             } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String stacktrace = sw.toString();
+                pw.close();
+                System.err.println(stacktrace);
             }
         }
     }

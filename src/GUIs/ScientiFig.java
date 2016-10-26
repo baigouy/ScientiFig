@@ -173,7 +173,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         registry.register(new PNGRegistryEntry());
         registry.register(new TIFFRegistryEntry());
         System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
-  //      ImageWriter writer = ImageWriterRegistry.getInstance().getWriterFor("image/png");
+        //      ImageWriter writer = ImageWriterRegistry.getInstance().getWriterFor("image/png");
 //writer.writeImage(buf, os);
     }
 
@@ -1191,7 +1191,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             /*
              * prefs are saved in xml format
              */
-                p.loadFromXML(in);
+            p.loadFromXML(in);
             /*
              * load soft parameters
              */
@@ -3838,12 +3838,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             root.setAttributeNS(null, "height", "841.89");
             root.setAttributeNS(null, "viewBox", "0 0 595.28 841.89");
         }
-        
-        //root.setAttributeNS(null, "viewBox", "0 0 2000 2000");
-		//	root.setAttributeNS(null, "preserveAspectRatio", "xMinYMin slice");		
-                	root.setAttributeNS(null, "preserveAspectRatio", "none");		
-			root.setAttributeNS(null, "style", "position: absolute; top:0; left:0; padding: 0; margin: 0;");
-        
+
+//        root.setAttributeNS(null, "preserveAspectRatio", "none");
+//        root.setAttributeNS(null, "style", "position: absolute; top:0; left:0; padding: 0; margin: 0;");
+
         g2d.getRoot(root);
         g2d.dispose();
         SaverLight.saveAsSVG(doc, fichier);
