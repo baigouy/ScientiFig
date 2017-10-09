@@ -1,29 +1,14 @@
+//TODO make a WIKI page for SF whenever I have time --> see the two links below
+//TODO replace my crappy custom XML parser/writer by a legacy one --> may speed up things a bit maybe
+//http://forum.imagej.net/t/imagej-wiki-page-update-visualization/4276/4
+//https://imagej.net/Visualization
 //  ~/Library/Preferences/ http://rsbweb.nih.gov/ij/docs/guide/146-13.html --> TODO save the prefs of SF in there !!! --> will prevent me from having trouble
 //--> but need to do the same for TA ???
 //TODO add support for multiple ROIs --> 
-/**
- * import ij.*; import ij.process.*; import ij.gui.*; import java.awt.*; import
- * ij.plugin.*; import ij.plugin.frame.*;
- *
- * public class My_Plugin implements PlugIn {
- *
- * public void run(String arg) { ImagePlus imp = IJ.getImage(); RoiManager rm =
- * RoiManager.getInstance(); if (rm==null) rm = new RoiManager(); IJ.run("Hide
- * Overlay", ""); IJ.run("Show Overlay", ""); IJ.run("To ROI Manager", "");
- * rm.select(0); rm.select(1); rm.select(2); rm.select(1); rm.select(0);
- * rm.select(1); rm.select(2); rm.runCommand(imp,"Show None");
- * rm.runCommand(imp,"Show All"); rm.runCommand(imp,"Show None"); rm.select(1);
- * rm.select(0); rm.select(2); rm.select(0); rm.runCommand(imp,"Show All"); }
- *
- * }
- */
 //TODO implementer un zoom --> crop chaque direction de la meme maniere mm nb de px mettre un slider sans nb pr faire ça
 //implementer un drift qui fait changer les valeurs de crop left et right de maniere oppose, i.e. si perd 10 px a gauche alors on les ajoute a droite et faire pareil pour up and down
 //TODO allow spacing to be changed once panel is in a row --> need to check the type of object selected
 //TODO implement clean split of IJ images by channel rather than by color in case users gave weird colors to their channels
-/*
- * obfuscateSFnZIP --> compile then obfuscate and compress
- */
 package GUIs;
 
 import Checks.IllustratorOrInkscape;
@@ -79,13 +64,13 @@ import Dialogs.CapitalizeFirstLetterDialog;
 import Dialogs.ListOfShortcuts;
 import MyShapes.MagnificationChangeLoggable;
 import MyShapes.RoiConverter;
+import MyShapes.Transformable;
 import R.RSession.MyRsessionLogger;
 import Tools.ComponentBlinker;
 import ij.Macro;
 import ij.WindowManager;
 import ij.gui.Roi;
 import ij.io.FileInfo;
-import ij.io.ImageWriter;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
 import java.awt.Color;
@@ -102,6 +87,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -123,9 +109,9 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.ComponentInputMap;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -146,9 +132,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.ActionMapUIResource;
 import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
-import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+//import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
 import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.rosuda.REngine.REXPMismatchException;
@@ -171,8 +156,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     static {
         final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
         registry.register(new PNGRegistryEntry());
-        registry.register(new TIFFRegistryEntry());
+//        registry.register(new TIFFRegistryEntry());
         System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+        /* yet another batik warning that we have to deactivate*/
+        System.setProperty("org.apache.batik.warn_destination", "false");
         //      ImageWriter writer = ImageWriterRegistry.getInstance().getWriterFor("image/png");
 //writer.writeImage(buf, os);
     }
@@ -180,36 +167,40 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     /**
      * list of shortcuts
      */
-    private static final LinkedHashMap<String, String> shortcuts = new LinkedHashMap<String, String>();
+    /* default software shortcuts */
+    static LinkedHashMap<Object, String> defaultShortcuts = new LinkedHashMap<Object, String>();
 
     static {
-        /**
-         * Update list of shortcuts for mac users
-         */
-        String CtrlButtonName = "Ctrl";
-        if (CommonClassesLight.isMac()) {
-            CtrlButtonName = "Cmd";
-        }
-        shortcuts.put(CtrlButtonName + " & N", "New File");
-        shortcuts.put(CtrlButtonName + " & O", "Open Files");
-        shortcuts.put(CtrlButtonName + " & I", "Import Files");
-        shortcuts.put(CtrlButtonName + " & S", "Save");
-        shortcuts.put(CtrlButtonName + " & Shift & S", "Save");
-        shortcuts.put(CtrlButtonName + " & Q", "Quit");
-        shortcuts.put(CtrlButtonName + " & +", "Zoom +");
-        shortcuts.put(CtrlButtonName + " & -", "Zoom -");
-        shortcuts.put(CtrlButtonName + " & Z", "Undo (undo/redo needs to be active)");
-        shortcuts.put(CtrlButtonName + " & Y", "Redo (undo/redo needs to be active)");
-        shortcuts.put("L", "Rotate image left");
-        shortcuts.put("R", "Rotate image right");
-        shortcuts.put(CtrlButtonName + " & J", "Create a new journal style");
-        shortcuts.put(CtrlButtonName + " & E", "Edit selected journal style");
-        shortcuts.put(CtrlButtonName + " & Left arrow", "Move selection left");
-        shortcuts.put(CtrlButtonName + " & Right arrow", "Move selection right");
-        shortcuts.put("- / Del", "Delete selection");
-        shortcuts.put("+", "Add images to the selected panel");
-        shortcuts.put("F1", "Help");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "New File");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Open Files");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Import Files");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Save");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() + KeyEvent.SHIFT_MASK), "Save As");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Quit");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Zoom +");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Zoom -");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Undo (undo/redo needs to be active)");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo (undo/redo needs to be active)");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, 0), "Rotate image left");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "Rotate image right");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_J, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Create a new journal style");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Edit selected journal style");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Move selection left");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Move selection right");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Delete selection");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "Add images to the selected panel");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "Remove images to the selected panel");
+        defaultShortcuts.put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "Help");
+//        defaultShortcuts.put("Middle mouse", "Save the current mask");
+//        defaultShortcuts.put("Left+Right mouse", "Apply correction");
     }
+    /* user modified shortcuts */
+    static LinkedHashMap<Object, String> currentShortcuts = new LinkedHashMap<Object, String>();
+
+    static {
+        currentShortcuts.putAll(defaultShortcuts);
+    }
+
     /**
      * Variables
      */
@@ -239,11 +230,11 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     private static int import_J = 0;
     public static boolean rowAutoSameHeight = true;
     String letter = "B";
-    public static final String currentyear = CommonClassesLight.getYear();
+    public static final String CURRENT_YEAR = CommonClassesLight.getYear();
     public static String name_to_load;
     public boolean loading = false;
-    public static final String version = "3.01";
-    public static final String software_name = "ScientiFig";
+    public static final String VERSION = "3.1";
+    public static final String SOFTWARE_NAME = "ScientiFig";
     public static ArrayList<String> yf5m_files = new ArrayList<String>();
     private int PanelCounter = 1;
     DefaultListModel tableListModel = new DefaultListModel();
@@ -257,6 +248,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     HashMap<Integer, Montage> panels = new HashMap<Integer, Montage>();
     double resolution = 72;
     public static HashMap<String, SerializableBufferedImage2> imported_from_J = new HashMap<String, SerializableBufferedImage2>();
+    /* contains images sent back to the "image list" that no longer exist on the drive */
+    public static HashMap<String, Object> temporarilyInMemObjectImagesSentBackToImageList = new HashMap<String, Object>();
+    /* in mem image counter to make in mem images all unique */
+    public static volatile int currentInMemCounter = 0;
     HashMap<String, Double> imported_from_pixel_size = new HashMap<String, Double>();
     public static boolean isUndoRedoAllowed = false;
     public static int MAX_UNDOS = 10;
@@ -273,23 +268,23 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     public static boolean useNativeDialog = false;
     public static boolean showHelpInfoWindow = true;
     ScheduledExecutorService refreshMemory = Executors.newSingleThreadScheduledExecutor();
-    private static final ArrayList<String> exts = new ArrayList<String>();
+    private static final ArrayList<String> EXTS = new ArrayList<String>();
     /**
      * alternate between fit width or height
      */
     private static boolean fitWidth = true;
 
     static {
-        exts.add(".figur");
-        exts.add(".jpg");
-        exts.add(".jpeg");
-        exts.add(".png");
-        exts.add(".bmp");
-        exts.add(".gif");
-        exts.add(".tga");
-        exts.add(".tif");
-        exts.add(".tiff");
-        exts.add(".svg");
+        EXTS.add(".figur");
+        EXTS.add(".jpg");
+        EXTS.add(".jpeg");
+        EXTS.add(".png");
+        EXTS.add(".bmp");
+        EXTS.add(".gif");
+        EXTS.add(".tga");
+        EXTS.add(".tif");
+        EXTS.add(".tiff");
+        EXTS.add(".svg");
     }
     Object current_selected_shapeBlock;
     Object current_selected_shapeRow;
@@ -337,6 +332,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
      * A log window for java errors
      */
     LogFrame logger;
+    static JRootPane rtPane;
 
     public static PopulateJournalStyles styles = getStyles();
     ROIpanelLight r1 = new ROIpanelLight() {
@@ -381,6 +377,10 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             } catch (Exception e) {
             }
         }
+        /* we add shortcuts */
+        addAccelerators();
+        /* we import parameters and user custom shotcuts */
+        rtPane = this.getRootPane();
         if (!ScientiFig.propertiesLoaded) {
             load_properties(this.getClass());
         }
@@ -463,7 +463,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 listClicked(evt);
             }
         });
-        JRootPane rtPane = this.getRootPane();
+
         rtPane.setGlassPane(glasspane);
         glasspane.setVisible(true);
         glasspane.setOpaque(false);
@@ -487,7 +487,15 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         this.setIconImage(icon.getImage());
         ief.setIconImage(icon.getImage());
         r2.setMultiClickAllowsForDeeperSelectionOfElements(true);
-        addAccelerators();
+
+    }
+
+    /**
+     *
+     * @return the current SF version
+     */
+    public static String getVersion() {
+        return VERSION;
     }
 
     private void addAccelerators() {
@@ -497,115 +505,204 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
  /*
          * ctrl +/zoom +
          */
-        InputMap im = new ComponentInputMap(zoomPlus);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "zoomPlus");
-        ActionMap am = new ActionMapUIResource();
-        am.put("zoomPlus", new AbstractAction("zoomPlus") {
+//        InputMap im = new ComponentInputMap(zoomPlus);
+
+        InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        /* we load default shortcuts */
+        CommonClassesLight.resetShortcuts(im, defaultShortcuts);
+
+        rootPane.getActionMap().put(
+                "Zoom +",
+                new AbstractAction("Zoom +") {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent e) {
                 runAllnow(zoomPlus);
             }
         });
-        SwingUtilities.replaceUIActionMap(zoomPlus, am);
-        SwingUtilities.replaceUIInputMap(zoomPlus, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
+
+//        SwingUtilities.replaceUIActionMap(zoomPlus, am);
+//        SwingUtilities.replaceUIInputMap(zoomPlus, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
 
         /*
          * ctrl -/zoom -
          */
-        im = new ComponentInputMap(zoomMinus);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "zoomMinus");
-        am = new ActionMapUIResource();
-        am.put("zoomMinus", new AbstractAction("zoomMinus") {
+//        im = new ComponentInputMap(zoomMinus);
+////        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "zoomMinus");
+////        am = new ActionMapUIResource();
+////        am.put("zoomMinus", new AbstractAction("zoomMinus") {
+////            @Override
+////            public void actionPerformed(ActionEvent actionEvent) {
+////                runAllnow(zoomMinus);
+////            }
+////        });
+        rootPane.getActionMap().put(
+                "Zoom -",
+                new AbstractAction("Zoom -") {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent e) {
                 runAllnow(zoomMinus);
             }
         });
-        SwingUtilities.replaceUIActionMap(zoomMinus, am);
-        SwingUtilities.replaceUIInputMap(zoomMinus, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
 
         /*
          * L --> rotate left
          */
-        im = new ComponentInputMap(rotateLeft);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, 0), "rotateLeft");
-        am = new ActionMapUIResource();
-        am.put("rotateLeft", new AbstractAction("rotateLeft") {
+        rootPane.getActionMap().put(
+                "Rotate image left",
+                new AbstractAction("Rotate image left") {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent e) {
                 runAllnow(rotateLeft);
             }
         });
-        SwingUtilities.replaceUIActionMap(rotateLeft, am);
-        SwingUtilities.replaceUIInputMap(rotateLeft, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
 
         /*
          * R --> rotate right
          */
-        im = new ComponentInputMap(rotateRight);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "rotateRight");
-        am = new ActionMapUIResource();
-        am.put("rotateRight", new AbstractAction("rotateRight") {
+        rootPane.getActionMap().put(
+                "Rotate image right",
+                new AbstractAction("Rotate image right") {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent e) {
                 runAllnow(rotateRight);
             }
         });
-        SwingUtilities.replaceUIActionMap(rotateRight, am);
-        SwingUtilities.replaceUIInputMap(rotateRight, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
+
+        rootPane.getActionMap().put(
+                "New File",
+                new AbstractAction("New File") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(New);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Open Files",
+                new AbstractAction("Open Files") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(OpenYF5M);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Import Files",
+                new AbstractAction("Import Files") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(jMenuItemImport);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Save",
+                new AbstractAction("Save") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(Save);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Save As",
+                new AbstractAction("Save As") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(SaveAs);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Quit",
+                new AbstractAction("Quit") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(Quit);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Undo (undo/redo needs to be active)",
+                new AbstractAction("Undo (undo/redo needs to be active)") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(jMenuItemUndo);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Redo (undo/redo needs to be active)",
+                new AbstractAction("Redo (undo/redo needs to be active)") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(jMenuItemRedo);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Create a new journal style",
+                new AbstractAction("Create a new journal style") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(newJournalStyle);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Edit selected journal style",
+                new AbstractAction("Edit selected journal style") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(jMenuItemEditJournalStyle);
+            }
+        });
+
+        rootPane.getActionMap().put(
+                "Help",
+                new AbstractAction("Help") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAllnow(jMenuHelp);
+            }
+        });
 
         /*
          * shortcut to add images
          */
-        im = new ComponentInputMap(addSelectedImagesInCurPanel);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "add");
-        am = new ActionMapUIResource();
-        am.put("add", new AbstractAction("add") {
+        rootPane.getActionMap().put(
+                "Add images to the selected panel",
+                new AbstractAction("Add images to the selected panel") {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent e) {
                 runAllnow(addSelectedImagesInCurPanel);
             }
         });
-        SwingUtilities.replaceUIActionMap(addSelectedImagesInCurPanel, am);
-        SwingUtilities.replaceUIInputMap(addSelectedImagesInCurPanel, JComponent.WHEN_IN_FOCUSED_WINDOW, im);
         /*
          * now we add shortcuts to the GUI
          */
-        im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "substract");
-        rootPane.getActionMap().put("substract", new AbstractAction("substract") {
+        rootPane.getActionMap().put("Delete selection", new AbstractAction("Delete selection") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 runAllnow(deleteButton);
             }
         });
-        im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), "minus");
-        rootPane.getActionMap().put("minus", new AbstractAction("minus") {
+        rootPane.getActionMap().put("Remove images to the selected panel", new AbstractAction("Remove images to the selected panel") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 runAllnow(deleteButton);
             }
         });
-        im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "del");
-        rootPane.getActionMap().put("del", new AbstractAction("del") {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                runAllnow(deleteButton);
-            }
-        });
-        im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Ctrl+LEFT");
-        rootPane.getActionMap().put("Ctrl+LEFT", new AbstractAction("Ctrl+LEFT") {
+
+        rootPane.getActionMap().put("Move selection left", new AbstractAction("Move selection left") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 runAllnow(moveLeft);
             }
         });
-        im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Ctrl+RIGHT");
-        rootPane.getActionMap().put("Ctrl+RIGHT", new AbstractAction("Ctrl+RIGHT") {
+
+        rootPane.getActionMap().put("Move selection right", new AbstractAction("Move selection right") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 runAllnow(moveRight);
@@ -1233,6 +1330,62 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 }
             } catch (Exception e) {
             }
+            try {
+                /* we reload keyboard shortcuts */
+                boolean first = true;
+                ArrayList<String> names = new ArrayList<String>(p.stringPropertyNames());
+                LinkedHashMap<Object, String> importedShortcuts = new LinkedHashMap<Object, String>();
+                for (int i = 0; i < names.size(); i++) {
+                    try {
+                        String cur_prop = names.get(i);
+                        if (cur_prop.startsWith("shortcut:")) {
+                            if (first) {
+                                System.out.println("importing user defined shortcuts");
+                                first = false;
+                            }
+                            if (cur_prop.matches("shortcut:\\d{1,}.+\\d{1,}")) {
+                                /* we parse it to recover the shortcuts */
+                                ArrayList<Integer> shortcutsKeyCodes = new ArrayList<Integer>();
+                                Pattern pat = Pattern.compile("-?\\d+");
+                                Matcher m = pat.matcher(cur_prop.replaceAll("shortcut:", ""));
+                                while (m.find()) {
+                                    shortcutsKeyCodes.add(Integer.parseInt(m.group()));
+                                }
+                                if (!shortcutsKeyCodes.isEmpty()) {
+                                    KeyStroke k = KeyStroke.getKeyStroke(shortcutsKeyCodes.get(1), shortcutsKeyCodes.get(0));
+                                    String val = p.getProperty(cur_prop);
+                                    importedShortcuts.put(k, val);
+                                }
+                            } else {
+                                importedShortcuts.put(cur_prop.replaceAll("shortcut:", ""), p.getProperty(cur_prop));
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                /* We clean the imported shortcuts, i.e. we import only user modified ones */
+                for (Map.Entry<Object, String> entry : importedShortcuts.entrySet()) {
+                    Object key = entry.getKey();
+                    String value = entry.getValue();
+                    if (currentShortcuts.containsValue(value)) {
+                        for (Map.Entry<Object, String> entry2 : currentShortcuts.entrySet()) {
+                            Object key2 = entry2.getKey();
+                            String value2 = entry2.getValue();
+                            if (value2.equals(value)) {
+                                /* we found an overridden command --> we gonna delete it */
+                                currentShortcuts.remove(key2);
+                                break;
+                            }
+                        }
+                    }
+                }
+                /* two shortcuts are the same the user ones wil override the stuff */
+                currentShortcuts.putAll(importedShortcuts);
+                /* apply new shortcuts */
+                CommonClassesLight.resetShortcuts(rtPane, currentShortcuts);
+            } catch (Exception e) {
+            }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -1258,8 +1411,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         if (undo != null) {
             undo.setVisible(isUndoRedoAllowed);
             redo.setVisible(isUndoRedoAllowed);
-            jMenuItem14.setEnabled(isUndoRedoAllowed);
-            jMenuItem21.setEnabled(isUndoRedoAllowed);
+            jMenuItemUndo.setEnabled(isUndoRedoAllowed);
+            jMenuItemRedo.setEnabled(isUndoRedoAllowed);
         }
     }
 
@@ -1281,6 +1434,25 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             p.setProperty("Show help info window", showHelpInfoWindow + "");
             p.setProperty("Force usage of all cores", useAllCores + "");
             p.setProperty("Max number of processors to use", nbOfCPUs2Use + "");
+            try {
+                /* store user defined shortcuts */
+                for (Map.Entry<Object, String> entry : currentShortcuts.entrySet()) {
+                    Object key = entry.getKey();
+                    String value = entry.getValue();
+                    Object defaultKey = defaultShortcuts.get(key);
+                    /* we skip default shortcuts and only store user modified ones */
+                    if (defaultKey != null && value.equals((String) defaultKey)) {
+                        continue;
+                    }
+                    if (key instanceof KeyStroke) {
+                        KeyStroke k = (KeyStroke) key;
+                        p.setProperty("shortcut:" + k.getModifiers() + "," + k.getKeyCode(), value);
+                    } else {
+                        p.setProperty("shortcut:" + key.toString(), value);
+                    }
+                }
+            } catch (Exception e) {
+            }
             out = new FileOutputStream(folder_of_jar + "/ScientiFigPrefs.prefs");
             p.storeToXML(out, "last update " + new Date().toString());//put date
         } catch (Exception ex) {
@@ -1587,7 +1759,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         jMenu1 = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
         OpenYF5M = new javax.swing.JMenuItem();
-        jMenuItem19 = new javax.swing.JMenuItem();
+        jMenuItemImport = new javax.swing.JMenuItem();
         Save = new javax.swing.JMenuItem();
         SaveAs = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -1601,11 +1773,11 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         Quit = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenuItem18 = new javax.swing.JMenuItem();
-        jMenuItem14 = new javax.swing.JMenuItem();
-        jMenuItem21 = new javax.swing.JMenuItem();
+        jMenuItemUndo = new javax.swing.JMenuItem();
+        jMenuItemRedo = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         newJournalStyle = new javax.swing.JMenuItem();
-        jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItemEditJournalStyle = new javax.swing.JMenuItem();
         deleteJournalStyle = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
@@ -1618,7 +1790,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         capitalizeFirstLetter = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         launchFigur = new javax.swing.JMenuItem();
-        jMenu14 = new javax.swing.JMenu();
+        jMenuHelp = new javax.swing.JMenu();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem13 = new javax.swing.JMenuItem();
         showShortcuts = new javax.swing.JMenuItem();
@@ -1673,7 +1845,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         moveRight.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle(software_name+" v"+version);
+        setTitle(SOFTWARE_NAME+" v"+VERSION);
         setIconImage(new ImageIcon(getClass().getClassLoader().getResource("Icons/icon_029.png")).getImage());
         setMinimumSize(new java.awt.Dimension(1024, 630));
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -2839,7 +3011,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 
         jMenu1.setText("File");
 
-        New.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         New.setText("New");
         New.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2848,7 +3019,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu1.add(New);
 
-        OpenYF5M.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         OpenYF5M.setText("Open (or drag and drop)");
         OpenYF5M.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2857,16 +3027,14 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu1.add(OpenYF5M);
 
-        jMenuItem19.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem19.setText("Import images (or drag and drop)");
-        jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemImport.setText("Import images (or drag and drop)");
+        jMenuItemImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
             }
         });
-        jMenu1.add(jMenuItem19);
+        jMenu1.add(jMenuItemImport);
 
-        Save.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         Save.setText("Save");
         Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2875,7 +3043,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu1.add(Save);
 
-        SaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         SaveAs.setText("Save as...");
         SaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2945,7 +3112,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu1.add(extract_images);
 
-        Quit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         Quit.setText("Quit");
         Quit.setToolTipText("Quit");
         Quit.addActionListener(new java.awt.event.ActionListener() {
@@ -2967,30 +3133,27 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu5.add(jMenuItem18);
 
-        jMenuItem14.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem14.setText("Undo");
-        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemUndo.setText("Undo");
+        jMenuItemUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem14ActionPerformed(evt);
+                jMenuItemUndoActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem14);
+        jMenu5.add(jMenuItemUndo);
 
-        jMenuItem21.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem21.setText("Redo");
-        jMenuItem21.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemRedo.setText("Redo");
+        jMenuItemRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem21ActionPerformed(evt);
+                jMenuItemRedoActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem21);
+        jMenu5.add(jMenuItemRedo);
 
         jMenuBar1.add(jMenu5);
 
         jMenu11.setText("Journals");
         jMenu11.setToolTipText("");
 
-        newJournalStyle.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.CTRL_MASK));
         newJournalStyle.setText("Create new journal/plot style");
         newJournalStyle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2999,14 +3162,13 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         });
         jMenu11.add(newJournalStyle);
 
-        jMenuItem11.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem11.setText("Edit current journal/plot style");
-        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemEditJournalStyle.setText("Edit current journal/plot style");
+        jMenuItemEditJournalStyle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
             }
         });
-        jMenu11.add(jMenuItem11);
+        jMenu11.add(jMenuItemEditJournalStyle);
 
         deleteJournalStyle.setText("Permanently Delete journal/plot style");
         deleteJournalStyle.addActionListener(new java.awt.event.ActionListener() {
@@ -3098,16 +3260,15 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 
         jMenuBar1.add(jMenu6);
 
-        jMenu14.setText("Help/Licenses/Citations");
+        jMenuHelp.setText("Help/Licenses/Citations");
 
-        jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
         jMenuItem8.setText("Help content");
         jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runAll(evt);
             }
         });
-        jMenu14.add(jMenuItem8);
+        jMenuHelp.add(jMenuItem8);
 
         jMenuItem13.setText("View a demo of the functionalities of the next button/spinner you are going to click on");
         jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
@@ -3115,7 +3276,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 helpVideo(evt);
             }
         });
-        jMenu14.add(jMenuItem13);
+        jMenuHelp.add(jMenuItem13);
 
         showShortcuts.setText("Shortcuts");
         showShortcuts.addActionListener(new java.awt.event.ActionListener() {
@@ -3123,7 +3284,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 runAll(evt);
             }
         });
-        jMenu14.add(showShortcuts);
+        jMenuHelp.add(showShortcuts);
 
         jMenuItem2.setText("Show R installation guidelines");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -3131,7 +3292,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 runAll(evt);
             }
         });
-        jMenu14.add(jMenuItem2);
+        jMenuHelp.add(jMenuItem2);
 
         jMenuItem9.setText("About/licenses");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -3139,7 +3300,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 runAll(evt);
             }
         });
-        jMenu14.add(jMenuItem9);
+        jMenuHelp.add(jMenuItem9);
 
         citations.setText("Citations");
         citations.addActionListener(new java.awt.event.ActionListener() {
@@ -3147,9 +3308,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 runAll(evt);
             }
         });
-        jMenu14.add(citations);
+        jMenuHelp.add(citations);
 
-        jMenuBar1.add(jMenu14);
+        jMenuBar1.add(jMenuHelp);
 
         setJMenuBar(jMenuBar1);
 
@@ -3243,12 +3404,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     public void updateTitle(String name) {
         try {
             if (name == null) {
-                setTitle(software_name + " v" + version);
+                setTitle(SOFTWARE_NAME + " v" + VERSION);
             } else {
-                setTitle(software_name + " v" + version + " - " + new File(name).getName());
+                setTitle(SOFTWARE_NAME + " v" + VERSION + " - " + new File(name).getName());
             }
         } catch (Exception e) {
-            setTitle(software_name + " v" + version);
+            setTitle(SOFTWARE_NAME + " v" + VERSION);
         }
     }
 
@@ -3590,7 +3751,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             showAppropriateOptions(myList1);
             if (myList1.getSelectedIndex() >= 0 && myList1.getSelectedIndex() < myList1.Size()) {
                 String sel = myList1.getSelectedValue();
-                if (!sel.contains("importJ:")) {
+                if (!sel.contains("importJ:") && !sel.contains("inMem:")) {
                     if (!sel.toLowerCase().endsWith(".svg") && !sel.toLowerCase().endsWith(".figur")) {
                         MyImage2D.Double prev = new MyImage2D.Double(0, 0, myList1.getSelectedValue());
                         setImageDisplay(prev);
@@ -3600,9 +3761,13 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     } else {
                         setImageDisplay(new MyImageVector.Double(new Loader().loadSVGDocument(sel)));
                     }
-                } else if (imported_from_J.containsKey(sel)) {
+                } else if (sel.contains("importJ:") && imported_from_J.containsKey(sel)) {
                     setImageDisplay(new MyImage2D.Double(0, 0, sel, imported_from_J.get(sel).getBufferedImage()));
+                } /* bug fix for images sent back to the image list while deleted from the disk or moved */ else if (sel.contains("inMem:") && temporarilyInMemObjectImagesSentBackToImageList.containsKey(sel)) {
+                    /* display the object */
+                    setImageDisplay(temporarilyInMemObjectImagesSentBackToImageList.get(sel));
                 }
+
             }
         }
     }
@@ -3732,6 +3897,21 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 for (Object object : group) {
                     if (object instanceof Namable) {
                         String name = ((Namable) object).getFullName();
+                        /* crops have a short name that does not match full name so I can force them in mem, see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282 */
+                        String shortName = ((Namable) object).getShortName();
+                        if (!CommonClassesLight.getName(name).endsWith(shortName) && shortName.contains("-crop-")) {
+                            /* we force the file not to exist, dirty hack */
+                            shortName = shortName + "-" + (++currentInMemCounter);
+                            try {
+                                name = new File(name).getParent();
+                            } catch (Exception e) {
+                            }
+                            name += CommonClassesLight.change_path_separators_to_system_ones("/" + shortName);
+                            ((Namable) object).setFullName(name);
+                            if (object instanceof MyImage2D) {
+                                ((MyImage2D) object).setShortName(shortName);
+                            }
+                        }
                         if (name != null && name.contains("importJ:")) {
                             name = CommonClassesLight.change_path_separators_to_system_ones(name);
                             SerializableBufferedImage2 sb = ((MyImage2D) object).getOriginalImage();
@@ -3751,6 +3931,24 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             if (name != null) {//bug fix for color blind splits
                                 if (new File(name).exists()) {
                                     files_to_add.add(name);
+                                } else {
+                                    /* handles in mem images, i.e. deleted images sent back to original list that only exist in memory  http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/3 */
+                                    /*
+                                    http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/3
+                                    -possible fixes 
+                                        --> embed also the list of original files but that may make the file huge
+                                        --> open a dialog to get the file from the new loaction on the disk
+                                        --> save file as temporary image and reload it when necessary (warn it is gonna be deleted if SF is closed)
+                                        --> could also do a combination of all of these parameters --> think about it
+                                        --> maybe also apply the fixes to FiguR
+                                        --> think how to handle these issues in SVID
+                                        --> check if the bug is different for crops
+                                        --> could also check if file exists in the root path of the yf5m file (yes and no that is complex as I may load several yf5m files)
+                                        --> alternatively I could convert it to an IJ import file ??? --> maybe that is the simplest solution
+                                        --> I could also serialize the image object and reload it if necessary ???? maybe it is a bad idea
+                                     */
+                                    addToInMemory(object, name);
+
                                 }
                             }
                         }
@@ -3841,7 +4039,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
 
 //        root.setAttributeNS(null, "preserveAspectRatio", "none");
 //        root.setAttributeNS(null, "style", "position: absolute; top:0; left:0; padding: 0; margin: 0;");
-
         g2d.getRoot(root);
         g2d.dispose();
         SaverLight.saveAsSVG(doc, fichier);
@@ -4115,7 +4312,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //save the file as file.log.txt
         }
     }
 
@@ -4569,7 +4765,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         lastExportFolder = null;
         rows.clear();
         panels.clear();
+        /* we reset IJ imports */
         imported_from_J.clear();
+        /* we reset the inMem images and inMem counter */
+        temporarilyInMemObjectImagesSentBackToImageList.clear();
+        currentInMemCounter = 0;
+        /* we empty the list */
         myList1.clearList();
         tableContentListModel.clear();
         tableListModel.clear();
@@ -4770,6 +4971,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     /**
      *
      * @param images
+     * @param ignore_size_errors
      * @return Converts selected images to vectorial objects
      */
     public ArrayList<Object> getShapes(ArrayList<String> images, boolean ignore_size_errors) {
@@ -4779,8 +4981,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             int size_y = -1;
             double AspectRatio = -1;
             for (String string : images) {
-                MyImage2D tmp;
-                if (!string.contains("importJ:")) {
+                MyImage2D tmp = null;
+                if (!string.contains("importJ:") && !string.contains("inMem:")) {
                     if (!string.toLowerCase().endsWith(".svg") && !string.toLowerCase().endsWith(".figur")) {
                         Loader l2 = new Loader();
                         BufferedImage bimg = l2.loadWithImageJ8bitFix(string);
@@ -4807,11 +5009,18 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     } else {
                         tmp = new MyImageVector.Double(0, 0, string, new Loader().loadSVGDocument(string));
                     }
-                } else {
+                } else if (string.contains("importJ:")) {
                     tmp = new MyImage2D.Double(0, 0, string, imported_from_J.get(string).getBufferedImage());
                     if (imported_from_pixel_size.containsKey(string)) {
                         tmp.setSize_of_one_px_in_unit(imported_from_pixel_size.get(string));
                     }
+                } else if (string.contains("inMem:")) {
+                    if (temporarilyInMemObjectImagesSentBackToImageList.containsKey(string)) {
+                        tmp = (MyImage2D.Double) temporarilyInMemObjectImagesSentBackToImageList.get(string);
+                    }
+                }
+                if (tmp == null) {
+                    return null;
                 }
                 if (size_x == -1) {
                     size_x = tmp.getImageWidth();
@@ -5149,8 +5358,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
      * @return a myimage2D for a file
      */
     public MyImage2D getImage(String name) {
-        MyImage2D tmp;
-        if (!name.contains("importJ:")) {
+        MyImage2D tmp = null;
+        if (!name.contains("importJ:") && !name.contains("inMem:")) {
             if (!name.toLowerCase().endsWith(".svg") && !name.toLowerCase().endsWith(".figur")) {
                 Loader l2 = new Loader();
                 BufferedImage bimg = l2.loadWithImageJ8bitFix(name);
@@ -5176,12 +5385,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             } else {
                 tmp = new MyImageVector.Double(0, 0, name, new Loader().loadSVGDocument(name));
             }
-        } else {
+        } else if (name.contains("importJ:")) {
             tmp = new MyImage2D.Double(0, 0, name, imported_from_J.get(name).getBufferedImage());
             if (imported_from_pixel_size != null) {
                 if (imported_from_pixel_size.get(name) != null) {
                     tmp.setSize_of_one_px_in_unit(imported_from_pixel_size.get(name));
                 }
+            }
+        } else if (name.contains("inMem:")) {
+            /* we handle in mem images if they exist */
+            if (temporarilyInMemObjectImagesSentBackToImageList.containsKey(name)) {
+                tmp = (MyImage2D) temporarilyInMemObjectImagesSentBackToImageList.get(name);
             }
         }
         return tmp;
@@ -5586,8 +5800,11 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             ignoreWarnForSave = true;
         }
         if (source == showShortcuts) {
-            ListOfShortcuts spane = new ListOfShortcuts(shortcuts);
+            ListOfShortcuts spane = new ListOfShortcuts(currentShortcuts, defaultShortcuts);
             JOptionPane.showMessageDialog(this, spane, "List of shortcuts", JOptionPane.PLAIN_MESSAGE);
+            /* we updte current shortcuts */
+            currentShortcuts = spane.getShortcuts();
+            CommonClassesLight.resetShortcuts(this.getRootPane(), currentShortcuts);
             return;
         }
         if (source == zoomMinus) {
@@ -6361,6 +6578,21 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             for (Object object : images) {
                                 if (object instanceof Namable) {
                                     String name = ((Namable) object).getFullName();
+                                    /* crops have a short name that does not match full name so I can force them in mem, see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282 */
+                                    String shortName = ((Namable) object).getShortName();
+                                    if (!CommonClassesLight.getName(name).endsWith(shortName) && shortName.contains("-crop-")) {
+                                        /* we force the file not to exist, dirty hack */
+                                        shortName = shortName + "-" + (++currentInMemCounter);
+                                        try {
+                                            name = new File(name).getParent();
+                                        } catch (Exception e) {
+                                        }
+                                        name += CommonClassesLight.change_path_separators_to_system_ones("/" + shortName);
+                                        ((Namable) object).setFullName(name);
+                                        if (object instanceof MyImage2D) {
+                                            ((MyImage2D) object).setShortName(shortName);
+                                        }
+                                    }
                                     if (name != null && name.contains("importJ:")) {
                                         SerializableBufferedImage2 sb = ((MyImage2D) object).getOriginalImage();
                                         if (!imported_from_J.containsKey(name)) {
@@ -6374,6 +6606,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                         myList1.addDirectlyToList(name, sb.getBufferedImage());
                                     } else if (name != null && new File(name).exists()) {
                                         files_to_add.add(name);
+                                    } else if (name != null && !new File(name).exists()) {
+                                        /* handle in mem images (deleted files sent to image list) */
+                                        addToInMemory(object, name);
                                     }
                                 }
                             }
@@ -6397,6 +6632,21 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                             if (cur_sel instanceof Namable) {
                                 ArrayList<String> files_to_add = new ArrayList<String>();
                                 String name = ((Namable) cur_sel).getFullName();
+                                /* crops have a short name that does not match full name so I can force them in mem, see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282 */
+                                String shortName = ((Namable) cur_sel).getShortName();
+                                if (!CommonClassesLight.getName(name).endsWith(shortName) && shortName.contains("-crop-")) {
+                                    /* we force the file not to exist, dirty hack */
+                                    shortName = shortName + "-" + (++currentInMemCounter);
+                                    try {
+                                        name = new File(name).getParent();
+                                    } catch (Exception e) {
+                                    }
+                                    name += CommonClassesLight.change_path_separators_to_system_ones("/" + shortName);
+                                    ((Namable) cur_sel).setFullName(name);
+                                    if (cur_sel instanceof MyImage2D) {
+                                        ((MyImage2D) cur_sel).setShortName(shortName);
+                                    }
+                                }
                                 if (name != null && name.contains("importJ:")) {
                                     SerializableBufferedImage2 sb = ((MyImage2D) cur_sel).getOriginalImage();
                                     if (!imported_from_J.containsKey(name)) {
@@ -6408,10 +6658,11 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                         imported_from_J.put(name, sb);
                                     }
                                     myList1.addDirectlyToList(name, sb.getBufferedImage());
-                                } else if (name != null) {
-                                    if (new File(name).exists()) {
-                                        files_to_add.add(name);
-                                    }
+                                } else if (name != null && new File(name).exists()) {
+                                    files_to_add.add(name);
+                                } else if (name != null && !new File(name).exists()) {
+                                    /* handles deleted images sent to image list */
+                                    addToInMemory(cur_sel, name);
                                 }
                                 myList1.addAllNoCheck(files_to_add);
                             }
@@ -6525,6 +6776,8 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             ArrayList<String> list = myList1.getSelection();
             for (String string : list) {
                 imported_from_J.remove(string);
+                /* remove image from mem if people really don't want to keep this image */
+                temporarilyInMemObjectImagesSentBackToImageList.remove(string);
                 imported_from_pixel_size.remove(string);
                 myList1.removeSelection();
             }
@@ -6641,7 +6894,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                         Montage b = panels.get(real_pos);
                         ArrayList<String> image_names = myList1.getSelection();//MyList2.MULTI_SEL);
                         for (String string : image_names) {
-                            if (!string.contains("importJ:")) {
+                            if (!string.contains("importJ:") && !string.contains("inMem:")) {
                                 if (!string.toLowerCase().endsWith(".svg") && !string.toLowerCase().endsWith(".figur")) {
                                     b.addShape2(new MyImage2D.Double(0, 0, string));
                                 } else if (string.toLowerCase().endsWith(".figur")) {
@@ -6660,7 +6913,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                 } else {
                                     b.addShape2(new MyImageVector.Double(0, 0, string, new Loader().loadSVGDocument(string)));
                                 }
-                            } else {
+                            } else if (string.contains("importJ:")) {
                                 MyImage2D.Double tmp = new MyImage2D.Double(0, 0, string, imported_from_J.get(string).getBufferedImage());
                                 if (imported_from_pixel_size.get(string) != null) {
                                     tmp.setSize_of_one_px_in_unit(imported_from_pixel_size.get(string));
@@ -6668,6 +6921,9 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                     tmp.setSize_of_one_px_in_unit(1);
                                 }
                                 b.addShape2(tmp);
+                            } else if (string.contains("inMem:")) {
+                                /* here we reload in mem images as they were */
+                                b.addShape2(temporarilyInMemObjectImagesSentBackToImageList.get(string));
                             }
                         }
                         b.update();
@@ -6715,7 +6971,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     if (!image_names.isEmpty()) {
                         Montage b = curPanel;
                         for (String string : image_names) {
-                            if (!string.contains("importJ:")) {
+                            if (!string.contains("importJ:") && !string.contains("inMem:")) {
                                 if (!string.toLowerCase().endsWith(".svg") && !string.toLowerCase().endsWith(".figur")) {
                                     b.addShape2(new MyImage2D.Double(0, 0, string));
                                 } else if (string.toLowerCase().endsWith(".figur")) {
@@ -6726,7 +6982,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                 } else {
                                     b.addShape2(new MyImageVector.Double(0, 0, string, new Loader().loadSVGDocument(string)));
                                 }
-                            } else {
+                            } else if (string.contains("importJ:")) {
                                 MyImage2D.Double tmp = new MyImage2D.Double(0, 0, string, imported_from_J.get(string).getBufferedImage());
                                 if (imported_from_pixel_size.get(string) != null) {
                                     tmp.setSize_of_one_px_in_unit(imported_from_pixel_size.get(string));
@@ -6734,6 +6990,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                                     tmp.setSize_of_one_px_in_unit(1);
                                 }
                                 b.addShape2(tmp);
+                            } else if (string.contains("inMem:")) {
+                                /* handles in mem images */
+                                if (temporarilyInMemObjectImagesSentBackToImageList.containsKey(string)) {
+                                    MyImage2D.Double tmp = (MyImage2D.Double) temporarilyInMemObjectImagesSentBackToImageList.get(string);
+                                    b.addShape2(tmp);
+                                }
                             }
                         }
                         b.update();
@@ -7076,7 +7338,7 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 loading = false;
             }
         }
-        if (source == jMenuItem11) {
+        if (source == jMenuItemEditJournalStyle) {
             /* 
              * we edit the current journal style
              */
@@ -7441,9 +7703,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking graphs...");
@@ -7547,8 +7806,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
 
         if (source == checkText) {
@@ -7565,9 +7822,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text...");
@@ -7621,8 +7875,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
 
         if (source == checkStyle) {
@@ -7639,9 +7891,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking text style...");
@@ -7696,8 +7945,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
         if (source == checkSize) {
             /*
@@ -7713,9 +7960,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking figure size...");
@@ -7773,8 +8017,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
         if (source == checkLineArts) {
             /*
@@ -7790,9 +8032,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             JDialog jd = null;
             try {
                 jd = new JDialog(CommonClassesLight.getParentFrame(), "Checking line arts...");
@@ -7886,8 +8125,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
         if (source == checkFont) {
             /*
@@ -7903,9 +8140,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 return;
             }
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
             /*
              * TODO maybe replace by a progress bar
              */
@@ -7962,8 +8196,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                 } catch (Exception e2) {
                 }
             }
-//                }
-//            }).start();
         }
         if (source == capitalizeFirstLetter) {
             /*
@@ -8038,17 +8270,17 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
             /*
              * show copyright notice
              */
-            AuthorPane2 apane = new AuthorPane2("Benoit Aigouy", "Copyright " + CommonClassesLight.COPYRIGHT + " 2012-" + currentyear, software_name + " " + version, "<html>e-mail: <a href=\"mailto:baigouy@gmail.com\">baigouy@gmail.com</a></html>");
+            AuthorPane2 apane = new AuthorPane2("Benoit Aigouy", "Copyright " + CommonClassesLight.COPYRIGHT + " 2012-" + CURRENT_YEAR, SOFTWARE_NAME + " " + VERSION, "<html>e-mail: <a href=\"mailto:baigouy@gmail.com\">baigouy@gmail.com</a></html>");
             Object[] pane = new Object[1];
             pane[0] = apane;
-            JOptionPane.showMessageDialog(this, pane, "About " + software_name + " ...", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(this, pane, "About " + SOFTWARE_NAME + " ...", JOptionPane.PLAIN_MESSAGE);
         }
 
-        if (source == jMenuItem19) {
+        if (source == jMenuItemImport) {
             /*
              * import images to the 'image list' for heroic people who don't want to use DND
              */
-            File[] nom = CommonClassesLight.openFiles(this, lastOpenName, exts, !CommonClassesLight.isWindows() && useNativeDialog);
+            File[] nom = CommonClassesLight.openFiles(this, lastOpenName, EXTS, !CommonClassesLight.isWindows() && useNativeDialog);
             if (nom != null) {
                 try {
                     lastOpenName = nom[0].getParent();
@@ -8414,16 +8646,16 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     /*
      * undo
      */
-    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+    private void jMenuItemUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemUndoActionPerformed
         undo.doClick();
-    }//GEN-LAST:event_jMenuItem14ActionPerformed
+    }//GEN-LAST:event_jMenuItemUndoActionPerformed
 
     /*
      * redo
      */
-    private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
+    private void jMenuItemRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRedoActionPerformed
         redo.doClick();
-    }//GEN-LAST:event_jMenuItem21ActionPerformed
+    }//GEN-LAST:event_jMenuItemRedoActionPerformed
 
     private void updatePositionInPanel(Object object) {
         if (object == null) {
@@ -9067,6 +9299,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     updateTitle(lastSaveName);
                     imported_from_pixel_size = fa.imported_from_pixel_size;
                     Rstatus = fa.Rstatus;
+                    /* force reload shortcuts */
+                    try {
+                        CommonClassesLight.resetShortcuts(rootPane, currentShortcuts);
+                    } catch (Exception e) {
+                        //no big deal if it does not work
+                    }
                     checkStatus();
                     fa.setVisible(true);
                     Dimension screen = getScreenSize();
@@ -9110,6 +9348,12 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                     updateTitle(lastSaveName);
                     imported_from_pixel_size = fa.imported_from_pixel_size;
                     Rstatus = fa.Rstatus;
+                    /* force reload shortcuts */
+                    try {
+                        CommonClassesLight.resetShortcuts(rootPane, currentShortcuts);
+                    } catch (Exception e) {
+                        //no big deal if it does not work
+                    }
                     checkStatus();
                     fa.setVisible(true);
                     Dimension screen = getScreenSize();
@@ -9127,11 +9371,6 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
                      * first attempt to import files from macro --> a bit crappy
                      * --> ignore for now
                      */
-//                    if (name_to_load!=null)
-//                    {
-//                         loadNonMTFile(name_to_load, true);
-//                        name_to_load=null;
-//                    }
                     if (macro != null) {
                         if (macro.toLowerCase().contains("/figure")) {
                             Figure rh = new Figure(macro);
@@ -9386,6 +9625,21 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
         }
     }
 
+    private void addToInMemory(Object object, String name) {
+        /* bug fix for images sent back to original list http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/3*/
+        if (object instanceof Transformable) {
+            /* move the image back to 0,0 */
+            ((Transformable) object).setFirstCorner(new Point2D.Double(0, 0));
+            //TODO at some point but ignore for now --> need to get the original image width and display it
+        }
+        if (object instanceof MyImage2D.Double) {
+            ((MyImage2D.Double) object).setLetter("");
+        }
+        temporarilyInMemObjectImagesSentBackToImageList.put(++currentInMemCounter + "inMem:" + name, object);
+        SerializableBufferedImage2 sb = ((MyImage2D) object).getOriginalImage();
+        myList1.addDirectlyToList(currentInMemCounter + "inMem:" + name, sb.getBufferedImage());
+    }
+
     /**
      * The main function is used to test the class and its methods
      *
@@ -9493,24 +9747,24 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu11;
-    private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
-    private static javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem18;
-    private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
-    private static javax.swing.JMenuItem jMenuItem21;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuItemEditJournalStyle;
+    private javax.swing.JMenuItem jMenuItemImport;
+    private static javax.swing.JMenuItem jMenuItemRedo;
+    private static javax.swing.JMenuItem jMenuItemUndo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -9581,4 +9835,5 @@ public class ScientiFig extends javax.swing.JFrame implements PlugIn {
     private javax.swing.JButton zoomMinus;
     private javax.swing.JButton zoomPlus;
     // End of variables declaration//GEN-END:variables
+
 }

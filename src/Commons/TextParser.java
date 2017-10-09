@@ -104,6 +104,7 @@ public class TextParser {
      * that contain a NAN value
      *
      * @param input_file
+     * @return 
      * @since <B>Packing Analyzer 1.0</B>
      */
     public ArrayList<ArrayList<Double>> apply_ignore_NAN(String input_file) {
@@ -149,6 +150,7 @@ public class TextParser {
      * Returns the first line of a file
      *
      * @param input_file
+     * @return 
      * @since <B>Packing Analyzer 1.0</B>
      */
     public String getFirstLineOnly(String input_file) {
@@ -171,6 +173,7 @@ public class TextParser {
      * a #
      *
      * @param input_file
+     * @return 
      * @since <B>Packing Analyzer 1.0</B>
      */
     public ArrayList<String> OnlyGetText(String input_file) {
@@ -190,7 +193,8 @@ public class TextParser {
     /**
      * Parses the first line of a file and return it as an array of strings
      *
-     * @param input_file
+     * @param entete
+     * @return 
      * @since <B>Packing Analyzer 1.0</B>
      */
     public ArrayList<String> parseHeader(String entete) {
@@ -213,6 +217,7 @@ public class TextParser {
      * Parses a line as an array of double
      *
      * @param line input line
+     * @return 
      * @since <B>Packing Analyzer 1.0</B>
      */
     public ArrayList<Double> parse_line_as_Double(String line) {
@@ -231,10 +236,11 @@ public class TextParser {
     }
 
     /**
-     * Converts an ArrayList<ArrayList<Double>> to an
-     * ArrayList<ArrayList<Integer>>
+     * Converts an ArrayList%<ArrayList%<Double%>%> to an
+     * ArrayList%<%ArrayList%<%Integer%>%>
      *
      * @param double_table input table
+     * @return 
      * @since <B>Packing Analyzer 2.0</B>
      */
     public ArrayList<ArrayList<Integer>> Double2IntTable(ArrayList<ArrayList<Double>> double_table) {
@@ -254,6 +260,7 @@ public class TextParser {
      * Parses a txt file into a single String
      *
      * @param input_file
+     * @return 
      * @since <B>Packing Analyzer 8.0</B>
      */
     public static String getTextAsString(String input_file) {

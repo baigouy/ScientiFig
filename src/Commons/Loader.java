@@ -190,7 +190,7 @@ public class Loader {
      * @return a bufferedImage corresponding to the SVG or null if fails
      */
     public BufferedImage loadSVG2BufferedImage(SVGDocument document) {
-        System.setProperty("org.apache.batik.warn_destination", "false");
+        System.setProperty("org.apache.batik.warn_destination", "false"); 
         try {
             UserAgentAdapter userAgentAdapter = new UserAgentAdapter();
             BridgeContext bridgeContext = new BridgeContext(userAgentAdapter);

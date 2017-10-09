@@ -97,7 +97,7 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
          */
         public static final long serialVersionUID = 2070327142126833034L;
 
-      /**
+        /**
          * converts an IJ rect ROI to a SF one
          *
          * @param ijRoi
@@ -105,9 +105,9 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
         public Double(Roi ijRoi) {
 //            if (ijRoi instanceof EllipseRoi)
 //            {
-            EllipseRoi elRoi = (EllipseRoi)ijRoi;
+            EllipseRoi elRoi = (EllipseRoi) ijRoi;
             double[] params = elRoi.getParams();
-            el2d = new Ellipse2D.Double(params[0], params[1], params[2]-params[0], params[3]-params[1]);
+            el2d = new Ellipse2D.Double(params[0], params[1], params[2] - params[0], params[3] - params[1]);
 //            }else if (ijRoi instanceof OvalRoi)
 //            {
 //             OvalRoi elRoi = (OvalRoi)ijRoi;
@@ -126,8 +126,8 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
             }
             strokeSize = ijRoi.getStrokeWidth();
             //ijRoi.getZpos
-        }        
-        
+        }
+
         /**
          * Constructor
          *
@@ -401,6 +401,9 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
 
     @Override
     public Rectangle getBounds() {
+        if (angle != 0) {
+            return getRotatedShape().getBounds();
+        }
         return el2d.getBounds();
     }
 
@@ -1079,7 +1082,7 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
     @Override
     public boolean contains(Point p) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(p);
+            return getRotatedShape()./*getBounds2D().*/contains(p);
         }
         return el2d.contains(p);
     }
@@ -1087,7 +1090,7 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
     @Override
     public boolean contains(Point2D p) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(p);
+            return getRotatedShape()./*getBounds2D().*/contains(p);
         }
         return el2d.contains(p);
     }
@@ -1095,7 +1098,7 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
     @Override
     public boolean contains(Rectangle2D r2) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(r2);
+            return getRotatedShape()./*getBounds2D().*/contains(r2);
         }
         return el2d.contains(r2);
     }
@@ -1103,7 +1106,7 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
     @Override
     public boolean contains(double x, double y) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(x, y);
+            return getRotatedShape()./*getBounds2D().*/contains(x, y);
         }
         return el2d.contains(x, y);
     }
@@ -1111,13 +1114,14 @@ public abstract class MyEllipse2D extends Ellipse2D implements PARoi, Contourabl
     @Override
     public boolean contains(double x, double y, double w, double h) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(x, y, w, h);
+            return getRotatedShape()./*getBounds2D().*/contains(x, y, w, h);
         }
         return el2d.contains(x, y, w, h);
     }
 
     @Override
     public boolean intersects(Rectangle r) {
+        //TODO fix all intersects in all classes --> make sure it is not rotated
         return el2d.intersects(r);
     }
 

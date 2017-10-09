@@ -1,3 +1,33 @@
+05/10/17
+-hopefully fixed issues associated with deleted or moved images (see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/2)
+-used a super dirty hack to preserve crops even when they are sent back to the image list (see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/2) --> maybe will need some more love in the future
+
+03/09/17
+-created a fix for SF for users not willing to switch to a recent FIJI (using java 1.8 and batik 1.9)
+-added a new update site for this deprecated version of SF that is specifically comptible with FIJI legacy
+
+07/06/17
+-removed a batik warning set to true by FIJI
+
+06/06/17
+-added support for batik 1.9 (to catch up with FIJI update)
+
+09/03/17
+-modified line display (made line extremities round, instead of squary)
+
+08/03/17
+-may have fixed a potential yosemite bug occuring upon DND of images
+
+03/03/17
+-fixed a shortcut bug (shortcuts other than letters were not allowed, which was dumb)
+
+01/02/17
+-added support for custom defined shortcuts (please report bugs)
+-custom shortcuts are stored in pref file and reloaded on reboot (please report bugs)
+
+09/01/17
+-fixed internal coding errors in ROIs (no effect as the erroneous methods weren't used anyway)
+
 24/10/16
 -fixed typos
 

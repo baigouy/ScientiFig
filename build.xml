@@ -136,6 +136,8 @@
             <fileset dir="${basedir}/GraphThemes" />
         </copy>
 
+        <!-- we make sure the jar can be executes, this is very useful so copy this everywhere --> 
+        <chmod file="${dist.dir}/${ant.project.name}.jar" perm="+x"/>
 
 <!--
         <copy todir="${dist.dir}/tuto">

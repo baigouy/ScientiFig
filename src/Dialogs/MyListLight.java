@@ -43,6 +43,9 @@ import Commons.IconLabel;
 import Commons.CommonClassesLight;
 import Commons.MyWriter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -192,7 +195,14 @@ public class MyListLight extends javax.swing.JPanel implements Serializable {
                 if (string == null) {
                     continue;
                 }
-                if (string.contains("importJ:")) {
+                /* if the image was deleted or moved from the disk then use the serialized version of it for a while forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282/3*/
+                if (string.contains("inMem:"))
+                {
+                    if (ScientiFig.temporarilyInMemObjectImagesSentBackToImageList.containsKey(string)) {
+                        addToListNoCheckIfNotExists(string);
+                    } 
+                }else   
+                    if (string.contains("importJ:")) {
                     if (ScientiFig.imported_from_J.containsKey(string)) {//ca marche
                         addToListNoCheckIfNotExists(string);
                     }
@@ -249,7 +259,7 @@ public class MyListLight extends javax.swing.JPanel implements Serializable {
     public boolean accept(String f) {
         String fichier = f.toLowerCase();
         for (String string : supportedExtensions) {
-            if (fichier.endsWith(string)) {
+            if (fichier.toLowerCase().endsWith(string)) {
                 return true;
             }
         }
@@ -284,7 +294,7 @@ public class MyListLight extends javax.swing.JPanel implements Serializable {
      * create an iconLabel
      *
      * @param text label text
-     * @param label image
+     * @param img
      * @return an IconLabel that we can add to the list
      */
     public IconLabel createLabel(String text, BufferedImage img) {
@@ -442,9 +452,7 @@ public class MyListLight extends javax.swing.JPanel implements Serializable {
      * Empties the list
      */
     public void clearList() {
-//        list.clearSelection();
         listModel.clear();
-//        list.updateUI();
         updateList();
     }
 
@@ -688,6 +696,43 @@ public class MyListLight extends javax.swing.JPanel implements Serializable {
         public void run() {
             processDrop(files2add);
         }
+    }
+    
+    public void doSomethingUponDoubleClick() {
+        MouseListener mouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = list.locationToIndex(e.getPoint());
+                    /**
+                     * opens the folder associated to the current image
+                     */
+                    if (new File(CommonClassesLight.getName(listModel.get(index).toString())).exists()) {
+                        try {
+                            CommonClassesLight.openUsingDefaultApplication(CommonClassesLight.getName(listModel.get(index).toString()));
+                        } catch (Exception e2) {
+                            /*
+                             * no big deal if it fails
+                             * there are big pbs under linux with that
+                             */
+                        }
+                    } else {
+                        /**
+                         * if the folder does not exist then open the image
+                         */
+                        try {
+                            CommonClassesLight.openUsingDefaultApplication(new File(CommonClassesLight.getName(listModel.get(index).toString())).getParent());
+                        } catch (Exception e2) {
+                            /*
+                             * no big deal if it fails
+                             * there are big pbs under linux with that
+                             */
+                        }
+                    }
+                }
+            }
+        };
+        list.addMouseListener(mouseListener);
     }
 
     public static void main(String[] args) {

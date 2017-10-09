@@ -64,7 +64,7 @@ import org.apache.batik.bridge.UserAgentAdapter;
 //import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
-import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+//import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
 import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.apache.batik.gvt.CanvasGraphicsNode;
 import org.apache.batik.gvt.GVTTreeWalker;
@@ -87,14 +87,16 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
      * Variables
      */
     public static final long serialVersionUID = -6176423765056197861L;
- static {
-     System.setProperty("org.apache.batik.warn_destination", "false");   
-     final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+
+    static {
+        final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
         registry.register(new PNGRegistryEntry());
-        registry.register(new TIFFRegistryEntry());
+//        registry.register(new TIFFRegistryEntry());
         System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+        /* yet another batik warning that we have to deactivate*/
+        System.setProperty("org.apache.batik.warn_destination", "false");
     }
-        double initial_elems_width;
+    double initial_elems_width;
     double initial_elems_height;
     AffineTransform at = new AffineTransform();
     double init_transX = 0;
@@ -273,7 +275,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         DocumentLoader loader = new DocumentLoader(userAgent);
         BridgeContext bridgeContext = new BridgeContext(userAgent, loader);
         bridgeContext.setDynamic(true);
-            bridgeContext.setDynamicState(BridgeContext.DYNAMIC);
+        bridgeContext.setDynamicState(BridgeContext.DYNAMIC);
         GVTBuilder builder = new GVTBuilder();
         if (document == null) {
             reloadDocFromString();
@@ -516,7 +518,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
         cropping_rect.height = down;
 
         /* we update the pdf viewBox */
-        /* TODO NB this might be useless and can be buggy too --> maybe remove ??? */
+ /* TODO NB this might be useless and can be buggy too --> maybe remove ??? */
         setViewSize((int) cropping_rect.x, (int) cropping_rect.y, (int) cropping_rect.width, (int) cropping_rect.height);
 
         isCropped = true;
@@ -625,9 +627,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             updateAT();
             at.translate(-cropping_rect.x, -cropping_rect.y);
             g2d.transform(at);
-            
-            
-            
+
             /*  
              * we paint the svg to the g2d
              */
@@ -651,7 +651,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
             System.out.println(" top_initial_elems_height;" + top_initial_elems_height);
             System.out.println(" top_init_transX = 0;" + top_init_transX);
             System.out.println(" top_init_transY = 0;" + top_init_transY);
-            System.out.println("rec2d " +rec2d);
+            System.out.println("rec2d " + rec2d);
             /* hack to fix erroneous drawing of svg images --> we simply embed them */
 //            Shape clip = g2d.getClip();
 //            if (clip != null) {
@@ -663,7 +663,7 @@ public class MyImageVector extends MyImage2D implements Drawable, Serializable, 
 //                System.out.println(at.getTranslateX()+" "+at.getTranslateY());
 //            }
             //get the bounds of the doc
-            ((MyGraphics2D) g2d).drawImage(svg_content_serializable, 0,0, initial_elems_width, initial_elems_height);
+            ((MyGraphics2D) g2d).drawImage(svg_content_serializable, 0, 0, initial_elems_width, initial_elems_height);
             super.drawAndFill(g2d);
         }
     }

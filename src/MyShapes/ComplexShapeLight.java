@@ -38,6 +38,7 @@ import Commons.G2dParameters;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -578,13 +579,77 @@ public class ComplexShapeLight extends MyRectangle2D implements LineStrokable, T
      * @return true if the point p is contained in bounding rectangle
      * surrounding the group
      */
-    public boolean contains(Point2D.Double p) {
+    public boolean containsInMainRect(Point2D.Double p) {
         if (rec2d == null) {
             return false;
         }
         return rec2d.contains(p);
     }
 
+    
+    /**
+     * we loop over all shapes to see if any contains the point of interest, if
+     * so return true, false otherwise
+     *
+     * @param p
+     * @return
+     */
+    @Override
+    public boolean contains(Point p) {
+        boolean contains = false;
+        for (Object object : pos_n_shapes) {
+            if (object instanceof PARoi) {
+                if (((PARoi) object).contains(p.x, p.y)) {
+                    return true;
+                }
+            }
+        }
+        return contains;
+    }
+
+    @Override
+    public boolean contains(Point2D p) {
+        return contains(p.getX(), p.getY());
+    }
+
+    @Override
+    public boolean contains(double x, double y) {
+        boolean contains = false;
+        for (Object object : pos_n_shapes) {
+            if (object instanceof PARoi) {
+                if (((PARoi) object).contains(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return contains;
+    }
+
+    /**
+     * we loop over all shapes to see if any contains the rectangle of interest,
+     * if so return true, false otherwise
+     *
+     * @param p
+     * @return
+     */
+    @Override
+    public boolean contains(Rectangle2D r2) {
+        return contains(r2.getX(), r2.getY(), r2.getWidth(), r2.getHeight());
+    }
+
+    @Override
+    public boolean contains(double x, double y, double w, double h) {
+        boolean contains = false;
+        for (Object object : pos_n_shapes) {
+            if (object instanceof PARoi) {
+                if (((PARoi) object).contains(x, y, w, h)) {
+                    return true;
+                }
+            }
+        }
+        return contains;
+    }
+    
     /**
      * pack the vectorial objects in the X direction without space between them
      */

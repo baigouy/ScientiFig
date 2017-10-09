@@ -33,16 +33,18 @@
  */
 package Commons;
 
+//TODO clean up this stuff as there are a lot of obsolete things here
 import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
 
 /**
  * Series of static methods to modify the colors of an image
  *
  * @author Benoit Aigouy
  */
-public class ImageColors { 
+public class ImageColors {
 
     public final static int CH1_TO_WHITE = 0;
     public final static int CH2_TO_WHITE = 1;
@@ -386,6 +388,45 @@ public class ImageColors {
         return i1 < i2 ? i2 : i1;
     }
 
+    public static BufferedImage convertToRGB(BufferedImage image, int ch) {
+        if (image == null) {
+            return null;
+        }
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage output = new MyBufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        try {
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                    int RGB = image.getRGB(i, j) & 0x00FFFFFF;
+                    int red = (RGB >> 16) & 0xFF;
+                    int green = (RGB >> 8) & 0xFF;
+                    int blue = (RGB & 0xFF);
+                    if (ch == CommonClassesLight.CH1) {
+                        green = red;
+                        blue = red;
+                    } else if (ch == CommonClassesLight.CH2) {
+                        red = green;
+                        blue = green;
+                    } else {
+                        red = blue;
+                        green = blue;
+                    }
+                    int RGB_out = (red << 16) + (green << 8) + blue;
+                    output.setRGB(i, j, RGB_out);
+                }
+            }
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
+            System.err.println(stacktrace);
+        }
+        return output;
+    }
+
     /**
      * Converts the Red, Green or Blue channel of an image to
      * white<BR><BR><B>NB: </B> the two other channels remain unchanged.
@@ -396,22 +437,19 @@ public class ImageColors {
      * @return Bufferedimage containing the modified image
      * @since <B>Packing Analyzer 2.0</B>
      */
-    private static BufferedImage RGB2W(BufferedImage image, final int CHANNEL) {
+    public static BufferedImage RGB2W(BufferedImage image, final int CHANNEL) {
         BufferedImage output = null;
         try {
             BufferedImage temp = CommonClassesLight.copyImg(image);
-
             int width = temp.getWidth();
             int height = temp.getHeight();
             output = new MyBufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
             for (int j = 0; j < height; j++) {
                 for (int i = 0; i < width; i++) {
                     int RGB = temp.getRGB(i, j);
                     int red = (RGB >> 16) & 0xFF;
                     int green = (RGB >> 8) & 0xFF;
                     int blue = (RGB & 0xFF);
-
                     if (CHANNEL == CH1_TO_WHITE) {
                         green = max(green, red);
                         blue = max(blue, red);
@@ -428,8 +466,10 @@ public class ImageColors {
             }
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
         }
         return output;
@@ -840,7 +880,65 @@ public class ImageColors {
         if (showBlue) {
             count++;
         }
-        return count == 1 ? true : false;
+        return count == 1;
+    }
+
+    public static boolean isBlack(BufferedImage input) {
+        if (input == null) {
+            return true;
+        }
+        int width = input.getWidth();
+        int height = input.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int px = input.getRGB(i, j) & 0x00FFFFFF;
+                if (px != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static HashSet<Integer> detectRGBChannels(BufferedImage input) {
+        HashSet<Integer> channels = new HashSet<Integer>();
+        if (input == null) {
+            return channels;
+        }
+        boolean alwaysSameRGB = true;
+        int width = input.getWidth();
+        int height = input.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int px = input.getRGB(i, j) & 0x00FFFFFF;
+
+                int ch1 = (px >> 16) & 0xFF;
+                int ch2 = (px >> 8) & 0xFF;
+                int ch3 = (px & 0xFF);
+                if ((px & red_mask) != 0) {
+                    channels.add(CommonClassesLight.CH1);
+                }
+                if ((px & green_mask) != 0) {
+                    channels.add(CommonClassesLight.CH2);
+                }
+                if ((px & blue_mask) != 0) {
+                    channels.add(CommonClassesLight.CH3);
+                }
+                /* we make sure it's not three times the same channels)*/
+                if (ch1 != ch2 || ch1 != ch3 || ch2 != ch3) {
+                    alwaysSameRGB = false;
+                }
+                if (channels.size() == 3 && !alwaysSameRGB) {
+                    return channels;
+                }
+            }
+        }
+        if (alwaysSameRGB && channels.size() == 3) {
+            channels.clear();
+            channels.add(CommonClassesLight.CH3);
+            return channels;
+        }
+        return channels;
     }
 
     public static BufferedImage forceWhite(BufferedImage orig, boolean showRed, boolean showGreen, boolean showBlue) {
@@ -864,7 +962,7 @@ public class ImageColors {
 //        {
 //            return CommonClassesLight.get16BitsChannel(mode, image);
 //        }
-        
+
         BufferedImage original = CommonClassesLight.copyImg(image);
         int width = original.getWidth();
         int height = original.getHeight();
@@ -1010,5 +1108,3 @@ public class ImageColors {
 //        Saver.pop(ImageColors.RGB2B(test));
     }
 }
-
-

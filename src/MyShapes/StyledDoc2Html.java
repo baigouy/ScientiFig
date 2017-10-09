@@ -51,6 +51,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import static Tools.StyledDocTools.getText;
 
 /**
  * StyledDoc2Html converts an sttributed string to an html string --> best

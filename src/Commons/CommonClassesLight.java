@@ -1,9 +1,14 @@
 package Commons;
 
+import Dialogs.CustomShortcutDefinition;
 import GUIs.LogFrame;
+import MyShapes.Contourable;
+import MyShapes.PARoi;
 import R.RSession.MyRsessionLogger;
 import ij.*;
+import ij.gui.Roi;
 import ij.io.FileInfo;
+import ij.plugin.frame.RoiManager;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -261,6 +266,65 @@ public class CommonClassesLight {
     public static final double PI_OVER_TWO_DEGREES = 90;
 
     /**
+     * Use this to define shortcuts
+     *
+     * @param rootPane
+     * @param listOfShortcuts
+     */
+    public static void resetShortcuts(JRootPane rootPane, LinkedHashMap<Object, String> listOfShortcuts) {
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        resetShortcuts(inputMap, listOfShortcuts);
+    }
+
+    /**
+     * Use this to define shortcuts
+     *
+     * @param inputMap
+     * @param listOfShortcuts
+     */
+    public static void resetShortcuts(InputMap inputMap, LinkedHashMap<Object, String> listOfShortcuts) {
+        /* we reset the shortcuts */
+        KeyStroke[] shortcuts = inputMap.allKeys();
+        if (shortcuts != null) {
+            for (KeyStroke shortcut : shortcuts) {
+                inputMap.remove(shortcut);
+            }
+        }
+        /* we initialise shortcuts */
+        for (Map.Entry<Object, String> entry : listOfShortcuts.entrySet()) {
+            Object key = entry.getKey();
+            if (key instanceof KeyStroke) {
+                String value = entry.getValue();
+                //System.out.println(key + " " + value);
+                inputMap.put((KeyStroke) key, value);
+            }
+            /* for debug only */
+//            else
+//            {
+//                System.out.println("too bad "+key);
+//            }
+        }
+    }
+
+    public static ArrayList<String> convertShortcutsToTips(LinkedHashMap<Object, String> listOfShortcuts) {
+        ArrayList<String> tips = new ArrayList<String>();
+        if (listOfShortcuts == null || listOfShortcuts.isEmpty()) {
+            return tips;
+        }
+        for (Map.Entry<Object, String> entry : listOfShortcuts.entrySet()) {
+            String tip = "<html>Did you know that ";
+            Object key = entry.getKey();
+            if (key instanceof KeyStroke) {
+                tip += "by pressing:<br> <font color='red'>'" + CustomShortcutDefinition.getFormattedKeys((KeyStroke) key) + "'</font> <br>you can<br> <font color='blue'>" + entry.getValue() + "</font>";
+            } else {
+                tip += "using <br> <font color='red'>'" + key.toString() + "'</font> <br>you can<br><font color='blue'> " + entry.getValue() + "</font>";
+            }
+            tips.add(tip);
+        }
+        return tips;
+    }
+
+    /**
      * Sends a String to the system clipboard
      *
      * @param text
@@ -400,6 +464,15 @@ public class CommonClassesLight {
             lib_folder = "";
         }
         return lib_folder;
+    }
+
+    /**
+     * Use this to change the current java working directory, can be very useful
+     *
+     * @param workingDirectory user defined new working directory
+     */
+    public static void setCurrentWorkingDirectory(String workingDirectory) {
+        System.setProperty("user.dir", workingDirectory);
     }
 
     /**
@@ -721,6 +794,49 @@ public class CommonClassesLight {
             return fifo;
         }
         return null;
+    }
+
+    /**
+     * pops up and sets it to top for 2.5 seconds then remove it
+     *
+     * @param ip
+     */
+    public static void pop(final ImagePlus ip) {
+        pop(ip, 2500);
+    }
+
+    /**
+     * pops up an imagePlus for some time then remove it
+     *
+     * @param ip
+     * @param timeInMs
+     */
+    public static void pop(final ImagePlus ip, long timeInMs) {
+        if (ip == null || timeInMs <= 0) {
+            return;
+        }
+        /* ensure the image is visible, otherwise show it */
+        if (!ip.isVisible()) {
+            ip.show();
+        }
+        /**
+         * hack to get imagePlus always on top
+         */
+        ip.getWindow().setAlwaysOnTop(true);
+        /**
+         * code to get the image to close automaically after some delay
+         */
+        final java.util.Timer timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    ip.close();
+                } catch (Exception e) {
+                }
+                timer.cancel();
+            }
+        }, timeInMs);
     }
 
     /**
@@ -1568,7 +1684,7 @@ public class CommonClassesLight {
             Desktop desktop = null;
             if (Desktop.isDesktopSupported()) {
                 desktop = Desktop.getDesktop();
-            } 
+            }
             if (desktop != null) {
                 File f = new File(file);
                 if (f.exists()) {
@@ -1578,13 +1694,6 @@ public class CommonClassesLight {
                 }
             }
         } catch (Exception e) {
-            /**
-             * useless to warn the user for this
-             */
-//            StringWriter sw = new StringWriter();
-//             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-//            String stacktrace = sw.toString();pw.close();
-//            System.err.println(stacktrace);
         }
     }
 
@@ -1599,6 +1708,58 @@ public class CommonClassesLight {
         }
         ImagePlus ip = IJ.openImage(path);
         ip.show();
+    }
+
+    /**
+     * this is only useful to me for debugging my code
+     */
+    public static void autoCloseImageJ() {
+        java.util.Timer timer = new java.util.Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (WindowManager.getCurrentImage() == null) {
+                    System.exit(0);
+                }
+            }
+        }, 1000, 1000);
+    }
+
+    public static void sendToIJRoiManager(ArrayList<Object> shapes) {
+        openImageJ();
+        RoiManager roiManager = RoiManager.getInstance();
+        if (roiManager == null) {
+            roiManager = new RoiManager();
+        }
+        if (shapes != null && !shapes.isEmpty()) {
+            for (Object object : shapes) {
+                if (object != null) {
+                    PARoi paRoi = ((PARoi) object);
+                    Roi roi = paRoi.getIJRoi();
+                    int color = ((Contourable) object).getDrawColor() & 0x00FFFFFF;
+                    roi.setStrokeColor(new Color(color));
+                    roi.setFillColor(new Color(color));
+                    roiManager.addRoi(roi);
+                }
+            }
+        }
+    }
+
+    public static void imagesToStack() {
+        IJimagesToStack();
+    }
+
+    /**
+     * merges freely floating IJ images as a stack
+     */
+    public static void IJimagesToStack() {
+        try {
+            if (WindowManager.getImageCount() >= 2) {
+                IJ.run("Images to Stack", "name=Stack title=[] use");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean isImageJEmbedded = true;
@@ -1731,6 +1892,38 @@ public class CommonClassesLight {
         return pt.x + "\t" + pt.y;
     }
 
+      /**
+     * fills an image with the specified color
+     *
+     * @param img
+     * @param color
+     * @return a filled image
+     */
+    public static BufferedImage fill(BufferedImage img, int color) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                img.setRGB(i, j, color);
+            }
+        }
+        return img;
+    }
+
+    /**
+     * creates an empty image colores
+     * @param width
+     * @param height
+     * @param color
+     * @return 
+     */
+    public static BufferedImage createImage(int width, int height, int color)
+    {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+         fill(img, color);
+        return img;
+    }
+    
     /**
      * Returns the negative of a color
      *
@@ -2021,11 +2214,13 @@ public class CommonClassesLight {
         int green = pRandom.nextInt(255);
         int blue = pRandom.nextInt(255);
         int random_color = (red << 16) + (green << 8) + blue;
+        random_color = random_color & 0x00FFFFFF;//not sure it's necessary but shouldn't hurt--> check
         while (colors.contains(random_color)) {
             red = pRandom.nextInt(255);
             green = pRandom.nextInt(255);
             blue = pRandom.nextInt(255);
             random_color = (red << 16) + (green << 8) + blue;
+            random_color = random_color & 0x00FFFFFF;//not sure it's necessary but shouldn't hurt--> check
         }
         return random_color;
     }
@@ -2743,6 +2938,14 @@ public class CommonClassesLight {
     public static void showMessage(Component parent, String text) {
         String formatted_text = generateMultilineJlabel(text);
         JOptionPane.showMessageDialog(parent, formatted_text, "Information...", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void showMessage(String text) {
+        if (GUI instanceof Component) {
+            showMessage((Component) GUI, text);
+        } else {
+            showMessage(null, text);
+        }
     }
 
     /**

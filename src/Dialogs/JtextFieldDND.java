@@ -47,7 +47,7 @@ import javax.swing.event.DocumentListener;
  * @author Benoit Aigouy
  */
 public class JtextFieldDND extends javax.swing.JPanel {
-
+    
     public static final long serialVersionUID = 5447412807391271349L;
     private boolean monitorChanges = false;
     private final DocumentListener listener = new DocumentListener() {
@@ -55,17 +55,22 @@ public class JtextFieldDND extends javax.swing.JPanel {
         public void changedUpdate(DocumentEvent e) {
             textChanged();
         }
-
+        
         @Override
         public void removeUpdate(DocumentEvent e) {
             textRemoved();
         }
-
+        
         @Override
         public void insertUpdate(DocumentEvent e) {
             textInserted();
         }
     };
+    
+    public JtextFieldDND(String txt) {
+        this();
+        setText(txt);
+    }
 
     /**
      * Creates new form JtextFieldDND (a jtextfield that supports DND)
@@ -81,7 +86,7 @@ public class JtextFieldDND extends javax.swing.JPanel {
         jLabel1.setVisible(false);
         jButton1.setVisible(false);
     }
-
+    
     public boolean isMonitorChanges() {
         return monitorChanges;
     }
@@ -196,7 +201,7 @@ public class JtextFieldDND extends javax.swing.JPanel {
         }
         return false;
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

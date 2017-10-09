@@ -64,6 +64,7 @@ import java.util.List;
  * @author Benoit Aigouy
  */
 public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener {
+
     /*
      * Variables
      */
@@ -154,6 +155,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      * @param ROIS Vectorial objects that should be contained and displayed in
      * the ROIPanel
      */
+    
     public ROIpanelLight(ArrayList<Object> ROIS) {
         this();
         this.ROIS = ROIS;
@@ -994,6 +996,9 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         if (!allowRefresh) {
             return;
         }
+        if (!isVisible()) {
+            return;
+        }
         super.paint(g);
 //        AffineTransform at = new AffineTransform();
 //        at.setToTranslation(25, 10);
@@ -1513,7 +1518,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
         }
 
         if (selected_shape_or_group instanceof ComplexShapeLight) {
-            if (((ComplexShapeLight) selected_shape_or_group).contains(click_point_corrected)) {
+            if (((ComplexShapeLight) selected_shape_or_group).containsInMainRect(click_point_corrected)) {
                 clicked_on_a_shape = true;
             }
         }
@@ -2193,7 +2198,7 @@ public class ROIpanelLight extends javax.swing.JPanel implements MouseListener, 
      */
     public void selectionChanged(Object selection) {
         //System.out.println(e.getSource());
-    /*
+        /*
          * is just there to be overided
          */
     }

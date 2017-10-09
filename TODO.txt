@@ -1,0 +1,4 @@
+update the GRED website
+switch to java8 and switch to imglib2 and scifio
+
+

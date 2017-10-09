@@ -83,7 +83,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
-import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+//import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
 import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.rosuda.REngine.REXPMismatchException;
 
@@ -105,8 +105,10 @@ public class FiguR extends javax.swing.JFrame implements PlugIn {
     static {
         final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
         registry.register(new PNGRegistryEntry());
-        registry.register(new TIFFRegistryEntry());
+//        registry.register(new TIFFRegistryEntry());
         System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+        /* yet another batik warning that we have to deactivate*/
+        System.setProperty("org.apache.batik.warn_destination", "false"); 
     }
 
     /**

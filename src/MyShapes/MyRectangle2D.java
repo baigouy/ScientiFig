@@ -366,7 +366,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
          * small addition in case the shape has been rotated
          */
         if (angle != 0) {
-            return getRotatedShape().getBounds2D();
+            return getRotatedShape().getBounds2D();//but need to fix the translation error and maybe the same for the contains
         }
         return rec2d.getBounds2D();
     }
@@ -383,6 +383,10 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
 
     @Override
     public Rectangle getBounds() {
+        //TODO FIX THIS IN ALL CLASSES
+        if (angle != 0) {
+            return getRotatedShape().getBounds();
+        }
         return rec2d.getBounds();
     }
 
@@ -918,6 +922,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     public void flipHorizontally() {
         /*
          * rien a faire
+        NB sauf si rotated --> fix
          */
     }
 
@@ -925,6 +930,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     public void flipVertically() {
         /*
          * rien a faire
+        NB sauf si rotated --> fix
          */
     }
 
@@ -1079,7 +1085,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     @Override
     public boolean contains(Point p) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(p);
+            return getRotatedShape()./*getBounds2D().*/contains(p);
         }
         return rec2d.contains(p);
     }
@@ -1087,7 +1093,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     @Override
     public boolean contains(Point2D p) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(p);
+            return getRotatedShape()./*getBounds2D().*/contains(p);
         }
         return rec2d.contains(p);
     }
@@ -1095,7 +1101,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     @Override
     public boolean contains(Rectangle2D r2) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(r2);
+            return getRotatedShape()./*getBounds2D().*/contains(r2);
         }
         return rec2d.contains(r2);
     }
@@ -1103,7 +1109,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     @Override
     public boolean contains(double x, double y) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(x, y);
+            return getRotatedShape()./*getBounds2D().*/contains(x, y);
         }
         return rec2d.contains(x, y);
     }
@@ -1111,7 +1117,7 @@ public abstract class MyRectangle2D /*extends Rectangle2D*/ implements PARoi, Co
     @Override
     public boolean contains(double x, double y, double w, double h) {
         if (angle != 0) {
-            return getRotatedShape().getBounds2D().contains(x, y, w, h);
+            return getRotatedShape()./*getBounds2D().*/contains(x, y, w, h);
         }
         return rec2d.contains(x, y, w, h);
     }

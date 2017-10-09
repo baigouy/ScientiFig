@@ -42,6 +42,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ import java.util.ArrayList;
 public class DropTargetHandler implements DropTargetListener {
 
     @Override
-    public void dragEnter(DropTargetDragEvent dtde) {
+    public void dragEnter(DropTargetDragEvent dtde) { 
     }
 
     @Override
@@ -89,9 +90,30 @@ public class DropTargetHandler implements DropTargetListener {
                         }
                         dtde.dropComplete(true);
                         return;
-                    } else if (dataFlavor.isFlavorTextType()) { //linux ubuntu only
+                    } else if (dataFlavor.isFlavorTextType()) { //linux ubuntu only or mac OS X Yosemite ?
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                        String data = ((String) (t.getTransferData(DataFlavor.stringFlavor)));
+                        String data = null;
+                        /* attempt to fix a java Yosemite bug/unicode string */
+                        try {
+                            StringBuilder text = new StringBuilder();
+                            Reader r = dataFlavor.getReaderForText(t);
+                            int c = r.read();
+                            while (c != -1) {
+                                text.append((char) c);
+                                c = r.read();
+                            }
+                            data = text.toString();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        /* old loading, to preserve compatibility  */
+                        if (data == null) {
+                            try {
+                                data = ((String) (t.getTransferData(DataFlavor.stringFlavor)));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                         ArrayList<String> file_list = CommonClassesLight.UriListToStringArray(data); //create an array out of a single string by parsing it
                         if (!file_list.isEmpty()) {
                             for (int j = 0; j < file_list.size(); j++) {
@@ -106,8 +128,8 @@ public class DropTargetHandler implements DropTargetListener {
                         String data = ((String) (t.getTransferData(DataFlavor.stringFlavor)));
                         String[] result = data.split("\n");
                         if (result != null) {
-                            for (int j = 0; j < result.length; j++) {
-                                data = result[j];
+                            for (String result1 : result) {
+                                data = result1;
                                 if (data.toLowerCase().startsWith("file:")) {
                                     data = new File(new URL(data).toURI()).toString();
                                 }
@@ -123,8 +145,8 @@ public class DropTargetHandler implements DropTargetListener {
                 String data = ((String) (t.getTransferData(DataFlavor.stringFlavor)));
                 String[] result = data.split("\n");
                 if (result != null) {
-                    for (int j = 0; j < result.length; j++) {
-                        data = result[j];
+                    for (String result1 : result) {
+                        data = result1;
                         if (data.toLowerCase().startsWith("file:")) {
                             data = new File(new URL(data).toURI()).toString();
                         }
@@ -141,8 +163,10 @@ public class DropTargetHandler implements DropTargetListener {
             dtde.dropComplete(false);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-            String stacktrace = sw.toString();pw.close();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String stacktrace = sw.toString();
+            pw.close();
             System.err.println(stacktrace);
             dtde.dropComplete(false);
         }
@@ -150,9 +174,8 @@ public class DropTargetHandler implements DropTargetListener {
 
     /**
      * just override this with your code to handle the transfered file
+     * @param data
      */
     public void doSomethingWithTheFile(String data) {
     }
 }
-
-

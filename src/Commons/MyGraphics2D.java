@@ -55,7 +55,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
-import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
+//import org.apache.batik.ext.awt.image.codec.tiff.TIFFRegistryEntry;
 import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 //import org.apache.batik.svggen.CachedImageHandlerBase64Encoder;
 import org.apache.batik.svggen.DefaultExtensionHandler;
@@ -83,8 +83,10 @@ public class MyGraphics2D extends Graphics2D {
     static {
         final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
         registry.register(new PNGRegistryEntry());
-        registry.register(new TIFFRegistryEntry());
+//        registry.register(new TIFFRegistryEntry());
         System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+        /* yet another batik warning that we have to deactivate*/
+        System.setProperty("org.apache.batik.warn_destination", "false"); 
     }
     public static int MIXED_DRAWING_SVG_GRAPHICS2D = 1;
     public static int GRAPHICS2D_ONLY = 2;

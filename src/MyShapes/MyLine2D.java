@@ -341,7 +341,9 @@ public abstract class MyLine2D extends Line2D implements PARoi, Contourable, Ser
     public BasicStroke getLineStroke() {
         float[] stroke_parameters = createLineStroke();
         if (stroke_parameters == null) {
-            return new BasicStroke(strokeSize);
+            /* small aesthetic change */
+            //return new BasicStroke(strokeSize);
+            return new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         } else {
             return new BasicStroke(
                     strokeSize,

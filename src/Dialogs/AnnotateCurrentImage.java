@@ -62,8 +62,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
@@ -95,6 +93,7 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      *
      * @param bg_image backround image over which various vectorial shapes will
      * be added
+     * @param copiedROIs
      */
     public AnnotateCurrentImage(MyImage2D bg_image, ArrayList<Object> copiedROIs) {
         initComponents();
@@ -105,13 +104,9 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         rOIpanelLight1.show_base_of_line = false;
         speedUpScrollbars();
         /*
-         * we load the combo with arrows
-         */
-        //Vector arrows = new Vector();
-        /*
          * NB: the order should match ARROW_HEAD_TYPE in MyLine2D
          */
-        /*
+ /*
          //somehow some of these unicodes characters don't display on some systems --> I replaced them by icons
          arrows.add(CommonClassesLight.RIGHT_ARROW);
          arrows.add(CommonClassesLight.RIGHT_ARROW_UP_BARB);
@@ -126,7 +121,6 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_arrow.png")));
         jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/inhibition_arrow.png")));
         jComboBox2.addItem(new javax.swing.ImageIcon(getClass().getResource("/Icons/double_headed_inhibition_arrow.png")));
-        //jComboBox2.setModel(new DefaultComboBoxModel(arrows));
         if (copiedROIs != null && (copiedROIs instanceof ArrayList)) {
             rOIpanelLight1.copy = copiedROIs;
         }
@@ -1257,12 +1251,12 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                 CommonClassesLight.Warning(this, "Please select or draw a rectangular ROI first");
                 return;
             } else {
-                ChangeRectangleROIWidthOrJHeight iopane = new ChangeRectangleROIWidthOrJHeight( (int)((MyRectangle2D) raw).rec2d.width, (int)((MyRectangle2D) raw).rec2d.height);
+                ChangeRectangleROIWidthOrJHeight iopane = new ChangeRectangleROIWidthOrJHeight((int) ((MyRectangle2D) raw).rec2d.width, (int) ((MyRectangle2D) raw).rec2d.height);
                 int result = JOptionPane.showOptionDialog(this, new Object[]{iopane}, "Edit Rectangle Width or Height", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
                 if (result == JOptionPane.OK_OPTION) {
                     ((MyRectangle2D) raw).rec2d.width = iopane.getRectWidth();
                     ((MyRectangle2D) raw).rec2d.height = iopane.getRectHeight();
-                     rOIpanelLight1.repaint();
+                    rOIpanelLight1.repaint();
                 }
             }
         }
@@ -1321,7 +1315,9 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
             MyImage2D.Double newCrop = new MyImage2D.Double(0, 0, img.getOriginalDisplay());
             newCrop.crop((int) originalRect.getX(), (int) ((origWidth - (int) originalRect.getX() - r.getWidth())), (int) originalRect.getY(), ((int) (origHeight - (int) originalRect.getY() - r.getHeight())));
             newCrop.rotate((fullRotation < 0 ? 360 + fullRotation : fullRotation));
+            /* we should make sure this image does no longer exist on the disk, see http://forum.imagej.net/t/scientifig-v3-01-images-deleted-instead-of-landing-on-image-list/7282 */
             newCrop.setFullName(img.getFullName());
+            /* I can identify crops as their short name does not match their long name --> I can force them to be InMem; crops are labeled with -crop- and a number */
             newCrop.setShortName(img.getShortName() + "-crop-" + CommonClassesLight.create_number_of_the_appropriate_size(oneLinerCrops.size() + 1, 2));
             newCrop.setSize_of_one_px_in_unit(img.getScale_bar_size_in_unit());
             oneLinerCrops.add(newCrop);
@@ -1434,8 +1430,10 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
                     }
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
-                     PrintWriter pw = new PrintWriter(sw); e.printStackTrace(pw);
-                    String stacktrace = sw.toString();pw.close();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stacktrace = sw.toString();
+                    pw.close();
                     System.err.println(stacktrace);
                 }
             }
@@ -1739,7 +1737,6 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
      */
     public static void main(String args[]) {
         MyImage2D.Double tmp = new MyImage2D.Double(0, 0, new Loader().load("/E/sample_images_PA/trash_test_mem/egg_chambers/Series010.png"));
-//        System.out.println(new Loader().load("C:/Users/aigouy/Desktop/sample_images_PA/trash_test_mem/mini/focused_Series012.png").getHeight());
         tmp.crop(64, 128, 64, 128);
         tmp.rotate(45);
         System.out.println("image rotation " + tmp.getTheta()); //--> recup l'angle de l'image
@@ -1772,7 +1769,6 @@ public class AnnotateCurrentImage extends javax.swing.JPanel {
         AnnotateCurrentImage fp = new AnnotateCurrentImage(tmp, null);
         int result = JOptionPane.showOptionDialog(null, new Object[]{fp}, "Add Extra Objects To The Image", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
         if (result == JOptionPane.OK_OPTION) {
-            //
         }
         System.exit(0);
     }
